@@ -3,7 +3,8 @@ import EventCard from '@/components/EventCard';
 
 async function getEvents(search?: string) {
   try {
-    const url = new URL('http://localhost:3001/events');
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const url = new URL(`${baseUrl}/events`);
     if (search) {
       url.searchParams.append('search', search);
     }

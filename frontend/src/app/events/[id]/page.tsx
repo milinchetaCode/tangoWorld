@@ -4,7 +4,8 @@ import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Clock, Info } from 'lu
 
 async function getEvent(id: string) {
     try {
-        const res = await fetch(`http://localhost:3001/events/${id}`, { next: { revalidate: 0 } });
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const res = await fetch(`${baseUrl}/events/${id}`, { next: { revalidate: 0 } });
         if (!res.ok) {
             if (res.status === 404) return null;
             throw new Error('Failed to fetch event');
