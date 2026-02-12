@@ -1,8 +1,27 @@
 import Hero from '@/components/Hero';
 import EventCard from '@/components/EventCard';
-import { MOCK_EVENTS } from '@/lib/mock-data';
 
-export default function Home() {
+async function getEvents(search?: string) {
+  try {
+    const url = new URL('http://localhost:3001/events');
+    if (search) {
+      url.searchParams.append('search', search);
+    }
+    const res = await fetch(url.toString(), { next: { revalidate: 0 } });
+    if (!res.ok) {
+      throw new Error('Failed to fetch events');
+    }
+    return res.json();
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
+}
+
+export default async function Home({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+  const { search } = await searchParams;
+  const events = await getEvents(search);
+
   return (
     <div>
       <Hero />
@@ -19,12 +38,18 @@ export default function Home() {
           </div>
 
           <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-            {MOCK_EVENTS.map((event) => (
-              <EventCard
-                key={event.id}
-                {...event}
-              />
-            ))}
+            {events.length > 0 ? (
+              events.map((event: any) => (
+                <EventCard
+                  key={event.id}
+                  {...event}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-slate-500 italic">No upcoming events found at the moment.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

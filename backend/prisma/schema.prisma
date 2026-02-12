@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  surname      String
+  city         String
+  gender       String        // "male", "female"
+  dietaryNeeds String?
+  role         String        @default("user") // "user", "organizer", "admin"
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  events       Event[]
+  applications Application[]
+}
+
+model Event {
+  id             String        @id @default(uuid())
+  title          String
+  startDate      DateTime
+  endDate        DateTime
+  location       String
+  venue          String
+  imageUrl       String?
+  guests         String?
+  djs            String?
+  schedule       String?
+  capacity       Int
+  maleCapacity   Int
+  femaleCapacity Int
+  organizer      User          @relation(fields: [organizerId], references: [id])
+  organizerId    String
+  status         String        @default("published") // "draft", "published", "cancelled"
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  applications   Application[]
+}
+
+model Application {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  status    String   @default("applied") // "applied", "accepted", "waitlisted", "rejected", "cancelled"
+  appliedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, eventId])
+}

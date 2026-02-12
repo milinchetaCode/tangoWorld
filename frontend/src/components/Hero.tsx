@@ -16,16 +16,17 @@ export default function Hero() {
                         Find marathons and festivals globally. Your next tanda awaits.
                     </p>
                     <div className="mt-10 flex items-center justify-center gap-x-6">
-                        <div className="relative w-full max-w-md">
+                        <form action="/" method="GET" className="relative w-full max-w-md">
                             <input
                                 type="text"
-                                className="block w-full rounded-full border-0 py-4 pl-12 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm sm:leading-6"
+                                name="search"
+                                className="block w-full rounded-full border-0 py-4 pl-12 pr-4 text-slate-900 bg-white shadow-xl ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm sm:leading-6"
                                 placeholder="Search by city, event name, or date..."
                             />
                             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                                 <Search className="h-5 w-5 text-slate-400" aria-hidden="true" />
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>

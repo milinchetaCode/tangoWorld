@@ -4,15 +4,21 @@ import { Calendar, MapPin, Users } from 'lucide-react';
 interface EventCardProps {
     id: string;
     title: string;
-    date: string;
+    startDate?: string;
+    endDate?: string;
+    date?: string; // Keep for backward compatibility with mock data
     location: string;
     imageUrl?: string;
     capacity?: number;
     acceptedCount?: number;
 }
 
-export default function EventCard({ id, title, date, location, imageUrl, capacity, acceptedCount }: EventCardProps) {
+export default function EventCard({ id, title, startDate, endDate, date, location, imageUrl, capacity, acceptedCount }: EventCardProps) {
     const isFull = capacity && acceptedCount && acceptedCount >= capacity;
+
+    const formattedDate = startDate && endDate
+        ? `${new Date(startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+        : date;
 
     return (
         <Link href={`/events/${id}`} className="group block">
@@ -39,7 +45,7 @@ export default function EventCard({ id, title, date, location, imageUrl, capacit
                     <div className="mt-4 space-y-2">
                         <div className="flex items-center text-sm text-slate-500">
                             <Calendar className="mr-2 h-4 w-4 shrink-0" />
-                            {date}
+                            {formattedDate}
                         </div>
                         <div className="flex items-center text-sm text-slate-500">
                             <MapPin className="mr-2 h-4 w-4 shrink-0" />
