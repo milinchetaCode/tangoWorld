@@ -18,6 +18,7 @@ async function main() {
             city: 'Berlin',
             gender: 'male',
             role: 'organizer',
+            organizerStatus: 'approved',
         },
     });
 
