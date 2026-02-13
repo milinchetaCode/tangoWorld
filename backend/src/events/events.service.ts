@@ -10,9 +10,9 @@ export class EventsService {
         return this.prisma.event.findMany({
             where: search ? {
                 OR: [
-                    { title: { contains: search } },
-                    { location: { contains: search } },
-                    { venue: { contains: search } },
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { location: { contains: search, mode: 'insensitive' } },
+                    { venue: { contains: search, mode: 'insensitive' } },
                 ],
             } : {},
             include: {
