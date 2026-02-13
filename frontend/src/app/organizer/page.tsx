@@ -88,3 +88,5 @@ function OrganizerDashboard() {
         </div>
     );
 }
+
+export default withAuth(OrganizerDashboard, { requiredStatus: ['approved'] });

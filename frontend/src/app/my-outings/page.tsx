@@ -234,3 +234,5 @@ const MyOutingsPage = () => {
         </div>
     );
 }
+
+export default withAuth(MyOutingsPage);
