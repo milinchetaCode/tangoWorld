@@ -1,10 +1,12 @@
 import Hero from '@/components/Hero';
 import EventCard from '@/components/EventCard';
 
+import { getApiUrl } from '@/lib/api';
+
 async function getEvents(search?: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    const url = new URL(`${baseUrl}/events`);
+    const apiUrl = getApiUrl('/events');
+    const url = new URL(apiUrl);
     if (search) {
       url.searchParams.append('search', search);
     }

@@ -2,10 +2,11 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Clock, Info } from 'lucide-react';
 
+import { getApiUrl } from '@/lib/api';
+
 async function getEvent(id: string) {
     try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const res = await fetch(`${baseUrl}/events/${id}`, { next: { revalidate: 0 } });
+        const res = await fetch(getApiUrl(`/events/${id}`), { next: { revalidate: 0 } });
         if (!res.ok) {
             if (res.status === 404) return null;
             throw new Error('Failed to fetch event');
