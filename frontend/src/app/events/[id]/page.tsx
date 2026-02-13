@@ -35,7 +35,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     return (
         <div className="bg-slate-50 min-h-screen pb-20">
             {/* Hero Image */}
-            <div className="relative min-h-[500px] w-full bg-slate-900 overflow-hidden">
+            <div className="relative h-[450px] w-full bg-slate-900 overflow-hidden">
                 {event.imageUrl ? (
                     <img
                         src={event.imageUrl}
@@ -47,7 +47,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
 
-                <div className="absolute bottom-0 left-0 right-0 px-8 pt-8 pb-24 max-w-7xl mx-auto z-10">
+                <div className="absolute bottom-0 left-0 right-0 px-8 pt-8 pb-16 max-w-7xl mx-auto z-10">
                     <Link href="/" className="inline-flex items-center text-white/70 hover:text-white mb-8 transition-all group">
                         <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                         Back to all events
