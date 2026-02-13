@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getApiUrl } from '@/lib/api';
+import { withAuth } from '@/components/withAuth';
 
 function ProfilePage() {
     const [user, setUser] = useState<any>(null);
@@ -113,8 +114,8 @@ function ProfilePage() {
                     </dl>
                 </div>
             </div>
-            );
+        </div>
+    );
 }
 
-            import {withAuth} from '@/components/withAuth';
-            export default withAuth(ProfilePage);
+export default withAuth(ProfilePage);
