@@ -24,6 +24,8 @@ model User {
   updatedAt    DateTime      @updatedAt
   events       Event[]
   applications Application[]
+
+  @@map("users")
 }
 
 model Event {
@@ -46,6 +48,8 @@ model Event {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   applications   Application[]
+
+  @@map("events")
 }
 
 model Application {
@@ -59,4 +63,5 @@ model Application {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, eventId])
+  @@map("applications")
 }
