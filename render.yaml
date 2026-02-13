@@ -8,7 +8,7 @@ services:
     startCommand: npx prisma migrate deploy && npx prisma db seed && npm run start:prod
     envVars:
       - key: DATABASE_URL
-        value: file:./dev.db
+        # Set this to your external/internal PostgreSQL database URL in Render Dashboard
       - key: JWT_SECRET
         generateValue: true
       - key: NODE_ENV
