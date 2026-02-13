@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, SetMetadata } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('events')
 export class EventsController {
@@ -16,7 +17,8 @@ export class EventsController {
         return this.eventsService.findOne(id);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @SetMetadata('status', ['approved'])
     @Post()
     create(@Body() body: any, @Request() req: any) {
         // Inject current user as organizer
@@ -28,13 +30,15 @@ export class EventsController {
         });
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @SetMetadata('status', ['approved'])
     @Patch(':id')
     update(@Param('id') id: string, @Body() body: any) {
         return this.eventsService.update(id, body);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @SetMetadata('status', ['approved'])
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.eventsService.remove(id);

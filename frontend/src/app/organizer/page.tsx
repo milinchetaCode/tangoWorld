@@ -1,8 +1,11 @@
+"use client";
+
 import { MOCK_EVENTS } from '@/lib/mock-data';
 import Link from 'next/link';
 import { Plus, Calendar, MapPin, Users } from 'lucide-react';
+import { withAuth } from '@/components/withAuth';
 
-export default function OrganizerDashboard() {
+function OrganizerDashboard() {
     // In a real app, we would fetch events created by the logged-in user
     const myEvents = MOCK_EVENTS.slice(0, 2);
 

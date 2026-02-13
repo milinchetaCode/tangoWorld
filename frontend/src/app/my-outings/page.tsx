@@ -4,8 +4,9 @@ import { MOCK_EVENTS } from '@/lib/mock-data';
 import Link from 'next/link';
 import { Calendar, MapPin, Users, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import { withAuth } from '@/components/withAuth';
 
-export default function MyOutingsPage() {
+const MyOutingsPage = () => {
     const [activeFilter, setActiveFilter] = useState<string>('all');
 
     // Mock user outings
@@ -93,8 +94,8 @@ export default function MyOutingsPage() {
                             >
                                 {filter.label}
                                 <span className={`ml-2 rounded-full px-2.5 py-0.5 text-xs font-medium ${activeFilter === filter.id
-                                        ? 'bg-rose-100 text-rose-600'
-                                        : 'bg-slate-100 text-slate-600'
+                                    ? 'bg-rose-100 text-rose-600'
+                                    : 'bg-slate-100 text-slate-600'
                                     }`}>
                                     {filter.count}
                                 </span>

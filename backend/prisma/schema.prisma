@@ -20,6 +20,7 @@ model User {
   gender       String        // "male", "female"
   dietaryNeeds String?
   role         String        @default("user") // "user", "organizer", "admin"
+  organizerStatus String     @default("none") // "none", "pending", "approved"
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   events       Event[]
