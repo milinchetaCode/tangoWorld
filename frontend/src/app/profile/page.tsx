@@ -30,6 +30,8 @@ function ProfilePage() {
     }, []);
 
     const handleRequestOrganizer = async () => {
+        if (!user) return;
+        
         setIsUpdating(true);
         setMessage('');
         try {
