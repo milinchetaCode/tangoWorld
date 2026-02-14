@@ -2,8 +2,12 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { getApiUrl } from '@/lib/api';
 
 export default function RegisterPage() {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -14,15 +18,40 @@ export default function RegisterPage() {
         dietary_needs: '',
     });
 
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Register attempt', formData);
-        // TODO: Implement actual registration logic
+        setError('');
+        setIsLoading(true);
+
+        try {
+            const res = await fetch(getApiUrl('/auth/register'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Registration failed');
+            }
+
+            // Registration successful - redirect to login
+            alert('Registration successful! Please login with your credentials.');
+            router.push('/login');
+        } catch (err: any) {
+            setError(err.message || 'An error occurred. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -35,6 +64,11 @@ export default function RegisterPage() {
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
                 <form className="space-y-6" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="rounded-md bg-red-50 p-4 ring-1 ring-inset ring-red-600/20">
+                            <p className="text-sm font-medium text-red-800">{error}</p>
+                        </div>
+                    )}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium leading-6 text-slate-900">
@@ -161,9 +195,10 @@ export default function RegisterPage() {
                     <div>
                         <button
                             type="submit"
-                            className="flex w-full justify-center rounded-md bg-rose-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+                            disabled={isLoading}
+                            className="flex w-full justify-center rounded-md bg-rose-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Register
+                            {isLoading ? 'Creating account...' : 'Register'}
                         </button>
                     </div>
                 </form>
