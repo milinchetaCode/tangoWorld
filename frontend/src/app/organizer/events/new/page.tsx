@@ -11,6 +11,8 @@ export default function CreateEventPage() {
         startDate: '',
         endDate: '',
         location: '',
+        latitude: '',
+        longitude: '',
         venue: '',
         guests: '',
         djs: '',
@@ -226,6 +228,47 @@ export default function CreateEventPage() {
                                     placeholder="Day 1:&#10;14:00 - Workshop with Carlos Gavito&#10;21:00 - Milonga&#10;&#10;Day 2:&#10;14:00 - Workshop with Mariana Montes&#10;21:00 - Grand Milonga"
                                     className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm font-mono text-xs"
                                 />
+                            </div>
+                        </div>
+                    </div>
+
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                            <div>
+                                <label htmlFor="latitude" className="block text-sm font-medium text-slate-900">
+                                    Latitude (optional)
+                                </label>
+                                <p className="mt-1 text-xs text-slate-500">For map display (e.g., 48.8566)</p>
+                                <div className="mt-2">
+                                    <input
+                                        id="latitude"
+                                        name="latitude"
+                                        type="number"
+                                        step="any"
+                                        value={formData.latitude}
+                                        onChange={handleChange}
+                                        placeholder="e.g., 48.8566"
+                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label htmlFor="longitude" className="block text-sm font-medium text-slate-900">
+                                    Longitude (optional)
+                                </label>
+                                <p className="mt-1 text-xs text-slate-500">For map display (e.g., 2.3522)</p>
+                                <div className="mt-2">
+                                    <input
+                                        id="longitude"
+                                        name="longitude"
+                                        type="number"
+                                        step="any"
+                                        value={formData.longitude}
+                                        onChange={handleChange}
+                                        placeholder="e.g., 2.3522"
+                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
