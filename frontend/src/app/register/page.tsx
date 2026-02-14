@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 
 import { getApiUrl } from '@/lib/api';
 
+const REDIRECT_DELAY_MS = 2000;
+
 export default function RegisterPage() {
     const router = useRouter();
     const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -66,7 +68,7 @@ export default function RegisterPage() {
             setSuccess(true);
             redirectTimeoutRef.current = setTimeout(() => {
                 router.push('/login');
-            }, 2000);
+            }, REDIRECT_DELAY_MS);
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
