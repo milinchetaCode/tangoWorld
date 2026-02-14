@@ -20,6 +20,7 @@ export default function RegisterPage() {
 
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -29,6 +30,7 @@ export default function RegisterPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setSuccess(false);
         setIsLoading(true);
 
         try {
@@ -44,11 +46,17 @@ export default function RegisterPage() {
                 throw new Error(data.message || 'Registration failed');
             }
 
-            // Registration successful - redirect to login
-            alert('Registration successful! Please login with your credentials.');
-            router.push('/login');
-        } catch (err: any) {
-            setError(err.message || 'An error occurred. Please try again.');
+            // Registration successful - show success message and redirect
+            setSuccess(true);
+            setTimeout(() => {
+                router.push('/login');
+            }, 2000);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('An error occurred. Please try again.');
+            }
         } finally {
             setIsLoading(false);
         }
@@ -67,6 +75,13 @@ export default function RegisterPage() {
                     {error && (
                         <div className="rounded-md bg-red-50 p-4 ring-1 ring-inset ring-red-600/20">
                             <p className="text-sm font-medium text-red-800">{error}</p>
+                        </div>
+                    )}
+                    {success && (
+                        <div className="rounded-md bg-green-50 p-4 ring-1 ring-inset ring-green-600/20">
+                            <p className="text-sm font-medium text-green-800">
+                                Registration successful! Redirecting to login...
+                            </p>
                         </div>
                     )}
                     <div className="grid grid-cols-2 gap-4">
