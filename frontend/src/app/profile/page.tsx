@@ -5,8 +5,20 @@ import { getApiUrl } from '@/lib/api';
 import { withAuth } from '@/components/withAuth';
 import { User, Mail, MapPin, Users, Utensils, Award, Calendar, Star } from 'lucide-react';
 
+interface UserProfile {
+    id: string;
+    email: string;
+    name: string;
+    surname: string;
+    city: string;
+    gender: string;
+    dietaryNeeds?: string;
+    role: string;
+    organizerStatus: string;
+}
+
 function ProfilePage() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<UserProfile | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
     const [message, setMessage] = useState('');
 
@@ -36,7 +48,7 @@ function ProfilePage() {
             setUser(updatedUser);
             localStorage.setItem('user', JSON.stringify(updatedUser));
             setMessage('Your request for organizer status has been submitted and is pending approval.');
-        } catch (error) {
+        } catch {
             setMessage('Error submitting request. Please try again.');
         } finally {
             setIsUpdating(false);
