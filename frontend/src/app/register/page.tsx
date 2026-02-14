@@ -11,6 +11,7 @@ const REDIRECT_DELAY_MS = 2000;
 export default function RegisterPage() {
     const router = useRouter();
     const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const isMountedRef = useRef(true);
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -27,7 +28,9 @@ export default function RegisterPage() {
 
     // Cleanup timeout on unmount
     useEffect(() => {
+        isMountedRef.current = true;
         return () => {
+            isMountedRef.current = false;
             if (redirectTimeoutRef.current) {
                 clearTimeout(redirectTimeoutRef.current);
             }
@@ -44,6 +47,12 @@ export default function RegisterPage() {
         setError('');
         setSuccess(false);
         setIsLoading(true);
+
+        // Clear any pending redirect from previous submission
+        if (redirectTimeoutRef.current) {
+            clearTimeout(redirectTimeoutRef.current);
+            redirectTimeoutRef.current = null;
+        }
 
         try {
             const res = await fetch(getApiUrl('/auth/register'), {
@@ -67,7 +76,9 @@ export default function RegisterPage() {
             // Registration successful - show success message and redirect
             setSuccess(true);
             redirectTimeoutRef.current = setTimeout(() => {
-                router.push('/login');
+                if (isMountedRef.current) {
+                    router.push('/login');
+                }
             }, REDIRECT_DELAY_MS);
         } catch (err: unknown) {
             if (err instanceof Error) {
