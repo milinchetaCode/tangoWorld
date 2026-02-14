@@ -255,7 +255,7 @@ The system must not:
 - email
 - city
 - gender
-- dietary_needs
+- dietaryNeeds
 
 ### OrganizerProfile
 - user_id (1–1 with User)
