@@ -1,13 +1,14 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { getApiUrl } from '@/lib/api';
 
 export default function RegisterPage() {
     const router = useRouter();
+    const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -21,6 +22,15 @@ export default function RegisterPage() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (redirectTimeoutRef.current) {
+                clearTimeout(redirectTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -40,7 +50,13 @@ export default function RegisterPage() {
                 body: JSON.stringify(formData),
             });
 
-            const data = await res.json();
+            let data;
+            try {
+                data = await res.json();
+            } catch {
+                // If response is not JSON, use status text
+                data = { message: res.statusText };
+            }
 
             if (!res.ok) {
                 throw new Error(data.message || 'Registration failed');
@@ -48,7 +64,7 @@ export default function RegisterPage() {
 
             // Registration successful - show success message and redirect
             setSuccess(true);
-            setTimeout(() => {
+            redirectTimeoutRef.current = setTimeout(() => {
                 router.push('/login');
             }, 2000);
         } catch (err: unknown) {
