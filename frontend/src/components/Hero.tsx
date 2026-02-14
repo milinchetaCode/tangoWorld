@@ -1,6 +1,11 @@
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
+import Link from 'next/link';
 
-export default function Hero() {
+interface HeroProps {
+    searchQuery?: string;
+}
+
+export default function Hero({ searchQuery }: HeroProps) {
     return (
         <div className="relative bg-slate-900 overflow-hidden isolate">
             <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
@@ -15,11 +20,12 @@ export default function Hero() {
                     <p className="mt-6 text-lg leading-8 text-slate-300">
                         Find marathons and festivals globally. Your next tanda awaits.
                     </p>
-                    <div className="mt-10 flex items-center justify-center gap-x-6">
+                    <div className="mt-10 flex flex-col items-center justify-center gap-4">
                         <form action="/" method="GET" className="relative w-full max-w-md">
                             <input
                                 type="text"
                                 name="search"
+                                defaultValue={searchQuery}
                                 className="block w-full rounded-full border-0 py-4 pl-12 pr-4 text-slate-900 bg-white shadow-xl ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm sm:leading-6"
                                 placeholder="Search by city, event name, or date..."
                             />
@@ -27,6 +33,15 @@ export default function Hero() {
                                 <Search className="h-5 w-5 text-slate-400" aria-hidden="true" />
                             </div>
                         </form>
+                        {searchQuery && (
+                            <Link
+                                href="/"
+                                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-2.5 text-sm font-medium text-white backdrop-blur-sm hover:bg-white/20 transition-colors ring-1 ring-white/20"
+                            >
+                                <X className="h-4 w-4" />
+                                Clear Search & Show All Events
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
