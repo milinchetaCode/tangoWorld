@@ -133,6 +133,7 @@ function ProfilePage() {
                                     <Calendar className="h-4 w-4" />
                                     <span className="text-xs font-medium uppercase tracking-wide">Member Since</span>
                                 </div>
+                                {/* TODO: Replace with actual user creation date from backend */}
                                 <p className="text-2xl font-bold text-slate-900">2024</p>
                             </div>
                             <div className="text-center border-x border-slate-100">
@@ -140,6 +141,7 @@ function ProfilePage() {
                                     <Star className="h-4 w-4" />
                                     <span className="text-xs font-medium uppercase tracking-wide">Events</span>
                                 </div>
+                                {/* TODO: Fetch actual event count from API */}
                                 <p className="text-2xl font-bold text-slate-900">0</p>
                             </div>
                             <div className="text-center">
