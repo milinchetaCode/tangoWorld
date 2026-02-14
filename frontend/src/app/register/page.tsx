@@ -19,7 +19,7 @@ export default function RegisterPage() {
         password: '',
         city: '',
         gender: 'female',
-        dietary_needs: '',
+        dietaryNeeds: '',
     });
 
     const [error, setError] = useState('');
@@ -221,15 +221,15 @@ export default function RegisterPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="dietary_needs" className="block text-sm font-medium leading-6 text-slate-900">
+                        <label htmlFor="dietaryNeeds" className="block text-sm font-medium leading-6 text-slate-900">
                             Dietary Needs
                         </label>
                         <div className="mt-2">
                             <textarea
-                                id="dietary_needs"
-                                name="dietary_needs"
+                                id="dietaryNeeds"
+                                name="dietaryNeeds"
                                 rows={3}
-                                value={formData.dietary_needs}
+                                value={formData.dietaryNeeds}
                                 onChange={handleChange}
                                 className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                             />

@@ -98,7 +98,7 @@ function ProfilePage() {
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium leading-6 text-slate-900">Dietary Needs</dt>
-                            <dd className="mt-1 text-sm leading-6 text-slate-700 sm:col-span-2 sm:mt-0">{user.dietary_needs}</dd>
+                            <dd className="mt-1 text-sm leading-6 text-slate-700 sm:col-span-2 sm:mt-0">{user.dietaryNeeds}</dd>
                         </div>
                         <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-sm font-medium leading-6 text-slate-900">Organizer Status</dt>
