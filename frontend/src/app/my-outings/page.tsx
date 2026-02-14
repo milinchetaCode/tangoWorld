@@ -1,20 +1,66 @@
 "use client";
 
-import { MOCK_EVENTS } from '@/lib/mock-data';
 import Link from 'next/link';
 import { Calendar, MapPin, Users, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { withAuth } from '@/components/withAuth';
+import { getApiUrl } from '@/lib/api';
+
+interface Application {
+    id: string;
+    status: string;
+    appliedAt: string;
+    event: {
+        id: string;
+        title: string;
+        startDate: string;
+        endDate: string;
+        location: string;
+        imageUrl: string | null;
+        capacity: number;
+        acceptedCount?: number;
+    };
+}
 
 const MyOutingsPage = () => {
     const [activeFilter, setActiveFilter] = useState<string>('all');
+    const [myOutings, setMyOutings] = useState<Application[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Mock user outings
-    const myOutings = [
-        { eventId: '1', status: 'accepted', appliedDate: '2026-01-15' },
-        { eventId: '2', status: 'waitlisted', appliedDate: '2026-01-20' },
-        { eventId: '3', status: 'applied', appliedDate: '2026-02-01' },
-    ];
+    useEffect(() => {
+        const fetchMyOutings = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Not authenticated');
+                    setLoading(false);
+                    return;
+                }
+
+                const res = await fetch(getApiUrl('/applications/me'), {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to fetch applications');
+                }
+
+                const data = await res.json();
+                setMyOutings(data);
+            } catch (err) {
+                console.error('Error fetching applications:', err);
+                setError('Failed to load your applications. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchMyOutings();
+    }, []);
 
     const getStatusConfig = (status: string) => {
         switch (status) {
@@ -53,6 +99,14 @@ const MyOutingsPage = () => {
         return diffDays;
     };
 
+    const formatDateRange = (startDate: string, endDate: string) => {
+        if (!startDate || !endDate) return 'Date TBA';
+        
+        const start = new Date(startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const end = new Date(endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return `${start} - ${end}`;
+    };
+
     const filteredOutings = activeFilter === 'all'
         ? myOutings
         : myOutings.filter(o => o.status === activeFilter);
@@ -63,6 +117,34 @@ const MyOutingsPage = () => {
         { id: 'waitlisted', label: 'Waitlisted', count: myOutings.filter(o => o.status === 'waitlisted').length },
         { id: 'applied', label: 'Applied', count: myOutings.filter(o => o.status === 'applied').length },
     ];
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen pt-16">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+                <div className="text-center py-12 bg-white rounded-xl border border-red-200">
+                    <XCircle className="mx-auto h-12 w-12 text-red-500" />
+                    <h3 className="mt-4 text-lg font-semibold text-slate-900">Error</h3>
+                    <p className="mt-2 text-sm text-slate-500">{error}</p>
+                    <div className="mt-6">
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
@@ -108,19 +190,25 @@ const MyOutingsPage = () => {
             {/* Events Grid */}
             {filteredOutings.length > 0 ? (
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                    {filteredOutings.map((outing) => {
-                        const event = MOCK_EVENTS.find(e => e.id === outing.eventId);
+                    {filteredOutings.map((application) => {
+                        const event = application.event;
                         if (!event) return null;
 
-                        const statusConfig = getStatusConfig(outing.status);
+                        const statusConfig = getStatusConfig(application.status);
                         const StatusIcon = statusConfig.icon;
-                        const daysUntil = calculateDaysUntil(event.date);
+                        const daysUntil = calculateDaysUntil(event.startDate);
                         const isPast = daysUntil < 0;
                         const isSoon = daysUntil >= 0 && daysUntil <= 7;
 
+                        // Use acceptedCount from backend or default to 0
+                        const acceptedCount = event.acceptedCount || 0;
+
+                        // Format the date range
+                        const formattedDate = formatDateRange(event.startDate, event.endDate);
+
                         return (
                             <Link
-                                key={outing.eventId}
+                                key={application.id}
                                 href={`/events/${event.id}`}
                                 className="group relative bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200"
                             >
@@ -174,7 +262,7 @@ const MyOutingsPage = () => {
                                     <div className="mt-3 space-y-2">
                                         <div className="flex items-center text-sm text-slate-600">
                                             <Calendar className="mr-2 h-4 w-4 text-slate-400 flex-shrink-0" />
-                                            <span className="truncate">{event.date}</span>
+                                            <span className="truncate">{formattedDate}</span>
                                         </div>
 
                                         <div className="flex items-center text-sm text-slate-600">
@@ -185,10 +273,10 @@ const MyOutingsPage = () => {
                                         <div className="flex items-center text-sm text-slate-600">
                                             <Users className="mr-2 h-4 w-4 text-slate-400 flex-shrink-0" />
                                             <span>
-                                                {event.acceptedCount} / {event.capacity} attendees
-                                                {event.acceptedCount && event.capacity && (
+                                                {acceptedCount} / {event.capacity} attendees
+                                                {acceptedCount > 0 && event.capacity > 0 && (
                                                     <span className="ml-2 text-xs text-slate-500">
-                                                        ({Math.round((event.acceptedCount / event.capacity) * 100)}% full)
+                                                        ({Math.round((acceptedCount / event.capacity) * 100)}% full)
                                                     </span>
                                                 )}
                                             </span>
@@ -198,7 +286,7 @@ const MyOutingsPage = () => {
                                     {/* Application Date */}
                                     <div className="mt-4 pt-4 border-t border-slate-100">
                                         <p className="text-xs text-slate-500">
-                                            Applied on {new Date(outing.appliedDate).toLocaleDateString('en-US', {
+                                            Applied on {new Date(application.appliedAt).toLocaleDateString('en-US', {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric'

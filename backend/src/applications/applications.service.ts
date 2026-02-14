@@ -72,11 +72,29 @@ export class ApplicationsService {
     }
 
     async findUserApplications(userId: string) {
-        return this.prisma.application.findMany({
+        const applications = await this.prisma.application.findMany({
             where: { userId },
             include: {
-                event: true
+                event: {
+                    include: {
+                        applications: {
+                            where: { status: 'accepted' }
+                        }
+                    }
+                }
             }
+        });
+
+        // Add acceptedCount to each event and remove applications array
+        return applications.map(app => {
+            const { applications: eventApplications, ...eventData } = app.event;
+            return {
+                ...app,
+                event: {
+                    ...eventData,
+                    acceptedCount: eventApplications.length
+                }
+            };
         });
     }
 
