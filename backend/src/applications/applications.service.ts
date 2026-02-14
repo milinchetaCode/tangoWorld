@@ -85,15 +85,17 @@ export class ApplicationsService {
             }
         });
 
-        // Add acceptedCount to each event
-        return applications.map(app => ({
-            ...app,
-            event: {
-                ...app.event,
-                acceptedCount: app.event.applications.length,
-                applications: undefined // Remove the applications array from response
-            }
-        }));
+        // Add acceptedCount to each event and remove applications array
+        return applications.map(app => {
+            const { applications: eventApplications, ...eventData } = app.event;
+            return {
+                ...app,
+                event: {
+                    ...eventData,
+                    acceptedCount: eventApplications.length
+                }
+            };
+        });
     }
 
     async updateStatus(id: string, status: string) {

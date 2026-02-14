@@ -99,6 +99,14 @@ const MyOutingsPage = () => {
         return diffDays;
     };
 
+    const formatDateRange = (startDate: string, endDate: string) => {
+        if (!startDate || !endDate) return 'Date TBA';
+        
+        const start = new Date(startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const end = new Date(endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return `${start} - ${end}`;
+    };
+
     const filteredOutings = activeFilter === 'all'
         ? myOutings
         : myOutings.filter(o => o.status === activeFilter);
@@ -196,9 +204,7 @@ const MyOutingsPage = () => {
                         const acceptedCount = event.acceptedCount || 0;
 
                         // Format the date range
-                        const formattedDate = event.startDate && event.endDate
-                            ? `${new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(event.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-                            : 'Date TBA';
+                        const formattedDate = formatDateRange(event.startDate, event.endDate);
 
                         return (
                             <Link
