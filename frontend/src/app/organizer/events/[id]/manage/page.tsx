@@ -259,15 +259,15 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                     <h3 className="text-base font-semibold leading-7 text-slate-900">Participants</h3>
                     <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">Manage applications and payment status.</p>
                 </div>
-                <div className="border-t border-gray-200">
+                <div className="border-t border-slate-200">
                     {applications.length === 0 ? (
                         <div className="px-4 py-8 sm:px-6 text-center text-slate-500">
                             No applications yet
                         </div>
                     ) : (
-                        <ul role="list" className="divide-y divide-gray-200">
+                        <ul role="list" className="divide-y divide-slate-200">
                             {applications.map((application) => (
-                                <li key={application.id} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap px-4 sm:px-6 hover:bg-gray-50">
+                                <li key={application.id} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap px-4 sm:px-6 hover:bg-slate-50">
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-semibold leading-6 text-slate-900">
                                             {application.user?.name} {application.user?.surname}
