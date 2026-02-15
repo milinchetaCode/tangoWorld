@@ -1,6 +1,9 @@
 // Geocoding utility using Nominatim (OpenStreetMap's geocoding service)
 // Free to use with appropriate rate limiting
 
+// Rate limit delay for Nominatim API (1 request per second)
+export const GEOCODING_DELAY_MS = 1100;
+
 interface GeocodingResult {
   latitude: number;
   longitude: number;
@@ -80,16 +83,17 @@ export async function geocodeLocation(location: string): Promise<GeocodingResult
  */
 export async function batchGeocodeLocations(
   locations: string[],
-  delayMs: number = 1000
+  delayMs: number = GEOCODING_DELAY_MS
 ): Promise<(GeocodingResult | null)[]> {
   const results: (GeocodingResult | null)[] = [];
 
-  for (const location of locations) {
+  for (let i = 0; i < locations.length; i++) {
+    const location = locations[i];
     const result = await geocodeLocation(location);
     results.push(result);
 
     // Add delay between requests to respect rate limits
-    if (locations.indexOf(location) < locations.length - 1) {
+    if (i < locations.length - 1) {
       await new Promise(resolve => setTimeout(resolve, delayMs));
     }
   }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin } from 'lucide-react';
-import { geocodeLocation } from '@/lib/geocoding';
+import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
 
 // Fix for default marker icons in Leaflet
 const iconPrototype = L.Icon.Default.prototype as L.Icon & {
@@ -39,21 +39,28 @@ export default function EventMap({ events }: EventMapProps) {
 
   useEffect(() => {
     // Geocode events that don't have coordinates
+    let isMounted = true;
+    
     async function geocodeEvents() {
+      if (!isMounted) return;
       setIsGeocoding(true);
       
       const eventsToGeocode = events.filter(e => !e.latitude || !e.longitude);
       const eventsWithCoords = events.filter(e => e.latitude && e.longitude);
       
       if (eventsToGeocode.length === 0) {
-        setGeocodedEvents(events);
-        setIsGeocoding(false);
+        if (isMounted) {
+          setGeocodedEvents(events);
+          setIsGeocoding(false);
+        }
         return;
       }
 
       // Process events sequentially to respect rate limits (1 req/sec for Nominatim)
       const geocodedResults = [];
       for (let i = 0; i < eventsToGeocode.length; i++) {
+        if (!isMounted) break; // Stop processing if unmounted
+        
         const event = eventsToGeocode[i];
         const coords = await geocodeLocation(event.location);
         
@@ -69,15 +76,21 @@ export default function EventMap({ events }: EventMapProps) {
         
         // Add delay between requests (except for the last one)
         if (i < eventsToGeocode.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1100));
+          await new Promise(resolve => setTimeout(resolve, GEOCODING_DELAY_MS));
         }
       }
 
-      setGeocodedEvents([...eventsWithCoords, ...geocodedResults]);
-      setIsGeocoding(false);
+      if (isMounted) {
+        setGeocodedEvents([...eventsWithCoords, ...geocodedResults]);
+        setIsGeocoding(false);
+      }
     }
 
     geocodeEvents();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [events]);
 
   useEffect(() => {
