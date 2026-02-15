@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Clock, Info } from 'lucide-react';
 
 import { getApiUrl } from '@/lib/api';
+import EventRegistration from '@/components/EventRegistration';
 
 async function getEvent(id: string) {
     try {
@@ -25,8 +26,6 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
     if (!event) {
         notFound();
     }
-
-    const isFull = (event.capacity ?? 0) > 0 && (event.acceptedCount ?? 0) >= (event.capacity ?? 0);
 
     const formattedDate = event.startDate && event.endDate
         ? `${new Date(event.startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} - ${new Date(event.endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
@@ -117,64 +116,11 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
 
                 {/* Sidebar / Actions */}
                 <div className="space-y-6">
-                    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 sticky top-24">
-                        <h3 className="text-xl font-bold text-slate-900 mb-6">Registration</h3>
-
-                        <div className="space-y-5 mb-8">
-                            <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <span className="text-slate-500 font-medium">Status</span>
-                                {isFull ? (
-                                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700 ring-1 ring-inset ring-red-600/10 uppercase tracking-wider">
-                                        Fully Booked
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700 ring-1 ring-inset ring-green-600/20 uppercase tracking-wider">
-                                        Open
-                                    </span>
-                                )}
-                            </div>
-                            <div className="px-1 space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-slate-500 text-sm">Total Capacity</span>
-                                    <span className="font-bold text-slate-900">{event.capacity} seats</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-slate-500 text-sm">Attending</span>
-                                    <span className="font-bold text-slate-900">{event.acceptedCount || 0} dancers</span>
-                                </div>
-                            </div>
-                            {/* Progress bar */}
-                            {event.capacity && (
-                                <div className="space-y-2">
-                                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
-                                        <div
-                                            className={`h-full rounded-full transition-all duration-500 ${isFull ? 'bg-red-500' : 'bg-rose-500'}`}
-                                            style={{ width: `${Math.min(((event.acceptedCount || 0) / event.capacity) * 100, 100)}%` }}
-                                        ></div>
-                                    </div>
-                                    <p className="text-right text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                                        {Math.round(((event.acceptedCount || 0) / event.capacity) * 100)}% Full
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        <button
-                            disabled={isFull}
-                            className={`w-full rounded-2xl px-6 py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98] ${isFull
-                                ? 'bg-slate-300 cursor-not-allowed shadow-none'
-                                : 'bg-rose-600 hover:bg-rose-500 hover:shadow-rose-500/30'
-                                }`}
-                        >
-                            {isFull ? 'Join the Waitlist' : 'Apply to Participate'}
-                        </button>
-
-                        <div className="mt-8 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                            <p className="text-[11px] text-center text-slate-500 leading-normal">
-                                Registration requires a verified dancer profile. Please <Link href="/login" className="text-rose-600 font-bold hover:underline">Log In</Link> to proceed.
-                            </p>
-                        </div>
-                    </div>
+                    <EventRegistration 
+                        eventId={event.id}
+                        capacity={event.capacity}
+                        acceptedCount={event.acceptedCount || 0}
+                    />
                 </div>
             </div>
         </div>

@@ -1,0 +1,37 @@
+export interface Application {
+    id: string;
+    userId: string;
+    eventId: string;
+    status: 'applied' | 'accepted' | 'waitlisted' | 'rejected' | 'cancelled';
+    appliedAt: string;
+    updatedAt: string;
+    user?: {
+        id: string;
+        name: string;
+        surname: string;
+        email: string;
+        gender: string;
+        dietaryNeeds?: string;
+    };
+}
+
+export interface Event {
+    id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    location: string;
+    venue: string;
+    imageUrl?: string;
+    guests?: string;
+    djs?: string;
+    schedule?: string;
+    capacity: number;
+    maleCapacity: number;
+    femaleCapacity: number;
+    organizerId: string;
+    status: string;
+    acceptedCount?: number;
+    createdAt: string;
+    updatedAt: string;
+}
