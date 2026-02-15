@@ -290,33 +290,6 @@ function ProfilePage() {
                                     </p>
                                 </div>
                             </div>
-                            <div className="p-6 bg-gradient-to-br from-slate-50 to-rose-50/50 rounded-xl border border-slate-100">
-                                <div className="flex items-start gap-3">
-                                    <Award className="h-6 w-6 text-rose-600 flex-shrink-0 mt-1" />
-                                    <div>
-                                        <h3 className="font-semibold text-slate-900 mb-2">Account Status</h3>
-                                        <p className="text-sm text-slate-600 mb-3">
-                                            {user.organizerStatus === 'approved' 
-                                                ? 'You have organizer privileges and can create events.'
-                                                : user.organizerStatus === 'pending'
-                                                ? 'Your organizer request is pending approval.'
-                                                : 'Standard user account. Request organizer status to create events.'
-                                            }
-                                        </p>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ring-inset ${
-                                                user.organizerStatus === 'approved' ? 'bg-green-50 text-green-700 ring-green-600/20' :
-                                                user.organizerStatus === 'pending' ? 'bg-yellow-50 text-yellow-800 ring-yellow-600/20' :
-                                                'bg-slate-100 text-slate-700 ring-slate-500/10'
-                                            }`}>
-                                                {user.organizerStatus === 'approved' ? '✓ Approved Organizer' :
-                                                 user.organizerStatus === 'pending' ? '⏳ Pending Review' :
-                                                 '👤 Standard User'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
