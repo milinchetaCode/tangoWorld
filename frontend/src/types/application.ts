@@ -3,6 +3,7 @@ export interface Application {
     userId: string;
     eventId: string;
     status: 'applied' | 'accepted' | 'waitlisted' | 'rejected' | 'cancelled';
+    paymentDone: boolean;
     appliedAt: string;
     updatedAt: string;
     user?: {
