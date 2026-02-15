@@ -7,7 +7,7 @@ export class EventsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(search?: string, organizerId?: string) {
-    const whereConditions: any = {};
+    const whereConditions: Prisma.EventWhereInput = {};
 
     // Filter by organizerId if provided
     if (organizerId) {

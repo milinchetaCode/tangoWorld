@@ -26,7 +26,7 @@ function OrganizerDashboard() {
             try {
                 const userStr = localStorage.getItem('user');
                 if (!userStr) {
-                    setError('User not found');
+                    setError('Authentication data not found. Please log in again.');
                     setIsLoading(false);
                     return;
                 }
@@ -43,7 +43,11 @@ function OrganizerDashboard() {
                 setMyEvents(data);
             } catch (err) {
                 console.error('Error fetching events:', err);
-                setError('Failed to load events');
+                if (err instanceof SyntaxError) {
+                    setError('Invalid authentication data. Please log in again.');
+                } else {
+                    setError('Failed to load events');
+                }
             } finally {
                 setIsLoading(false);
             }
