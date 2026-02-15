@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect, use, useCallback } from 'react';
 import { Check, X, Clock, ArrowLeft, DollarSign } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
