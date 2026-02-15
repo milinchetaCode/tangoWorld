@@ -132,7 +132,7 @@ export default function RegisterPage() {
                                     className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
-                            <p className="mt-1 text-xs text-slate-500">As in your ID for payment and assistance tracking</p>
+                            <p className="mt-1 text-xs text-slate-500">As it appears on your ID for payment and assistance tracking</p>
                         </div>
                         <div>
                             <label htmlFor="surname" className="block text-sm font-medium leading-6 text-slate-900">
@@ -149,7 +149,7 @@ export default function RegisterPage() {
                                     className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
-                            <p className="mt-1 text-xs text-slate-500">As in your ID for payment and assistance tracking</p>
+                            <p className="mt-1 text-xs text-slate-500">As it appears on your ID for payment and assistance tracking</p>
                         </div>
                     </div>
 
