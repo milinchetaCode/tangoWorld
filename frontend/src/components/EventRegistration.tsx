@@ -114,7 +114,7 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
     };
 
     return (
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 sticky top-24">
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-8 sticky top-24">
             <h3 className="text-xl font-bold text-slate-900 mb-6">Registration</h3>
 
             <div className="space-y-5 mb-8">
@@ -159,13 +159,13 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
             </div>
 
             {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div className="mb-4 p-3 bg-red-50 ring-1 ring-inset ring-red-600/20 rounded-xl">
                     <p className="text-sm text-red-600">{error}</p>
                 </div>
             )}
 
             {userApplication ? (
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <div className="p-4 bg-slate-50 rounded-xl ring-1 ring-slate-200">
                     <p className="text-sm text-center text-slate-700 leading-normal font-medium">
                         You have applied to this event. The organizer will review your application.
                     </p>
@@ -176,10 +176,10 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
                     disabled={isLoading}
                     aria-busy={isLoading}
                     aria-label={isLoading ? 'Submitting application...' : 'Apply to participate in this event'}
-                    className={`w-full rounded-2xl px-6 py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98] ${
+                    className={`w-full rounded-xl px-6 py-4 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] ${
                         isLoading
                             ? 'bg-slate-400 cursor-wait'
-                            : 'bg-rose-600 hover:bg-rose-500 hover:shadow-rose-500/30'
+                            : 'bg-rose-600 hover:bg-rose-500 hover:shadow-md'
                     }`}
                 >
                     {isLoading ? 'Applying...' : 'Apply to Participate'}
@@ -188,11 +188,11 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
                 <>
                     <button
                         onClick={() => router.push('/login')}
-                        className="w-full rounded-2xl px-6 py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98] bg-rose-600 hover:bg-rose-500 hover:shadow-rose-500/30"
+                        className="w-full rounded-xl px-6 py-4 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] bg-rose-600 hover:bg-rose-500 hover:shadow-md"
                     >
                         Log In to Apply
                     </button>
-                    <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                    <div className="mt-4 p-4 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
                         <p className="text-[11px] text-center text-slate-500 leading-normal">
                             Registration requires a verified dancer profile.
                         </p>

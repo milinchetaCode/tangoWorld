@@ -115,10 +115,10 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
 
     const getStatusBadge = (status: string) => {
         switch (status) {
-            case 'accepted': return <span className="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-800 ring-1 ring-inset ring-green-700/20">Accepted</span>;
-            case 'waitlisted': return <span className="inline-flex items-center rounded-md bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-900 ring-1 ring-inset ring-yellow-700/20">Waitlisted</span>;
-            case 'rejected': return <span className="inline-flex items-center rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-800 ring-1 ring-inset ring-red-700/20">Rejected</span>;
-            default: return <span className="inline-flex items-center rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-inset ring-blue-700/20">Applied</span>;
+            case 'accepted': return <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 ring-1 ring-inset ring-green-700/20">Accepted</span>;
+            case 'waitlisted': return <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-900 ring-1 ring-inset ring-yellow-700/20">Waitlisted</span>;
+            case 'rejected': return <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 ring-1 ring-inset ring-red-700/20">Rejected</span>;
+            default: return <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-inset ring-blue-700/20">Applied</span>;
         }
     };
 
@@ -165,16 +165,16 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
             <div className="mb-8">
-                <button onClick={() => router.back()} className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4">
+                <button onClick={() => router.back()} className="flex items-center text-sm text-slate-600 hover:text-slate-900 mb-4">
                     <ArrowLeft className="mr-1 h-4 w-4" />
                     Back to Dashboard
                 </button>
                 <div className="md:flex md:items-center md:justify-between">
                     <div className="min-w-0 flex-1">
-                        <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                        <h2 className="text-2xl font-bold leading-7 text-slate-900 sm:truncate sm:text-3xl sm:tracking-tight">
                             Manage: {event.title}
                         </h2>
-                        <p className="mt-1 text-sm text-gray-600">
+                        <p className="mt-1 text-sm text-slate-600">
                             Total Capacity: {acceptedCount} / {event.capacity} • Paid: {paidCount} / {acceptedCount}
                         </p>
                     </div>
@@ -184,11 +184,11 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             {/* Statistics Section */}
             <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
                 {/* Accepted Dancers Bar */}
-                <div className="bg-white shadow-sm ring-1 ring-gray-200 rounded-lg p-6">
-                    <h3 className="text-base font-semibold leading-7 text-gray-900 mb-4">Accepted Dancers</h3>
+                <div className="bg-white shadow-sm ring-1 ring-slate-200 rounded-2xl p-6">
+                    <h3 className="text-base font-semibold leading-7 text-slate-900 mb-4">Accepted Dancers</h3>
                     
                     <div className="space-y-2 mb-4">
-                        <div className="flex justify-between text-sm text-gray-700">
+                        <div className="flex justify-between text-sm text-slate-700">
                             <div className="flex gap-4">
                                 <span>
                                     <span className="inline-block w-3 h-3 bg-blue-600 rounded mr-1" aria-hidden="true"></span>
@@ -222,31 +222,31 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                 </div>
 
                 {/* Status Summary */}
-                <div className="bg-white shadow-sm ring-1 ring-gray-200 rounded-lg p-6">
-                    <h3 className="text-base font-semibold leading-7 text-gray-900 mb-4">Status Summary</h3>
+                <div className="bg-white shadow-sm ring-1 ring-slate-200 rounded-2xl p-6">
+                    <h3 className="text-base font-semibold leading-7 text-slate-900 mb-4">Status Summary</h3>
                     <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-700">Applied</span>
+                            <span className="text-sm text-slate-700">Applied</span>
                             <div className="flex gap-2 text-sm">
                                 <span className="text-blue-600 font-medium">M: {appliedMale}</span>
                                 <span className="text-pink-600 font-medium">F: {appliedFemale}</span>
-                                <span className="text-gray-900 font-semibold">({appliedApplications.length})</span>
+                                <span className="text-slate-900 font-semibold">({appliedApplications.length})</span>
                             </div>
                         </div>
                         <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-700">Waitlisted</span>
+                            <span className="text-sm text-slate-700">Waitlisted</span>
                             <div className="flex gap-2 text-sm">
                                 <span className="text-blue-600 font-medium">M: {waitlistedMale}</span>
                                 <span className="text-pink-600 font-medium">F: {waitlistedFemale}</span>
-                                <span className="text-gray-900 font-semibold">({waitlistedApplications.length})</span>
+                                <span className="text-slate-900 font-semibold">({waitlistedApplications.length})</span>
                             </div>
                         </div>
                         <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-700">Rejected</span>
+                            <span className="text-sm text-slate-700">Rejected</span>
                             <div className="flex gap-2 text-sm">
                                 <span className="text-blue-600 font-medium">M: {rejectedMale}</span>
                                 <span className="text-pink-600 font-medium">F: {rejectedFemale}</span>
-                                <span className="text-gray-900 font-semibold">({rejectedApplications.length})</span>
+                                <span className="text-slate-900 font-semibold">({rejectedApplications.length})</span>
                             </div>
                         </div>
                     </div>
@@ -254,14 +254,14 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             </div>
 
             {/* Participants List */}
-            <div className="bg-white shadow-sm ring-1 ring-gray-200 rounded-lg">
+            <div className="bg-white shadow-sm ring-1 ring-slate-200 rounded-2xl">
                 <div className="px-4 py-6 sm:px-6">
-                    <h3 className="text-base font-semibold leading-7 text-gray-900">Participants</h3>
-                    <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-600">Manage applications and payment status.</p>
+                    <h3 className="text-base font-semibold leading-7 text-slate-900">Participants</h3>
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">Manage applications and payment status.</p>
                 </div>
                 <div className="border-t border-gray-200">
                     {applications.length === 0 ? (
-                        <div className="px-4 py-8 sm:px-6 text-center text-gray-500">
+                        <div className="px-4 py-8 sm:px-6 text-center text-slate-500">
                             No applications yet
                         </div>
                     ) : (
@@ -269,26 +269,26 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                             {applications.map((application) => (
                                 <li key={application.id} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap px-4 sm:px-6 hover:bg-gray-50">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold leading-6 text-gray-900">
+                                        <p className="text-sm font-semibold leading-6 text-slate-900">
                                             {application.user?.name} {application.user?.surname}
                                             {application.user?.gender && (
-                                                <span className="ml-2 text-gray-600 font-normal">
+                                                <span className="ml-2 text-slate-600 font-normal">
                                                     ({application.user.gender === 'male' ? 'M' : application.user.gender === 'female' ? 'F' : application.user.gender})
                                                 </span>
                                             )}
                                             {application.paymentDone && (
-                                                <span className="ml-2 inline-flex items-center rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                                                <span className="ml-2 inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
                                                     Paid
                                                 </span>
                                             )}
                                         </p>
-                                        <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-600">
+                                        <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-slate-600">
                                             <p className="truncate">{application.user?.email}</p>
                                             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current"><circle cx={1} cy={1} r={1} /></svg>
                                             <p className="whitespace-nowrap">Applied: {new Date(application.appliedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                         </div>
                                         {application.user?.dietaryNeeds && (
-                                            <p className="mt-1 text-xs text-gray-600">Dietary needs: {application.user.dietaryNeeds}</p>
+                                            <p className="mt-1 text-xs text-slate-600">Dietary needs: {application.user.dietaryNeeds}</p>
                                         )}
                                     </div>
                                     <div className="flex w-full flex-none gap-x-4 sm:w-auto items-center">
@@ -298,7 +298,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                             {application.status !== 'accepted' && (
                                                 <button
                                                     onClick={() => handleStatusChange(application.id, 'accepted')}
-                                                    className="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                    className="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                                     title="Accept"
                                                 >
                                                     <Check className="h-4 w-4 text-green-600" />
@@ -307,7 +307,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                             {application.status !== 'waitlisted' && (
                                                 <button
                                                     onClick={() => handleStatusChange(application.id, 'waitlisted')}
-                                                    className="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                    className="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                                     title="Waitlist"
                                                 >
                                                     <Clock className="h-4 w-4 text-yellow-600" />
@@ -316,7 +316,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                             {application.status !== 'rejected' && (
                                                 <button
                                                     onClick={() => handleStatusChange(application.id, 'rejected')}
-                                                    className="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                    className="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                                     title="Reject"
                                                 >
                                                     <X className="h-4 w-4 text-red-600" />
@@ -328,7 +328,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                     className={`rounded-md px-2.5 py-1.5 text-xs font-semibold shadow-sm ring-1 ring-inset ${
                                                         application.paymentDone 
                                                             ? 'bg-green-600 text-white ring-green-600 hover:bg-green-700' 
-                                                            : 'bg-white text-gray-900 ring-gray-300 hover:bg-gray-50'
+                                                            : 'bg-white text-slate-900 ring-gray-300 hover:bg-gray-50'
                                                     }`}
                                                     title={application.paymentDone ? "Mark as unpaid" : "Mark as paid"}
                                                 >
