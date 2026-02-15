@@ -7,7 +7,6 @@ interface UpdateProfileData {
   gender?: string;
   dietaryNeeds?: string;
 }
-
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}

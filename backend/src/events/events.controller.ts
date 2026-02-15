@@ -55,4 +55,23 @@ export class EventsController {
   remove(@Param('id') id: string) {
     return this.eventsService.remove(id);
   }
+
+  @Patch(':id/coordinates')
+  updateCoordinates(
+    @Param('id') id: string,
+    @Body() body: { latitude: number; longitude: number },
+  ) {
+    // Validate coordinate ranges
+    if (body.latitude < -90 || body.latitude > 90) {
+      throw new Error('Latitude must be between -90 and 90');
+    }
+    if (body.longitude < -180 || body.longitude > 180) {
+      throw new Error('Longitude must be between -180 and 180');
+    }
+    return this.eventsService.updateCoordinates(
+      id,
+      body.latitude,
+      body.longitude,
+    );
+  }
 }

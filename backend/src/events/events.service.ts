@@ -75,4 +75,14 @@ export class EventsService {
       where: { id },
     });
   }
+
+  async updateCoordinates(id: string, latitude: number, longitude: number) {
+    return this.prisma.event.update({
+      where: { id },
+      data: {
+        latitude,
+        longitude,
+      },
+    });
+  }
 }
