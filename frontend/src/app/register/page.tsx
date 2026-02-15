@@ -100,6 +100,9 @@ export default function RegisterPage() {
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+                <p className="mb-4 text-sm text-slate-600">
+                    Fields marked with <span className="text-rose-600">*</span> are required
+                </p>
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     {error && (
                         <div className="rounded-md bg-red-50 p-4 ring-1 ring-inset ring-red-600/20">
@@ -116,7 +119,7 @@ export default function RegisterPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium leading-6 text-slate-900">
-                                Name
+                                Name <span className="text-rose-600">*</span>
                             </label>
                             <div className="mt-2">
                                 <input
@@ -126,13 +129,14 @@ export default function RegisterPage() {
                                     required
                                     value={formData.name}
                                     onChange={handleChange}
-                                    className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
+                                    className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
+                            <p className="mt-1 text-xs text-slate-500">As it appears on your ID for payment and assistance tracking</p>
                         </div>
                         <div>
                             <label htmlFor="surname" className="block text-sm font-medium leading-6 text-slate-900">
-                                Surname
+                                Surname <span className="text-rose-600">*</span>
                             </label>
                             <div className="mt-2">
                                 <input
@@ -142,15 +146,16 @@ export default function RegisterPage() {
                                     required
                                     value={formData.surname}
                                     onChange={handleChange}
-                                    className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
+                                    className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
+                            <p className="mt-1 text-xs text-slate-500">As it appears on your ID for payment and assistance tracking</p>
                         </div>
                     </div>
 
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium leading-6 text-slate-900">
-                            Email address
+                            Email address <span className="text-rose-600">*</span>
                         </label>
                         <div className="mt-2">
                             <input
@@ -161,14 +166,14 @@ export default function RegisterPage() {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
 
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium leading-6 text-slate-900">
-                            Password
+                            Password <span className="text-rose-600">*</span>
                         </label>
                         <div className="mt-2">
                             <input
@@ -179,14 +184,14 @@ export default function RegisterPage() {
                                 required
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
 
                     <div>
                         <label htmlFor="city" className="block text-sm font-medium leading-6 text-slate-900">
-                            City
+                            City, Country <span className="text-rose-600">*</span>
                         </label>
                         <div className="mt-2">
                             <input
@@ -196,14 +201,14 @@ export default function RegisterPage() {
                                 required
                                 value={formData.city}
                                 onChange={handleChange}
-                                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
 
                     <div>
                         <label htmlFor="gender" className="block text-sm font-medium leading-6 text-slate-900">
-                            Gender (required for role balancing)
+                            Gender <span className="text-rose-600">*</span>
                         </label>
                         <div className="mt-2">
                             <select
@@ -212,7 +217,7 @@ export default function RegisterPage() {
                                 required
                                 value={formData.gender}
                                 onChange={handleChange}
-                                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                             >
                                 <option value="female">Female</option>
                                 <option value="male">Male</option>
@@ -231,7 +236,7 @@ export default function RegisterPage() {
                                 rows={3}
                                 value={formData.dietaryNeeds}
                                 onChange={handleChange}
-                                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm sm:leading-6"
                             />
                         </div>
                     </div>
