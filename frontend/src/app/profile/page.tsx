@@ -22,6 +22,7 @@ function ProfilePage() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [message, setMessage] = useState('');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isOrganizerConfirmOpen, setIsOrganizerConfirmOpen] = useState(false);
     const [editFormData, setEditFormData] = useState({
         city: '',
         gender: '',
@@ -41,9 +42,18 @@ function ProfilePage() {
         }
     }, []);
 
+    const handleOpenOrganizerConfirm = () => {
+        setIsOrganizerConfirmOpen(true);
+    };
+
+    const handleCloseOrganizerConfirm = () => {
+        setIsOrganizerConfirmOpen(false);
+    };
+
     const handleRequestOrganizer = async () => {
         if (!user) return;
         
+        setIsOrganizerConfirmOpen(false);
         setIsUpdating(true);
         setMessage('');
         try {
@@ -171,16 +181,6 @@ function ProfilePage() {
                                     </div>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
-                                    {user.organizerStatus === 'none' && (
-                                        <button
-                                            onClick={handleRequestOrganizer}
-                                            disabled={isUpdating}
-                                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
-                                        >
-                                            <Award className="h-4 w-4" />
-                                            {isUpdating ? 'Submitting...' : 'Request Organizer Status'}
-                                        </button>
-                                    )}
                                     <button
                                         type="button"
                                         onClick={handleOpenEditModal}
@@ -220,7 +220,9 @@ function ProfilePage() {
                                     user.organizerStatus === 'pending' ? 'bg-yellow-50 text-yellow-800 ring-yellow-600/20' :
                                     'bg-slate-50 text-slate-600 ring-slate-500/10'
                                 }`}>
-                                    {user.organizerStatus || 'User'}
+                                    {user.organizerStatus === 'approved' ? 'Organizer' : 
+                                     user.organizerStatus === 'pending' ? 'Pending Approval' : 
+                                     'Dancer'}
                                 </span>
                             </div>
                         </div>
@@ -318,6 +320,26 @@ function ProfilePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Request Organizer Status Section - At Bottom */}
+                {user.organizerStatus === 'none' && (
+                    <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 sm:p-8 ring-1 ring-slate-900/5">
+                        <div className="text-center">
+                            <h3 className="text-lg font-semibold text-slate-900 mb-2">Want to organize Tango events?</h3>
+                            <p className="text-sm text-slate-600 mb-4">
+                                Request organizer status to create and manage events on the platform.
+                            </p>
+                            <button
+                                onClick={handleOpenOrganizerConfirm}
+                                disabled={isUpdating}
+                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                            >
+                                <Award className="h-4 w-4" />
+                                Request Organizer Status
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Edit Profile Modal */}
                 {isEditModalOpen && (
@@ -434,6 +456,81 @@ function ProfilePage() {
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Organizer Request Confirmation Modal */}
+                {isOrganizerConfirmOpen && (
+                    <div className="fixed inset-0 z-50 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4">
+                            {/* Backdrop */}
+                            <div 
+                                className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+                                onClick={handleCloseOrganizerConfirm}
+                            ></div>
+                            
+                            {/* Modal Content */}
+                            <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 ring-1 ring-slate-900/5">
+                                <div className="flex items-start gap-4 mb-6">
+                                    <div className="h-12 w-12 rounded-xl bg-rose-50 flex items-center justify-center flex-shrink-0">
+                                        <Award className="h-6 w-6 text-rose-600" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-bold text-slate-900 mb-2">Request Organizer Status</h2>
+                                        <p className="text-sm text-slate-600">
+                                            Please confirm that you understand the following:
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 mb-6 p-4 bg-slate-50 rounded-xl">
+                                    <div className="flex items-start gap-3">
+                                        <div className="h-6 w-6 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <span className="text-xs font-bold text-rose-600">1</span>
+                                        </div>
+                                        <p className="text-sm text-slate-700">
+                                            This status is <strong>only intended for Tango event organizers</strong> who want to create and manage events.
+                                        </p>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <div className="h-6 w-6 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <span className="text-xs font-bold text-rose-600">2</span>
+                                        </div>
+                                        <p className="text-sm text-slate-700">
+                                            You should only request this if you plan to <strong>set up events on the platform</strong>.
+                                        </p>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <div className="h-6 w-6 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <span className="text-xs font-bold text-rose-600">3</span>
+                                        </div>
+                                        <p className="text-sm text-slate-700">
+                                            Your request is <strong>subject to approval</strong> by the platform administrators.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Buttons */}
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={handleCloseOrganizerConfirm}
+                                        disabled={isUpdating}
+                                        className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition-all disabled:opacity-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleRequestOrganizer}
+                                        disabled={isUpdating}
+                                        className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                                    >
+                                        {isUpdating ? 'Submitting...' : 'I Understand, Proceed'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
