@@ -43,4 +43,12 @@ export class EventsController {
     remove(@Param('id') id: string) {
         return this.eventsService.remove(id);
     }
+
+    @Patch(':id/coordinates')
+    updateCoordinates(
+        @Param('id') id: string,
+        @Body() body: { latitude: number; longitude: number }
+    ) {
+        return this.eventsService.updateCoordinates(id, body.latitude, body.longitude);
+    }
 }
