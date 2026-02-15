@@ -182,9 +182,9 @@ function ProfilePage() {
                                         </button>
                                     )}
                                     <button
-                                                                            type="button"
-                                    onClick={handleOpenEditModal}
-                                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-md hover:shadow-lg ring-1 ring-inset ring-slate-200 hover:bg-slate-50 transition-all hover:scale-105"
+                                        type="button"
+                                        onClick={handleOpenEditModal}
+                                        className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-md hover:shadow-lg ring-1 ring-inset ring-slate-200 hover:bg-slate-50 transition-all hover:scale-105"
                                     >
                                         Edit Profile
                                     </button>

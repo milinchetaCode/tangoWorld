@@ -42,13 +42,18 @@ export default function EventMap({ events }: EventMapProps) {
   const saveCoordinates = async (eventId: string, latitude: number, longitude: number) => {
     try {
       const apiUrl = getApiUrl(`/events/${eventId}/coordinates`);
-      await fetch(apiUrl, {
+      const response = await fetch(apiUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ latitude, longitude }),
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Failed to save coordinates for event ${eventId}: ${response.status} ${errorText}`);
+      }
     } catch (error) {
       console.error(`Error saving coordinates for event ${eventId}:`, error);
       // Don't throw - we want to continue even if saving fails
