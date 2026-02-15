@@ -6,22 +6,36 @@ import { Event, Prisma } from '@prisma/client';
 export class EventsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(search?: string) {
+  async findAll(search?: string, organizerId?: string) {
+    const whereConditions: any = {};
+
+    // Filter by organizerId if provided
+    if (organizerId) {
+      whereConditions.organizerId = organizerId;
+    }
+
+    // Add search conditions
+    if (search) {
+      whereConditions.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
+        { venue: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
     return this.prisma.event.findMany({
-      where: search
-        ? {
-            OR: [
-              { title: { contains: search, mode: 'insensitive' } },
-              { location: { contains: search, mode: 'insensitive' } },
-              { venue: { contains: search, mode: 'insensitive' } },
-            ],
-          }
-        : {},
+      where: whereConditions,
       include: {
         organizer: {
           select: {
             name: true,
             surname: true,
+          },
+        },
+        applications: {
+          select: {
+            id: true,
+            status: true,
           },
         },
       },
