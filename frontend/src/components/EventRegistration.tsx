@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getApiUrl } from '@/lib/api';
+import { Application } from '@/types/application';
 
 interface EventRegistrationProps {
     eventId: string;
@@ -14,7 +15,7 @@ interface EventRegistrationProps {
 export default function EventRegistration({ eventId, capacity, acceptedCount }: EventRegistrationProps) {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userApplication, setUserApplication] = useState<any>(null);
+    const [userApplication, setUserApplication] = useState<Application | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -40,8 +41,8 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
             });
 
             if (res.ok) {
-                const applications = await res.json();
-                const existingApp = applications.find((app: any) => app.eventId === eventId);
+                const applications: Application[] = await res.json();
+                const existingApp = applications.find((app) => app.eventId === eventId);
                 if (existingApp) {
                     setUserApplication(existingApp);
                 }

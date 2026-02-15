@@ -4,12 +4,13 @@ import { notFound, useRouter } from 'next/navigation';
 import { useState, useEffect, use } from 'react';
 import { Check, X, Clock, ArrowLeft } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
+import { Application, Event } from '@/types/application';
 
 export default function ManageEventPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const router = useRouter();
-    const [event, setEvent] = useState<any>(null);
-    const [applications, setApplications] = useState<any[]>([]);
+    const [event, setEvent] = useState<Event | null>(null);
+    const [applications, setApplications] = useState<Application[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +70,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             if (res.ok) {
                 // Update local state
                 setApplications(prev => prev.map(app =>
-                    app.id === applicationId ? { ...app, status: newStatus } : app
+                    app.id === applicationId ? { ...app, status: newStatus as Application['status'] } : app
                 ));
             } else {
                 console.error('Failed to update status');
@@ -141,14 +142,14 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                 <li key={application.id} className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap px-4 sm:px-6 hover:bg-slate-50">
                                     <div>
                                         <p className="text-sm font-semibold leading-6 text-slate-900">
-                                            {application.user.name} {application.user.surname} <span className="text-slate-400 font-normal">({application.user.gender})</span>
+                                            {application.user?.name} {application.user?.surname} <span className="text-slate-400 font-normal">({application.user?.gender})</span>
                                         </p>
                                         <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-slate-500">
-                                            <p>{application.user.email}</p>
+                                            <p>{application.user?.email}</p>
                                             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current"><circle cx={1} cy={1} r={1} /></svg>
                                             <p>Applied: {new Date(application.appliedAt).toLocaleDateString()}</p>
                                         </div>
-                                        {application.user.dietaryNeeds && (
+                                        {application.user?.dietaryNeeds && (
                                             <p className="mt-1 text-xs text-slate-500">Dietary needs: {application.user.dietaryNeeds}</p>
                                         )}
                                     </div>
