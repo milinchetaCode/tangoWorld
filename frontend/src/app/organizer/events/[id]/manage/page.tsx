@@ -298,7 +298,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                             {application.status !== 'accepted' && (
                                                 <button
                                                     onClick={() => handleStatusChange(application.id, 'accepted')}
-                                                    className="rounded-xl bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+                                                    className="rounded-xl bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
                                                     title="Accept"
                                                 >
                                                     <Check className="h-4 w-4 text-green-600" />
@@ -307,7 +307,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                             {application.status !== 'waitlisted' && (
                                                 <button
                                                     onClick={() => handleStatusChange(application.id, 'waitlisted')}
-                                                    className="rounded-xl bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+                                                    className="rounded-xl bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
                                                     title="Waitlist"
                                                 >
                                                     <Clock className="h-4 w-4 text-yellow-600" />
@@ -316,7 +316,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                             {application.status !== 'rejected' && (
                                                 <button
                                                     onClick={() => handleStatusChange(application.id, 'rejected')}
-                                                    className="rounded-xl bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50"
+                                                    className="rounded-xl bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
                                                     title="Reject"
                                                 >
                                                     <X className="h-4 w-4 text-red-600" />
@@ -328,7 +328,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                     className={`rounded-xl px-2.5 py-1.5 text-xs font-semibold shadow-sm ring-1 ring-inset ${
                                                         application.paymentDone 
                                                             ? 'bg-green-600 text-white ring-green-600 hover:bg-green-700' 
-                                                            : 'bg-white text-slate-900 ring-slate-300 hover:bg-slate-50'
+                                                            : 'bg-white text-slate-900 ring-slate-200 hover:bg-slate-50'
                                                     }`}
                                                     title={application.paymentDone ? "Mark as unpaid" : "Mark as paid"}
                                                 >
