@@ -129,14 +129,14 @@ const MyOutingsPage = () => {
     if (error) {
         return (
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
-                <div className="text-center py-12 bg-white rounded-xl border border-red-200">
+                <div className="text-center py-12 bg-white rounded-2xl ring-1 ring-slate-200">
                     <XCircle className="mx-auto h-12 w-12 text-red-500" />
                     <h3 className="mt-4 text-lg font-semibold text-slate-900">Error</h3>
                     <p className="mt-2 text-sm text-slate-500">{error}</p>
                     <div className="mt-6">
                         <button
                             onClick={() => window.location.reload()}
-                            className="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+                            className="inline-flex items-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
                         >
                             Try Again
                         </button>
@@ -210,7 +210,7 @@ const MyOutingsPage = () => {
                             <Link
                                 key={application.id}
                                 href={`/events/${event.id}`}
-                                className="group relative bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200"
+                                className="group relative bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden hover:shadow-md transition-all duration-200"
                             >
                                 {/* Event Image */}
                                 <div className="aspect-[16/9] bg-slate-100 overflow-hidden relative">
@@ -300,7 +300,7 @@ const MyOutingsPage = () => {
                 </div>
             ) : (
                 /* Empty State */
-                <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-slate-200">
+                <div className="text-center py-12 bg-white rounded-2xl ring-1 ring-slate-200 border-2 border-dashed border-slate-200">
                     <Calendar className="mx-auto h-12 w-12 text-slate-400" />
                     <h3 className="mt-4 text-lg font-semibold text-slate-900">No events found</h3>
                     <p className="mt-2 text-sm text-slate-500">
@@ -312,7 +312,7 @@ const MyOutingsPage = () => {
                     <div className="mt-6">
                         <Link
                             href="/"
-                            className="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+                            className="inline-flex items-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
                         >
                             Discover Events
                         </Link>

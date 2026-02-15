@@ -52,7 +52,7 @@ export default function CreateEventPage() {
 
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Basic Information Section */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
                     <div className="flex items-center gap-2 mb-6">
                         <Calendar className="h-5 w-5 text-rose-600" />
                         <h3 className="text-lg font-semibold text-slate-900">Basic Information</h3>
@@ -73,7 +73,7 @@ export default function CreateEventPage() {
                                     value={formData.title}
                                     onChange={handleChange}
                                     placeholder="e.g., Buenos Aires Tango Marathon 2026"
-                                    className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                    className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                 />
                             </div>
                         </div>
@@ -92,7 +92,7 @@ export default function CreateEventPage() {
                                         required
                                         value={formData.startDate}
                                         onChange={handleChange}
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -111,7 +111,7 @@ export default function CreateEventPage() {
                                         value={formData.endDate}
                                         onChange={handleChange}
                                         min={formData.startDate}
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -120,7 +120,7 @@ export default function CreateEventPage() {
                 </div>
 
                 {/* Location Section */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
                     <div className="flex items-center gap-2 mb-6">
                         <MapPin className="h-5 w-5 text-rose-600" />
                         <h3 className="text-lg font-semibold text-slate-900">Location</h3>
@@ -142,7 +142,7 @@ export default function CreateEventPage() {
                                         value={formData.location}
                                         onChange={handleChange}
                                         placeholder="e.g., Buenos Aires, Argentina"
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -161,7 +161,7 @@ export default function CreateEventPage() {
                                         value={formData.venue}
                                         onChange={handleChange}
                                         placeholder="e.g., La Catedral Club"
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -182,7 +182,7 @@ export default function CreateEventPage() {
                                         value={formData.latitude}
                                         onChange={handleChange}
                                         placeholder="e.g., 48.8566"
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -201,7 +201,7 @@ export default function CreateEventPage() {
                                         value={formData.longitude}
                                         onChange={handleChange}
                                         placeholder="e.g., 2.3522"
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -210,7 +210,7 @@ export default function CreateEventPage() {
                 </div>
 
                 {/* Lineup Section */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
                     <div className="flex items-center gap-2 mb-6">
                         <Star className="h-5 w-5 text-rose-600" />
                         <h3 className="text-lg font-semibold text-slate-900">Lineup & Schedule</h3>
@@ -230,7 +230,7 @@ export default function CreateEventPage() {
                                     value={formData.guests}
                                     onChange={handleChange}
                                     placeholder="e.g., Carlos Gavito&#10;Mariana Montes&#10;Sebastian Arce"
-                                    className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                    className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                 />
                             </div>
                         </div>
@@ -248,7 +248,7 @@ export default function CreateEventPage() {
                                     value={formData.djs}
                                     onChange={handleChange}
                                     placeholder="e.g., DJ Tanguero&#10;DJ Milonguero"
-                                    className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                    className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                 />
                             </div>
                         </div>
@@ -266,7 +266,7 @@ export default function CreateEventPage() {
                                     value={formData.schedule}
                                     onChange={handleChange}
                                     placeholder="Day 1:&#10;14:00 - Workshop with Carlos Gavito&#10;21:00 - Milonga&#10;&#10;Day 2:&#10;14:00 - Workshop with Mariana Montes&#10;21:00 - Grand Milonga"
-                                    className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm font-mono text-xs"
+                                    className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm font-mono text-xs"
                                 />
                             </div>
                         </div>
@@ -274,7 +274,7 @@ export default function CreateEventPage() {
                 </div>
 
                 {/* Capacity Section */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
                     <div className="flex items-center gap-2 mb-6">
                         <Users className="h-5 w-5 text-rose-600" />
                         <h3 className="text-lg font-semibold text-slate-900">Capacity Settings</h3>
@@ -296,7 +296,7 @@ export default function CreateEventPage() {
                                         min="1"
                                         value={formData.capacity}
                                         onChange={handleChange}
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -315,7 +315,7 @@ export default function CreateEventPage() {
                                         min="0"
                                         value={formData.maleCapacity}
                                         onChange={handleChange}
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -334,7 +334,7 @@ export default function CreateEventPage() {
                                         min="0"
                                         value={formData.femaleCapacity}
                                         onChange={handleChange}
-                                        className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                        className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
                             </div>
@@ -386,7 +386,7 @@ export default function CreateEventPage() {
                 </div>
 
                 {/* Media Section */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
                     <div className="flex items-center gap-2 mb-6">
                         <ImageIcon className="h-5 w-5 text-rose-600" />
                         <h3 className="text-lg font-semibold text-slate-900">Event Image</h3>
@@ -405,7 +405,7 @@ export default function CreateEventPage() {
                                 value={formData.imageUrl}
                                 onChange={handleChange}
                                 placeholder="https://example.com/event-poster.jpg"
-                                className="block w-full rounded-lg border-0 py-2.5 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-600 sm:text-sm"
+                                className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                             />
                         </div>
                         {formData.imageUrl && (

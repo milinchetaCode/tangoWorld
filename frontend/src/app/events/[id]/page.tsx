@@ -68,7 +68,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
             <div className="mx-auto max-w-7xl px-6 lg:px-8 -mt-10 relative z-20 grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-10">
-                    <section className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                    <section className="bg-white rounded-2xl p-8 shadow-sm ring-1 ring-slate-200">
                         <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center">
                             <Info className="mr-3 h-6 w-6 text-rose-500" />
                             About the Event
@@ -91,7 +91,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                     </section>
 
                     {(event.guests || event.djs) && (
-                        <section className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                        <section className="bg-white rounded-2xl p-8 shadow-sm ring-1 ring-slate-200">
                             <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center">
                                 <Users className="mr-3 h-6 w-6 text-rose-500" />
                                 Lineup
