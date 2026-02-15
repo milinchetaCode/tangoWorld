@@ -5,6 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin } from 'lucide-react';
 import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
+import { getApiUrl } from '@/lib/api';
 
 // Fix for default marker icons in Leaflet
 const iconPrototype = L.Icon.Default.prototype as L.Icon & {
@@ -36,6 +37,30 @@ export default function EventMap({ events }: EventMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [geocodedEvents, setGeocodedEvents] = useState<Event[]>([]);
   const [isGeocoding, setIsGeocoding] = useState(false);
+
+  // Function to save coordinates to the backend
+  const saveCoordinates = async (eventId: string, latitude: number, longitude: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      const apiUrl = getApiUrl(`/events/${eventId}/coordinates`);
+      const response = await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ latitude, longitude }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Failed to save coordinates for event ${eventId}: ${response.status} ${errorText}`);
+      }
+    } catch (error) {
+      console.error(`Error saving coordinates for event ${eventId}:`, error);
+      // Don't throw - we want to continue even if saving fails
+    }
+  };
 
   useEffect(() => {
     // Geocode events that don't have coordinates
@@ -70,6 +95,8 @@ export default function EventMap({ events }: EventMapProps) {
             latitude: coords.latitude,
             longitude: coords.longitude,
           });
+          // Save coordinates to backend for future use (non-blocking)
+          saveCoordinates(event.id, coords.latitude, coords.longitude);
         } else {
           geocodedResults.push(event);
         }

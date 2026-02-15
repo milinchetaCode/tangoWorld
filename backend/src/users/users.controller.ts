@@ -17,7 +17,6 @@ interface UpdateProfileDto {
   gender?: string;
   dietaryNeeds?: string;
 }
-
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

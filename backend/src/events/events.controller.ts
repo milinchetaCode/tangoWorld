@@ -10,6 +10,7 @@ import {
   Request,
   Query,
   SetMetadata,
+  BadRequestException,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -54,5 +55,25 @@ export class EventsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.eventsService.remove(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/coordinates')
+  updateCoordinates(
+    @Param('id') id: string,
+    @Body() body: { latitude: number; longitude: number },
+  ) {
+    // Validate coordinate ranges
+    if (body.latitude < -90 || body.latitude > 90) {
+      throw new BadRequestException('Latitude must be between -90 and 90');
+    }
+    if (body.longitude < -180 || body.longitude > 180) {
+      throw new BadRequestException('Longitude must be between -180 and 180');
+    }
+    return this.eventsService.updateCoordinates(
+      id,
+      body.latitude,
+      body.longitude,
+    );
   }
 }

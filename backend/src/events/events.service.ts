@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Event, Prisma } from '@prisma/client';
 
@@ -74,5 +74,22 @@ export class EventsService {
     return this.prisma.event.delete({
       where: { id },
     });
+  }
+
+  async updateCoordinates(id: string, latitude: number, longitude: number) {
+    try {
+      return await this.prisma.event.update({
+        where: { id },
+        data: {
+          latitude,
+          longitude,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Event with ID ${id} not found`);
+      }
+      throw error;
+    }
   }
 }
