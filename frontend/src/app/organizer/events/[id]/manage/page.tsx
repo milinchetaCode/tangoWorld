@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect, use, useCallback } from 'react';
 import { Check, X, Clock, ArrowLeft, DollarSign } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
@@ -187,29 +187,36 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                 <div className="bg-white shadow-sm ring-1 ring-gray-200 rounded-lg p-6">
                     <h3 className="text-base font-semibold leading-7 text-gray-900 mb-4">Accepted Dancers</h3>
                     
-                    <div className="mb-4">
-                        <div className="flex justify-between text-sm text-gray-700 mb-2">
-                            <span>Male: {acceptedMale} / {event.maleCapacity}</span>
-                            <span>{malePercentage.toFixed(0)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                            <div 
-                                className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                                style={{ width: `${Math.min(malePercentage, 100)}%` }}
-                            ></div>
+                    <div className="space-y-2 mb-4">
+                        <div className="flex justify-between text-sm text-gray-700">
+                            <div className="flex gap-4">
+                                <span>
+                                    <span className="inline-block w-3 h-3 bg-blue-600 rounded mr-1" aria-hidden="true"></span>
+                                    <span className="sr-only">Male dancers: </span>Male: {acceptedMale} / {event.maleCapacity}
+                                </span>
+                                <span>
+                                    <span className="inline-block w-3 h-3 bg-pink-600 rounded mr-1" aria-hidden="true"></span>
+                                    <span className="sr-only">Female dancers: </span>Female: {acceptedFemale} / {event.femaleCapacity}
+                                </span>
+                            </div>
+                            <span className="font-medium">{acceptedCount} / {event.capacity}</span>
                         </div>
                     </div>
                     
-                    <div>
-                        <div className="flex justify-between text-sm text-gray-700 mb-2">
-                            <span>Female: {acceptedFemale} / {event.femaleCapacity}</span>
-                            <span>{femalePercentage.toFixed(0)}%</span>
+                    <div className="w-full bg-gray-200 rounded-full h-6 flex overflow-hidden">
+                        <div 
+                            className="bg-blue-600 h-6 transition-all duration-300 flex items-center justify-center text-xs text-white font-medium"
+                            style={{ width: `${(acceptedMale / event.capacity) * 100}%` }}
+                            title={`Male: ${acceptedMale} (${malePercentage.toFixed(0)}% of male capacity)`}
+                        >
+                            {acceptedMale > 0 && <span className="px-1">{acceptedMale}</span>}
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                            <div 
-                                className="bg-pink-600 h-3 rounded-full transition-all duration-300"
-                                style={{ width: `${Math.min(femalePercentage, 100)}%` }}
-                            ></div>
+                        <div 
+                            className="bg-pink-600 h-6 transition-all duration-300 flex items-center justify-center text-xs text-white font-medium"
+                            style={{ width: `${(acceptedFemale / event.capacity) * 100}%` }}
+                            title={`Female: ${acceptedFemale} (${femalePercentage.toFixed(0)}% of female capacity)`}
+                        >
+                            {acceptedFemale > 0 && <span className="px-1">{acceptedFemale}</span>}
                         </div>
                     </div>
                 </div>
