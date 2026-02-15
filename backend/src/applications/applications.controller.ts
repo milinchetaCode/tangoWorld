@@ -38,4 +38,10 @@ export class ApplicationsController {
   updateStatus(@Param('id') id: string, @Body('status') status: string) {
     return this.applicationsService.updateStatus(id, status);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/payment')
+  updatePayment(@Param('id') id: string, @Body('paymentDone') paymentDone: boolean) {
+    return this.applicationsService.updatePayment(id, paymentDone);
+  }
 }

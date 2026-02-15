@@ -115,4 +115,11 @@ export class ApplicationsService {
       data: { status },
     });
   }
+
+  async updatePayment(id: string, paymentDone: boolean) {
+    return this.prisma.application.update({
+      where: { id },
+      data: { paymentDone },
+    });
+  }
 }
