@@ -88,8 +88,8 @@ export default function EventMap({ events }: EventMapProps) {
             latitude: coords.latitude,
             longitude: coords.longitude,
           });
-          // Save coordinates to backend for future use
-          await saveCoordinates(event.id, coords.latitude, coords.longitude);
+          // Save coordinates to backend for future use (non-blocking)
+          saveCoordinates(event.id, coords.latitude, coords.longitude);
         } else {
           geocodedResults.push(event);
         }
