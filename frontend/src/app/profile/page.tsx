@@ -154,7 +154,7 @@ function ProfilePage() {
                 )}
 
                 {/* Profile Header Card */}
-                <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8 ring-1 ring-slate-900/5">
+                <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8 ring-1 ring-slate-200">
                     <div className="bg-gradient-to-r from-rose-500 to-rose-600 h-32 sm:h-40"></div>
                     <div className="px-6 sm:px-8 pb-8">
                         <div className="relative -mt-16 sm:-mt-20 mb-6">
@@ -296,7 +296,7 @@ function ProfilePage() {
 
                 {/* Request Organizer Status Section - At Bottom */}
                 {user.organizerStatus === 'none' && (
-                    <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 sm:p-8 ring-1 ring-slate-900/5">
+                    <div className="mt-8 bg-white rounded-2xl shadow-sm p-6 sm:p-8 ring-1 ring-slate-200">
                         <div className="text-center">
                             <h3 className="text-lg font-semibold text-slate-900 mb-2">Want to organize Tango events?</h3>
                             <p className="text-sm text-slate-600 mb-4">
@@ -305,7 +305,7 @@ function ProfilePage() {
                             <button
                                 onClick={handleOpenOrganizerConfirm}
                                 disabled={isUpdating}
-                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:shadow-md hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
                             >
                                 <Award className="h-4 w-4" />
                                 Request Organizer Status
@@ -325,7 +325,7 @@ function ProfilePage() {
                             ></div>
                             
                             {/* Modal Content */}
-                            <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 ring-1 ring-slate-900/5">
+                            <div className="relative bg-white rounded-2xl shadow-sm max-w-md w-full p-6 sm:p-8 ring-1 ring-slate-200">
                                 <div className="flex items-center justify-between mb-6">
                                     <h2 className="text-2xl font-bold text-slate-900">Edit Profile</h2>
                                     <button
@@ -423,7 +423,7 @@ function ProfilePage() {
                                         <button
                                             type="submit"
                                             disabled={isUpdating}
-                                            className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                                            className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold shadow-sm hover:shadow-md hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
                                         >
                                             {isUpdating ? 'Saving...' : 'Save Changes'}
                                         </button>
@@ -445,7 +445,7 @@ function ProfilePage() {
                             ></div>
                             
                             {/* Modal Content */}
-                            <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 ring-1 ring-slate-900/5">
+                            <div className="relative bg-white rounded-2xl shadow-sm max-w-md w-full p-6 sm:p-8 ring-1 ring-slate-200">
                                 <div className="flex items-start gap-4 mb-6">
                                     <div className="h-12 w-12 rounded-xl bg-rose-50 flex items-center justify-center flex-shrink-0">
                                         <Award className="h-6 w-6 text-rose-600" />
@@ -499,7 +499,7 @@ function ProfilePage() {
                                         type="button"
                                         onClick={handleRequestOrganizer}
                                         disabled={isUpdating}
-                                        className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                                        className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold shadow-sm hover:shadow-md hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
                                     >
                                         {isUpdating ? 'Submitting...' : 'I Understand, Proceed'}
                                     </button>
