@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getApiUrl } from '@/lib/api';
@@ -21,18 +21,7 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
 
     const isFull = capacity > 0 && acceptedCount >= capacity;
 
-    useEffect(() => {
-        // Check if user is logged in
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token);
-
-        // If logged in, check if user has already applied
-        if (token) {
-            checkUserApplication(token);
-        }
-    }, [eventId]);
-
-    const checkUserApplication = async (token: string) => {
+    const checkUserApplication = useCallback(async (token: string) => {
         try {
             const res = await fetch(getApiUrl('/applications/me'), {
                 headers: {
@@ -50,7 +39,18 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
         } catch (err) {
             console.error('Error checking user application:', err);
         }
-    };
+    }, [eventId]);
+
+    useEffect(() => {
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+
+        // If logged in, check if user has already applied
+        if (token) {
+            checkUserApplication(token);
+        }
+    }, [checkUserApplication]);
 
     const handleApply = async () => {
         const token = localStorage.getItem('token');

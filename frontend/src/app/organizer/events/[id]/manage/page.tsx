@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound, useRouter } from 'next/navigation';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useCallback } from 'react';
 import { Check, X, Clock, ArrowLeft } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { Application, Event } from '@/types/application';
@@ -14,11 +14,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchEventAndApplications();
-    }, [id]);
-
-    const fetchEventAndApplications = async () => {
+    const fetchEventAndApplications = useCallback(async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             router.push('/login');
@@ -51,7 +47,11 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [id, router]);
+
+    useEffect(() => {
+        fetchEventAndApplications();
+    }, [fetchEventAndApplications]);
 
     const handleStatusChange = async (applicationId: string, newStatus: string) => {
         const token = localStorage.getItem('token');
