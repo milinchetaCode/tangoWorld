@@ -39,6 +39,44 @@ describe('EventsController', () => {
     expect(controller).toBeDefined();
   });
 
+  describe('findAll', () => {
+    it('should call service.findAll with search parameter', async () => {
+      const search = 'tango';
+      mockEventsService.findAll.mockResolvedValue([]);
+
+      await controller.findAll(search);
+
+      expect(service.findAll).toHaveBeenCalledWith(search, undefined);
+    });
+
+    it('should call service.findAll with organizerId parameter', async () => {
+      const organizerId = 'user-123';
+      mockEventsService.findAll.mockResolvedValue([]);
+
+      await controller.findAll(undefined, organizerId);
+
+      expect(service.findAll).toHaveBeenCalledWith(undefined, organizerId);
+    });
+
+    it('should call service.findAll with both search and organizerId parameters', async () => {
+      const search = 'tango';
+      const organizerId = 'user-123';
+      mockEventsService.findAll.mockResolvedValue([]);
+
+      await controller.findAll(search, organizerId);
+
+      expect(service.findAll).toHaveBeenCalledWith(search, organizerId);
+    });
+
+    it('should call service.findAll with no parameters', async () => {
+      mockEventsService.findAll.mockResolvedValue([]);
+
+      await controller.findAll();
+
+      expect(service.findAll).toHaveBeenCalledWith(undefined, undefined);
+    });
+  });
+
   describe('updateCoordinates', () => {
     it('should update coordinates with valid data', async () => {
       const eventId = 'test-event-id';
