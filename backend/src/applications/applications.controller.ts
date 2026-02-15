@@ -35,13 +35,25 @@ export class ApplicationsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id/status')
-  updateStatus(@Param('id') id: string, @Body('status') status: string) {
-    return this.applicationsService.updateStatus(id, status);
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: string,
+    @Request() req: any,
+  ) {
+    return this.applicationsService.updateStatus(id, status, req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id/payment')
-  updatePayment(@Param('id') id: string, @Body('paymentDone') paymentDone: boolean) {
-    return this.applicationsService.updatePayment(id, paymentDone);
+  async updatePayment(
+    @Param('id') id: string,
+    @Body('paymentDone') paymentDone: boolean,
+    @Request() req: any,
+  ) {
+    return this.applicationsService.updatePayment(
+      id,
+      paymentDone,
+      req.user.userId,
+    );
   }
 }

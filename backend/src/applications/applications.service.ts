@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -109,14 +110,48 @@ export class ApplicationsService {
     });
   }
 
-  async updateStatus(id: string, status: string) {
+  async updateStatus(id: string, status: string, userId: string) {
+    // Get the application with event info to verify authorization
+    const application = await this.prisma.application.findUnique({
+      where: { id },
+      include: { event: { select: { organizerId: true } } },
+    });
+
+    if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+
+    // Verify the user is the organizer of the event
+    if (application.event.organizerId !== userId) {
+      throw new ForbiddenException(
+        'Only the event organizer can update application status',
+      );
+    }
+
     return this.prisma.application.update({
       where: { id },
       data: { status },
     });
   }
 
-  async updatePayment(id: string, paymentDone: boolean) {
+  async updatePayment(id: string, paymentDone: boolean, userId: string) {
+    // Get the application with event info to verify authorization
+    const application = await this.prisma.application.findUnique({
+      where: { id },
+      include: { event: { select: { organizerId: true } } },
+    });
+
+    if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+
+    // Verify the user is the organizer of the event
+    if (application.event.organizerId !== userId) {
+      throw new ForbiddenException(
+        'Only the event organizer can update payment status',
+      );
+    }
+
     return this.prisma.application.update({
       where: { id },
       data: { paymentDone },

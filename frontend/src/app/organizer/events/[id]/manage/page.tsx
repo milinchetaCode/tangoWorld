@@ -73,10 +73,13 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                     app.id === applicationId ? { ...app, status: newStatus } : app
                 ));
             } else {
-                console.error('Failed to update status');
+                const errorText = await res.text();
+                console.error('Failed to update status:', res.status, errorText);
+                alert(`Failed to update status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
             }
         } catch (err) {
             console.error('Error updating status:', err);
+            alert('Failed to update status. Please try again.');
         }
     };
 
@@ -100,10 +103,13 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                     app.id === applicationId ? { ...app, paymentDone } : app
                 ));
             } else {
-                console.error('Failed to update payment status');
+                const errorText = await res.text();
+                console.error('Failed to update payment status:', res.status, errorText);
+                alert(`Failed to update payment status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
             }
         } catch (err) {
             console.error('Error updating payment:', err);
+            alert('Failed to update payment status. Please try again.');
         }
     };
 
@@ -258,9 +264,11 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-semibold leading-6 text-gray-900">
                                             {application.user?.name} {application.user?.surname}
-                                            <span className="ml-2 text-gray-600 font-normal">
-                                                ({application.user?.gender === 'male' ? 'M' : 'F'})
-                                            </span>
+                                            {application.user?.gender && (
+                                                <span className="ml-2 text-gray-600 font-normal">
+                                                    ({application.user.gender === 'male' ? 'M' : application.user.gender === 'female' ? 'F' : application.user.gender})
+                                                </span>
+                                            )}
                                             {application.paymentDone && (
                                                 <span className="ml-2 inline-flex items-center rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
                                                     Paid
