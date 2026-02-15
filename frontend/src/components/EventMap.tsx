@@ -41,11 +41,13 @@ export default function EventMap({ events }: EventMapProps) {
   // Function to save coordinates to the backend
   const saveCoordinates = async (eventId: string, latitude: number, longitude: number) => {
     try {
+      const token = localStorage.getItem('token');
       const apiUrl = getApiUrl(`/events/${eventId}/coordinates`);
       const response = await fetch(apiUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
         },
         body: JSON.stringify({ latitude, longitude }),
       });
