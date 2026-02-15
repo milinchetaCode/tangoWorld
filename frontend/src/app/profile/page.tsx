@@ -217,9 +217,12 @@ function ProfilePage() {
                                 </div>
                                 <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ring-inset ${
                                     user.organizerStatus === 'approved' ? 'bg-green-50 text-green-700 ring-green-600/20' :
+                                    user.organizerStatus === 'pending' ? 'bg-yellow-50 text-yellow-800 ring-yellow-600/20' :
                                     'bg-slate-50 text-slate-600 ring-slate-500/10'
                                 }`}>
-                                    {user.organizerStatus === 'approved' ? 'Organizer' : 'Dancer'}
+                                    {user.organizerStatus === 'approved' ? 'Organizer' : 
+                                     user.organizerStatus === 'pending' ? 'Pending Approval' : 
+                                     'Dancer'}
                                 </span>
                             </div>
                         </div>
