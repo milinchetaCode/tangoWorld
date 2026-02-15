@@ -21,11 +21,23 @@ function ProfilePage() {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
     const [message, setMessage] = useState('');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        city: '',
+        gender: '',
+        dietaryNeeds: ''
+    });
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            const userData = JSON.parse(storedUser);
+            setUser(userData);
+            setEditFormData({
+                city: userData.city || '',
+                gender: userData.gender || '',
+                dietaryNeeds: userData.dietaryNeeds || ''
+            });
         }
     }, []);
 
@@ -52,6 +64,57 @@ function ProfilePage() {
             setMessage('Your request for organizer status has been submitted and is pending approval.');
         } catch {
             setMessage('Error submitting request. Please try again.');
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const handleOpenEditModal = () => {
+        if (user) {
+            setEditFormData({
+                city: user.city || '',
+                gender: user.gender || '',
+                dietaryNeeds: user.dietaryNeeds || ''
+            });
+            setIsEditModalOpen(true);
+        }
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setMessage('');
+    };
+
+    const handleEditFormChange = (field: string, value: string) => {
+        setEditFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleSubmitEdit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user) return;
+
+        setIsUpdating(true);
+        setMessage('');
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(getApiUrl(`/users/${user.id}`), {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editFormData)
+            });
+
+            if (!res.ok) throw new Error('Failed to update profile');
+
+            const updatedUser = await res.json();
+            setUser(updatedUser);
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            setMessage('Profile updated successfully!');
+            setIsEditModalOpen(false);
+        } catch {
+            setMessage('Error updating profile. Please try again.');
         } finally {
             setIsUpdating(false);
         }
@@ -119,8 +182,9 @@ function ProfilePage() {
                                         </button>
                                     )}
                                     <button
-                                        type="button"
-                                        className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-md hover:shadow-lg ring-1 ring-inset ring-slate-200 hover:bg-slate-50 transition-all hover:scale-105"
+                                                                            type="button"
+                                    onClick={handleOpenEditModal}
+                                    className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-md hover:shadow-lg ring-1 ring-inset ring-slate-200 hover:bg-slate-50 transition-all hover:scale-105"
                                     >
                                         Edit Profile
                                     </button>
@@ -254,6 +318,126 @@ function ProfilePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Edit Profile Modal */}
+                {isEditModalOpen && (
+                    <div className="fixed inset-0 z-50 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4">
+                            {/* Backdrop */}
+                            <div 
+                                className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+                                onClick={handleCloseEditModal}
+                            ></div>
+                            
+                            {/* Modal Content */}
+                            <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 ring-1 ring-slate-900/5">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-2xl font-bold text-slate-900">Edit Profile</h2>
+                                    <button
+                                        onClick={handleCloseEditModal}
+                                        className="text-slate-400 hover:text-slate-600 transition-colors"
+                                    >
+                                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <form onSubmit={handleSubmitEdit} className="space-y-6">
+                                    {/* Name and Surname - Read Only */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={user?.name || ''}
+                                                disabled
+                                                className="w-full px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 cursor-not-allowed"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Surname
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={user?.surname || ''}
+                                                disabled
+                                                className="w-full px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 cursor-not-allowed"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* City */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            City
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editFormData.city}
+                                            onChange={(e) => handleEditFormChange('city', e.target.value)}
+                                            required
+                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                                        />
+                                    </div>
+
+                                    {/* Gender */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            Gender
+                                        </label>
+                                        <select
+                                            value={editFormData.gender}
+                                            onChange={(e) => handleEditFormChange('gender', e.target.value)}
+                                            required
+                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                                        >
+                                            <option value="">Select gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Dietary Needs */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            Dietary Requirements
+                                        </label>
+                                        <textarea
+                                            value={editFormData.dietaryNeeds}
+                                            onChange={(e) => handleEditFormChange('dietaryNeeds', e.target.value)}
+                                            rows={3}
+                                            placeholder="e.g., vegetarian, vegan, gluten-free, etc."
+                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
+                                        />
+                                    </div>
+
+                                    {/* Buttons */}
+                                    <div className="flex gap-3 pt-4">
+                                        <button
+                                            type="button"
+                                            onClick={handleCloseEditModal}
+                                            disabled={isUpdating}
+                                            className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition-all disabled:opacity-50"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={isUpdating}
+                                            className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                                        >
+                                            {isUpdating ? 'Saving...' : 'Save Changes'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
