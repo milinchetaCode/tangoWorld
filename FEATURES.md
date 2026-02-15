@@ -37,7 +37,13 @@ You can now view all events on an interactive map! This makes it easy to discove
 - Automatic map bounds adjustment to show all events
 - Mobile-friendly and responsive
 
-**Note:** Only events with latitude/longitude coordinates will appear on the map. Events without coordinates will be displayed in list view only, with a notice indicating how many events don't have coordinates yet.
+**Automatic Geocoding:**
+- Events without coordinates are automatically geocoded when the map loads
+- Once geocoded, coordinates are saved to the database for faster loading next time
+- The geocoding process is transparent and happens in the background
+- A loading indicator shows when geocoding is in progress
+
+**Note:** Events are gradually getting coordinates through automatic geocoding. Events without coordinates will show a notice and will be geocoded when the map view is accessed.
 
 ---
 
@@ -56,11 +62,13 @@ When creating a new event, you can now add optional latitude and longitude coord
 4. Submit your event
 
 **Finding coordinates:**
+- **Automatic:** The system automatically geocodes event locations and saves coordinates
 - Use Google Maps: Right-click on your venue location and select the coordinates shown at the top
 - Use online geocoding services to convert an address to coordinates
-- Coordinates are optional, but highly recommended for better event visibility
+- Coordinates are optional - if not provided, they will be calculated automatically when someone views the map
 
 **Tips:**
 - Accurate coordinates help attendees find your event more easily
 - Events with coordinates get better visibility on the map view
 - Double-check coordinates before submitting to ensure accuracy
+- If coordinates are not provided, they will be automatically calculated based on the location field when someone views the map
