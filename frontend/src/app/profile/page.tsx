@@ -380,7 +380,7 @@ function ProfilePage() {
                                             value={editFormData.city}
                                             onChange={(e) => handleEditFormChange('city', e.target.value)}
                                             required
-                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 text-slate-900 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                                         />
                                     </div>
 
@@ -393,7 +393,7 @@ function ProfilePage() {
                                             value={editFormData.gender}
                                             onChange={(e) => handleEditFormChange('gender', e.target.value)}
                                             required
-                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
+                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 text-slate-900 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                                         >
                                             <option value="">Select gender</option>
                                             <option value="male">Male</option>
@@ -411,7 +411,7 @@ function ProfilePage() {
                                             onChange={(e) => handleEditFormChange('dietaryNeeds', e.target.value)}
                                             rows={3}
                                             placeholder="e.g., vegetarian, vegan, gluten-free, etc."
-                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
+                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
                                         />
                                     </div>
 
