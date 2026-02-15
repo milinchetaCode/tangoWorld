@@ -35,6 +35,8 @@ model Event {
   startDate      DateTime
   endDate        DateTime
   location       String
+  latitude       Float?
+  longitude      Float?
   venue          String
   imageUrl       String?
   guests         String?
