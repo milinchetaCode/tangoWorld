@@ -147,7 +147,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                         <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-slate-500">
                                             <p>{application.user?.email}</p>
                                             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current"><circle cx={1} cy={1} r={1} /></svg>
-                                            <p>Applied: {new Date(application.appliedAt).toLocaleDateString()}</p>
+                                            <p>Applied: {new Date(application.appliedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                         </div>
                                         {application.user?.dietaryNeeds && (
                                             <p className="mt-1 text-xs text-slate-500">Dietary needs: {application.user.dietaryNeeds}</p>
