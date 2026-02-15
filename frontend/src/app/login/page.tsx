@@ -113,9 +113,9 @@ export default function LoginPage() {
                 </form>
 
                 <p className="mt-10 text-center text-sm text-slate-500">
-                    Not a member?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link href="/register" className="font-semibold leading-6 text-rose-600 hover:text-rose-500">
-                        Start a 14 day free trial
+                        Create a free account
                     </Link>
                 </p>
             </div>
