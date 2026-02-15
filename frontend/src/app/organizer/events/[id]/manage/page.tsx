@@ -190,8 +190,14 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                     <div className="space-y-2 mb-4">
                         <div className="flex justify-between text-sm text-gray-700">
                             <div className="flex gap-4">
-                                <span><span className="inline-block w-3 h-3 bg-blue-600 rounded mr-1"></span>Male: {acceptedMale} / {event.maleCapacity}</span>
-                                <span><span className="inline-block w-3 h-3 bg-pink-600 rounded mr-1"></span>Female: {acceptedFemale} / {event.femaleCapacity}</span>
+                                <span>
+                                    <span className="inline-block w-3 h-3 bg-blue-600 rounded mr-1" aria-hidden="true"></span>
+                                    <span className="sr-only">Male dancers: </span>Male: {acceptedMale} / {event.maleCapacity}
+                                </span>
+                                <span>
+                                    <span className="inline-block w-3 h-3 bg-pink-600 rounded mr-1" aria-hidden="true"></span>
+                                    <span className="sr-only">Female dancers: </span>Female: {acceptedFemale} / {event.femaleCapacity}
+                                </span>
                             </div>
                             <span className="font-medium">{acceptedCount} / {event.capacity}</span>
                         </div>

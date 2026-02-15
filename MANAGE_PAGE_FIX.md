@@ -85,7 +85,7 @@ The `/manage` page had usability issues:
 - ✅ Fixed black background issue in dark mode
 - ✅ Combined progress bars into single stacked visualization
 - ✅ Added colored legend indicators (blue square for male, pink for female)
-- ✅ Increased bar height for better visibility (from 3rem to 6rem)
+- ✅ Increased bar height for better visibility (from h-3 to h-6, which is 0.75rem to 1.5rem)
 - ✅ Added number labels inside bars
 - ✅ Added total count display
 
