@@ -53,7 +53,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
         fetchEventAndApplications();
     }, [fetchEventAndApplications]);
 
-    const handleStatusChange = async (applicationId: string, newStatus: string) => {
+    const handleStatusChange = async (applicationId: string, newStatus: Application['status']) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
@@ -70,7 +70,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             if (res.ok) {
                 // Update local state
                 setApplications(prev => prev.map(app =>
-                    app.id === applicationId ? { ...app, status: newStatus as Application['status'] } : app
+                    app.id === applicationId ? { ...app, status: newStatus } : app
                 ));
             } else {
                 console.error('Failed to update status');

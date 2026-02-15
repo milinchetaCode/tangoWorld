@@ -174,13 +174,15 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
                 <button
                     onClick={handleApply}
                     disabled={isLoading}
+                    aria-busy={isLoading}
+                    aria-label={isLoading ? 'Submitting application...' : 'Apply to participate in this event'}
                     className={`w-full rounded-2xl px-6 py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98] ${
                         isLoading
                             ? 'bg-slate-400 cursor-wait'
                             : 'bg-rose-600 hover:bg-rose-500 hover:shadow-rose-500/30'
                     }`}
                 >
-                    {isLoading ? 'Applying...' : isFull ? 'Join the Waitlist' : 'Apply to Participate'}
+                    {isLoading ? 'Applying...' : 'Apply to Participate'}
                 </button>
             ) : (
                 <>
