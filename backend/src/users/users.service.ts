@@ -3,44 +3,44 @@ import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 
 interface UpdateProfileData {
-    city?: string;
-    gender?: string;
-    dietaryNeeds?: string;
+  city?: string;
+  gender?: string;
+  dietaryNeeds?: string;
 }
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
-    async findOneByEmail(email: string): Promise<User | null> {
-        return this.prisma.user.findUnique({
-            where: { email },
-        });
-    }
+  async findOneByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
 
-    async findOneById(id: string): Promise<User | null> {
-        return this.prisma.user.findUnique({
-            where: { id },
-        });
-    }
+  async findOneById(id: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
 
-    async create(data: Prisma.UserCreateInput): Promise<User> {
-        return this.prisma.user.create({
-            data,
-        });
-    }
+  async create(data: Prisma.UserCreateInput): Promise<User> {
+    return this.prisma.user.create({
+      data,
+    });
+  }
 
-    async requestOrganizer(id: string): Promise<User> {
-        return this.prisma.user.update({
-            where: { id },
-            data: { organizerStatus: 'pending' },
-        });
-    }
+  async requestOrganizer(id: string): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data: { organizerStatus: 'pending' },
+    });
+  }
 
-    async updateProfile(id: string, data: UpdateProfileData): Promise<User> {
-        return this.prisma.user.update({
-            where: { id },
-            data,
-        });
-    }
+  async updateProfile(id: string, data: UpdateProfileData): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
 }

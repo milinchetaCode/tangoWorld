@@ -8,7 +8,13 @@ import { EventsModule } from './events/events.module';
 import { ApplicationsModule } from './applications/applications.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, EventsModule, ApplicationsModule],
+  imports: [
+    PrismaModule,
+    UsersModule,
+    AuthModule,
+    EventsModule,
+    ApplicationsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
