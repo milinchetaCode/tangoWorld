@@ -51,19 +51,27 @@ export default function EventMap({ events }: EventMapProps) {
         return;
       }
 
-      const geocodedResults = await Promise.all(
-        eventsToGeocode.map(async (event) => {
-          const coords = await geocodeLocation(event.location);
-          if (coords) {
-            return {
-              ...event,
-              latitude: coords.latitude,
-              longitude: coords.longitude,
-            };
-          }
-          return event;
-        })
-      );
+      // Process events sequentially to respect rate limits (1 req/sec for Nominatim)
+      const geocodedResults = [];
+      for (let i = 0; i < eventsToGeocode.length; i++) {
+        const event = eventsToGeocode[i];
+        const coords = await geocodeLocation(event.location);
+        
+        if (coords) {
+          geocodedResults.push({
+            ...event,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+          });
+        } else {
+          geocodedResults.push(event);
+        }
+        
+        // Add delay between requests (except for the last one)
+        if (i < eventsToGeocode.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1100));
+        }
+      }
 
       setGeocodedEvents([...eventsWithCoords, ...geocodedResults]);
       setIsGeocoding(false);
