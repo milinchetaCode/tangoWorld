@@ -40,6 +40,146 @@ describe('EventsService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('findAll', () => {
+    it('should return all events when no filters provided', async () => {
+      const mockEvents = [
+        { id: '1', title: 'Event 1' },
+        { id: '2', title: 'Event 2' },
+      ];
+      mockPrismaService.event.findMany.mockResolvedValue(mockEvents);
+
+      const result = await service.findAll();
+
+      expect(prismaService.event.findMany).toHaveBeenCalledWith({
+        where: {},
+        include: {
+          organizer: {
+            select: {
+              name: true,
+              surname: true,
+            },
+          },
+          applications: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+        orderBy: {
+          startDate: 'asc',
+        },
+      });
+      expect(result).toEqual(mockEvents);
+    });
+
+    it('should filter events by organizerId', async () => {
+      const organizerId = 'user-123';
+      const mockEvents = [{ id: '1', title: 'Event 1', organizerId }];
+      mockPrismaService.event.findMany.mockResolvedValue(mockEvents);
+
+      const result = await service.findAll(undefined, organizerId);
+
+      expect(prismaService.event.findMany).toHaveBeenCalledWith({
+        where: { organizerId },
+        include: {
+          organizer: {
+            select: {
+              name: true,
+              surname: true,
+            },
+          },
+          applications: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+        orderBy: {
+          startDate: 'asc',
+        },
+      });
+      expect(result).toEqual(mockEvents);
+    });
+
+    it('should filter events by search term', async () => {
+      const search = 'tango';
+      const mockEvents = [{ id: '1', title: 'Tango Event' }];
+      mockPrismaService.event.findMany.mockResolvedValue(mockEvents);
+
+      const result = await service.findAll(search);
+
+      expect(prismaService.event.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { location: { contains: search, mode: 'insensitive' } },
+            { venue: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        include: {
+          organizer: {
+            select: {
+              name: true,
+              surname: true,
+            },
+          },
+          applications: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+        orderBy: {
+          startDate: 'asc',
+        },
+      });
+      expect(result).toEqual(mockEvents);
+    });
+
+    it('should filter events by both organizerId and search term', async () => {
+      const search = 'tango';
+      const organizerId = 'user-123';
+      const mockEvents = [
+        { id: '1', title: 'Tango Event', organizerId },
+      ];
+      mockPrismaService.event.findMany.mockResolvedValue(mockEvents);
+
+      const result = await service.findAll(search, organizerId);
+
+      expect(prismaService.event.findMany).toHaveBeenCalledWith({
+        where: {
+          organizerId,
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { location: { contains: search, mode: 'insensitive' } },
+            { venue: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        include: {
+          organizer: {
+            select: {
+              name: true,
+              surname: true,
+            },
+          },
+          applications: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+        orderBy: {
+          startDate: 'asc',
+        },
+      });
+      expect(result).toEqual(mockEvents);
+    });
+  });
+
   describe('updateCoordinates', () => {
     it('should update coordinates for an existing event', async () => {
       const eventId = 'test-event-id';
