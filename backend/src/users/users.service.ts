@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 
+interface UpdateProfileData {
+    city?: string;
+    gender?: string;
+    dietaryNeeds?: string;
+}
+
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) { }
@@ -28,6 +34,13 @@ export class UsersService {
         return this.prisma.user.update({
             where: { id },
             data: { organizerStatus: 'pending' },
+        });
+    }
+
+    async updateProfile(id: string, data: UpdateProfileData): Promise<User> {
+        return this.prisma.user.update({
+            where: { id },
+            data,
         });
     }
 }
