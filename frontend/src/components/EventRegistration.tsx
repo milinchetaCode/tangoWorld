@@ -367,7 +367,7 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                             )}
                             
                             {/* Total Price Display */}
-                            {totalPrice !== null && (
+                            {totalPrice !== null && totalPrice !== undefined && (
                                 <div className="mt-4 p-3 bg-rose-50 rounded-lg border border-rose-200">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-semibold text-slate-900">Total Price</span>
