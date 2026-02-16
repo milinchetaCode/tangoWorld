@@ -30,6 +30,10 @@ export class UsersService {
   }
 
   async requestOrganizer(id: string): Promise<User> {
+    // Auto-approve organizers since there's no admin approval workflow in place.
+    // Users can only request organizer status for themselves (verified in controller).
+    // This enables immediate event creation without manual admin intervention.
+    // Future enhancement: Add admin approval workflow if needed.
     return this.prisma.user.update({
       where: { id },
       data: { 
