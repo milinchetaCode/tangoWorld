@@ -30,6 +30,7 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
     const isFull = capacity > 0 && acceptedCount >= capacity;
 
     // Calculate event duration in days (automatically from event dates)
+    // Using inclusive date range: e.g., Jan 1-2 is 2 days, Jan 1-1 is 1 day
     const numberOfDays = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
     // Calculate total price based on selection
