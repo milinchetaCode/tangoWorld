@@ -10,7 +10,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ApplicationsService {
   constructor(private prisma: PrismaService) {}
 
-  async apply(userId: string, eventId: string) {
+  async apply(userId: string, eventId: string, applicationData?: { pricingOption?: string; numberOfDays?: number; totalPrice?: number }) {
     // 1. Check if event exists
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
@@ -56,12 +56,26 @@ export class ApplicationsService {
       initialStatus = 'waitlisted';
     }
 
+    // Prepare application data
+    const data: any = {
+      userId,
+      eventId,
+      status: initialStatus,
+    };
+
+    // Add pricing information if provided
+    if (applicationData?.pricingOption) {
+      data.pricingOption = applicationData.pricingOption;
+    }
+    if (applicationData?.numberOfDays) {
+      data.numberOfDays = applicationData.numberOfDays;
+    }
+    if (applicationData?.totalPrice) {
+      data.totalPrice = applicationData.totalPrice;
+    }
+
     return this.prisma.application.create({
-      data: {
-        userId,
-        eventId,
-        status: initialStatus,
-      },
+      data,
     });
   }
 

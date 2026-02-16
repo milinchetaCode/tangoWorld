@@ -10,16 +10,50 @@ interface EventRegistrationProps {
     eventId: string;
     capacity: number;
     acceptedCount: number;
+    startDate: string;
+    endDate: string;
+    priceFullEventFood?: number;
+    priceFullEventAccommodation?: number;
+    priceFullEventBoth?: number;
+    priceDailyFood?: number;
+    priceDailyNoFood?: number;
 }
 
-export default function EventRegistration({ eventId, capacity, acceptedCount }: EventRegistrationProps) {
+export default function EventRegistration({ eventId, capacity, acceptedCount, startDate, endDate, priceFullEventFood, priceFullEventAccommodation, priceFullEventBoth, priceDailyFood, priceDailyNoFood }: EventRegistrationProps) {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userApplication, setUserApplication] = useState<Application | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [selectedPricingOption, setSelectedPricingOption] = useState<string>('');
+    const [numberOfDays, setNumberOfDays] = useState<number>(1);
 
     const isFull = capacity > 0 && acceptedCount >= capacity;
+
+    // Calculate event duration in days
+    const eventDuration = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+    // Calculate total price based on selection
+    const calculateTotalPrice = () => {
+        if (!selectedPricingOption) return null;
+        
+        switch (selectedPricingOption) {
+            case 'full_food':
+                return priceFullEventFood;
+            case 'full_accommodation':
+                return priceFullEventAccommodation;
+            case 'full_both':
+                return priceFullEventBoth;
+            case 'daily_food':
+                return priceDailyFood ? priceDailyFood * numberOfDays : null;
+            case 'daily_no_food':
+                return priceDailyNoFood ? priceDailyNoFood * numberOfDays : null;
+            default:
+                return null;
+        }
+    };
+
+    const totalPrice = calculateTotalPrice();
 
     const checkUserApplication = useCallback(async (token: string) => {
         try {
@@ -59,16 +93,35 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
             return;
         }
 
+        // Validate pricing option selection if pricing is available
+        const hasPricing = priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth || priceDailyFood || priceDailyNoFood;
+        if (hasPricing && !selectedPricingOption) {
+            setError('Please select a pricing option');
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
 
         try {
+            const body: any = {};
+            if (selectedPricingOption) {
+                body.pricingOption = selectedPricingOption;
+                if (selectedPricingOption.startsWith('daily_')) {
+                    body.numberOfDays = numberOfDays;
+                }
+                if (totalPrice !== null) {
+                    body.totalPrice = totalPrice;
+                }
+            }
+
             const res = await fetch(getApiUrl(`/applications/${eventId}`), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify(body),
             });
 
             if (res.ok) {
@@ -169,21 +222,176 @@ export default function EventRegistration({ eventId, capacity, acceptedCount }: 
                     <p className="text-sm text-center text-slate-700 leading-normal font-medium">
                         You have applied to this event. The organizer will review your application.
                     </p>
+                    {userApplication.pricingOption && (
+                        <div className="mt-3 pt-3 border-t border-slate-200">
+                            <p className="text-xs text-slate-600">
+                                <span className="font-semibold">Selected option:</span>{' '}
+                                {userApplication.pricingOption.replace(/_/g, ' ')}
+                                {userApplication.numberOfDays && ` (${userApplication.numberOfDays} days)`}
+                            </p>
+                            {userApplication.totalPrice && (
+                                <p className="text-xs text-slate-600 mt-1">
+                                    <span className="font-semibold">Total:</span> ${Number(userApplication.totalPrice).toFixed(2)}
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
             ) : isLoggedIn ? (
-                <button
-                    onClick={handleApply}
-                    disabled={isLoading}
-                    aria-busy={isLoading}
-                    aria-label={isLoading ? 'Submitting application...' : 'Apply to participate in this event'}
-                    className={`w-full rounded-xl px-6 py-4 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] ${
-                        isLoading
-                            ? 'bg-slate-400 cursor-wait'
-                            : 'bg-rose-600 hover:bg-rose-500 hover:shadow-md'
-                    }`}
-                >
-                    {isLoading ? 'Applying...' : 'Apply to Participate'}
-                </button>
+                <>
+                    {/* Pricing Selection */}
+                    {(priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth || priceDailyFood || priceDailyNoFood) && (
+                        <div className="mb-6 space-y-4">
+                            <h4 className="text-sm font-semibold text-slate-900">Select Pricing Option</h4>
+                            
+                            {/* Full Event Options */}
+                            {(priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth) && (
+                                <div className="space-y-2">
+                                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Full Event</p>
+                                    
+                                    {priceFullEventFood && (
+                                        <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="pricingOption"
+                                                    value="full_food"
+                                                    checked={selectedPricingOption === 'full_food'}
+                                                    onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                    className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                                                />
+                                                <span className="ml-3 text-sm text-slate-900">Including Food</span>
+                                            </div>
+                                            <span className="text-sm font-bold text-rose-600">${Number(priceFullEventFood).toFixed(2)}</span>
+                                        </label>
+                                    )}
+                                    
+                                    {priceFullEventAccommodation && (
+                                        <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="pricingOption"
+                                                    value="full_accommodation"
+                                                    checked={selectedPricingOption === 'full_accommodation'}
+                                                    onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                    className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                                                />
+                                                <span className="ml-3 text-sm text-slate-900">Including Accommodation</span>
+                                            </div>
+                                            <span className="text-sm font-bold text-rose-600">${Number(priceFullEventAccommodation).toFixed(2)}</span>
+                                        </label>
+                                    )}
+                                    
+                                    {priceFullEventBoth && (
+                                        <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="pricingOption"
+                                                    value="full_both"
+                                                    checked={selectedPricingOption === 'full_both'}
+                                                    onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                    className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                                                />
+                                                <span className="ml-3 text-sm text-slate-900">Including Food & Accommodation</span>
+                                            </div>
+                                            <span className="text-sm font-bold text-rose-600">${Number(priceFullEventBoth).toFixed(2)}</span>
+                                        </label>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {/* Daily Options */}
+                            {(priceDailyFood || priceDailyNoFood) && (
+                                <div className="space-y-2">
+                                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Daily Rate</p>
+                                    
+                                    {priceDailyFood && (
+                                        <label className="block p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="pricingOption"
+                                                        value="daily_food"
+                                                        checked={selectedPricingOption === 'daily_food'}
+                                                        onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                        className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                                                    />
+                                                    <span className="ml-3 text-sm text-slate-900">Daily with Food</span>
+                                                </div>
+                                                <span className="text-sm font-bold text-rose-600">${Number(priceDailyFood).toFixed(2)}/day</span>
+                                            </div>
+                                        </label>
+                                    )}
+                                    
+                                    {priceDailyNoFood && (
+                                        <label className="block p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="pricingOption"
+                                                        value="daily_no_food"
+                                                        checked={selectedPricingOption === 'daily_no_food'}
+                                                        onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                        className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                                                    />
+                                                    <span className="ml-3 text-sm text-slate-900">Daily without Food</span>
+                                                </div>
+                                                <span className="text-sm font-bold text-rose-600">${Number(priceDailyNoFood).toFixed(2)}/day</span>
+                                            </div>
+                                        </label>
+                                    )}
+                                    
+                                    {/* Days selector for daily options */}
+                                    {selectedPricingOption.startsWith('daily_') && (
+                                        <div className="pl-7 pt-2">
+                                            <label htmlFor="numberOfDays" className="block text-xs font-medium text-slate-700 mb-1">
+                                                Number of days
+                                            </label>
+                                            <input
+                                                id="numberOfDays"
+                                                type="number"
+                                                min="1"
+                                                max={eventDuration}
+                                                value={numberOfDays}
+                                                onChange={(e) => setNumberOfDays(Math.max(1, Math.min(eventDuration, parseInt(e.target.value) || 1)))}
+                                                className="block w-24 rounded-lg border-slate-300 py-1.5 px-3 text-sm shadow-sm focus:border-rose-500 focus:ring-rose-500"
+                                            />
+                                            <p className="text-xs text-slate-500 mt-1">Event duration: {eventDuration} days</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {/* Total Price Display */}
+                            {totalPrice !== null && (
+                                <div className="mt-4 p-3 bg-rose-50 rounded-lg border border-rose-200">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm font-semibold text-slate-900">Total Price</span>
+                                        <span className="text-lg font-bold text-rose-600">${totalPrice.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    <button
+                        onClick={handleApply}
+                        disabled={isLoading}
+                        aria-busy={isLoading}
+                        aria-label={isLoading ? 'Submitting application...' : 'Apply to participate in this event'}
+                        className={`w-full rounded-xl px-6 py-4 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] ${
+                            isLoading
+                                ? 'bg-slate-400 cursor-wait'
+                                : 'bg-rose-600 hover:bg-rose-500 hover:shadow-md'
+                        }`}
+                    >
+                        {isLoading ? 'Applying...' : 'Apply to Participate'}
+                    </button>
+                </>
             ) : (
                 <>
                     <button

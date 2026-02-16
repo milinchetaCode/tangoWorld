@@ -17,8 +17,13 @@ export class ApplicationsController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':eventId')
-  apply(@Param('eventId') eventId: string, @Request() req: any) {
-    return this.applicationsService.apply(req.user.userId, eventId);
+  apply(@Param('eventId') eventId: string, @Body() body: any, @Request() req: any) {
+    const applicationData = {
+      pricingOption: body.pricingOption,
+      numberOfDays: body.numberOfDays,
+      totalPrice: body.totalPrice,
+    };
+    return this.applicationsService.apply(req.user.userId, eventId, applicationData);
   }
 
   @UseGuards(JwtAuthGuard)

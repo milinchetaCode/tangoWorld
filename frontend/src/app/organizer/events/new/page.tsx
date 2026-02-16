@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock } from 'lucide-react';
+import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign } from 'lucide-react';
 
 export default function CreateEventPage() {
     const router = useRouter();
@@ -21,6 +21,11 @@ export default function CreateEventPage() {
         capacity: 100,
         maleCapacity: 50,
         femaleCapacity: 50,
+        priceFullEventFood: '',
+        priceFullEventAccommodation: '',
+        priceFullEventBoth: '',
+        priceDailyFood: '',
+        priceDailyNoFood: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -421,6 +426,148 @@ export default function CreateEventPage() {
                                 />
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Pricing Section */}
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+                    <div className="flex items-center gap-2 mb-6">
+                        <DollarSign className="h-5 w-5 text-rose-600" />
+                        <h3 className="text-lg font-semibold text-slate-900">Pricing Options</h3>
+                    </div>
+
+                    <p className="text-sm text-slate-600 mb-6">
+                        Set different pricing options for your event. Leave fields empty if that option is not available. 
+                        At least one pricing option should be provided.
+                    </p>
+
+                    <div className="space-y-6">
+                        {/* Full Event Pricing */}
+                        <div className="border-t border-slate-200 pt-6 first:border-t-0 first:pt-0">
+                            <h4 className="text-sm font-semibold text-slate-900 mb-4">Full Event Pricing</h4>
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                                <div>
+                                    <label htmlFor="priceFullEventFood" className="block text-sm font-medium text-slate-900">
+                                        Including Food
+                                    </label>
+                                    <p className="mt-1 text-xs text-slate-500">Full event with meals</p>
+                                    <div className="mt-2 relative">
+                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span className="text-slate-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input
+                                            id="priceFullEventFood"
+                                            name="priceFullEventFood"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={formData.priceFullEventFood}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            className="block w-full rounded-xl border-0 py-2.5 pl-7 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="priceFullEventAccommodation" className="block text-sm font-medium text-slate-900">
+                                        Including Accommodation
+                                    </label>
+                                    <p className="mt-1 text-xs text-slate-500">Full event with lodging</p>
+                                    <div className="mt-2 relative">
+                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span className="text-slate-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input
+                                            id="priceFullEventAccommodation"
+                                            name="priceFullEventAccommodation"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={formData.priceFullEventAccommodation}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            className="block w-full rounded-xl border-0 py-2.5 pl-7 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="priceFullEventBoth" className="block text-sm font-medium text-slate-900">
+                                        Including Both
+                                    </label>
+                                    <p className="mt-1 text-xs text-slate-500">Food + accommodation</p>
+                                    <div className="mt-2 relative">
+                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span className="text-slate-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input
+                                            id="priceFullEventBoth"
+                                            name="priceFullEventBoth"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={formData.priceFullEventBoth}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            className="block w-full rounded-xl border-0 py-2.5 pl-7 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Daily Pricing */}
+                        <div className="border-t border-slate-200 pt-6">
+                            <h4 className="text-sm font-semibold text-slate-900 mb-4">Daily Pricing</h4>
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                <div>
+                                    <label htmlFor="priceDailyFood" className="block text-sm font-medium text-slate-900">
+                                        Daily with Food
+                                    </label>
+                                    <p className="mt-1 text-xs text-slate-500">Per-day price with meals</p>
+                                    <div className="mt-2 relative">
+                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span className="text-slate-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input
+                                            id="priceDailyFood"
+                                            name="priceDailyFood"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={formData.priceDailyFood}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            className="block w-full rounded-xl border-0 py-2.5 pl-7 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="priceDailyNoFood" className="block text-sm font-medium text-slate-900">
+                                        Daily without Food
+                                    </label>
+                                    <p className="mt-1 text-xs text-slate-500">Per-day price, no meals</p>
+                                    <div className="mt-2 relative">
+                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span className="text-slate-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input
+                                            id="priceDailyNoFood"
+                                            name="priceDailyNoFood"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={formData.priceDailyNoFood}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            className="block w-full rounded-xl border-0 py-2.5 pl-7 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
