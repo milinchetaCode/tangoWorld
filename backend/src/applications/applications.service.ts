@@ -5,12 +5,19 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+
+interface ApplicationPricingData {
+  pricingOption?: string;
+  numberOfDays?: number;
+  totalPrice?: number;
+}
 
 @Injectable()
 export class ApplicationsService {
   constructor(private prisma: PrismaService) {}
 
-  async apply(userId: string, eventId: string, applicationData?: { pricingOption?: string; numberOfDays?: number; totalPrice?: number }) {
+  async apply(userId: string, eventId: string, applicationData?: ApplicationPricingData) {
     // 1. Check if event exists
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
@@ -57,9 +64,13 @@ export class ApplicationsService {
     }
 
     // Prepare application data
-    const data: any = {
-      userId,
-      eventId,
+    const data: Prisma.ApplicationCreateInput = {
+      user: {
+        connect: { id: userId },
+      },
+      event: {
+        connect: { id: eventId },
+      },
       status: initialStatus,
     };
 

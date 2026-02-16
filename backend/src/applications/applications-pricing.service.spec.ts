@@ -82,8 +82,8 @@ describe('ApplicationsService - Pricing', () => {
       expect(result).toBeDefined();
       expect(mockPrismaService.application.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
-          userId,
-          eventId,
+          user: { connect: { id: userId } },
+          event: { connect: { id: eventId } },
           pricingOption: pricingData.pricingOption,
           totalPrice: pricingData.totalPrice,
         }),
@@ -130,8 +130,8 @@ describe('ApplicationsService - Pricing', () => {
       expect(result).toBeDefined();
       expect(mockPrismaService.application.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
-          userId,
-          eventId,
+          user: { connect: { id: userId } },
+          event: { connect: { id: eventId } },
           pricingOption: pricingData.pricingOption,
           numberOfDays: pricingData.numberOfDays,
           totalPrice: pricingData.totalPrice,
@@ -171,8 +171,8 @@ describe('ApplicationsService - Pricing', () => {
       expect(result).toBeDefined();
       expect(mockPrismaService.application.create).toHaveBeenCalledWith({
         data: {
-          userId,
-          eventId,
+          user: { connect: { id: userId } },
+          event: { connect: { id: eventId } },
           status: 'applied',
         },
       });

@@ -26,12 +26,11 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedPricingOption, setSelectedPricingOption] = useState<string>('');
-    const [numberOfDays, setNumberOfDays] = useState<number>(1);
 
     const isFull = capacity > 0 && acceptedCount >= capacity;
 
-    // Calculate event duration in days
-    const eventDuration = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    // Calculate event duration in days (automatically from event dates)
+    const numberOfDays = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
     // Calculate total price based on selection
     const calculateTotalPrice = () => {
@@ -345,22 +344,12 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                                         </label>
                                     )}
                                     
-                                    {/* Days selector for daily options */}
+                                    {/* Display event duration for daily options */}
                                     {selectedPricingOption.startsWith('daily_') && (
                                         <div className="pl-7 pt-2">
-                                            <label htmlFor="numberOfDays" className="block text-xs font-medium text-slate-700 mb-1">
-                                                Number of days
-                                            </label>
-                                            <input
-                                                id="numberOfDays"
-                                                type="number"
-                                                min="1"
-                                                max={eventDuration}
-                                                value={numberOfDays}
-                                                onChange={(e) => setNumberOfDays(Math.max(1, Math.min(eventDuration, parseInt(e.target.value) || 1)))}
-                                                className="block w-24 rounded-lg border-slate-300 py-1.5 px-3 text-sm shadow-sm focus:border-rose-500 focus:ring-rose-500"
-                                            />
-                                            <p className="text-xs text-slate-500 mt-1">Event duration: {eventDuration} days</p>
+                                            <p className="text-xs text-slate-600">
+                                                Event duration: <span className="font-semibold">{numberOfDays} {numberOfDays === 1 ? 'day' : 'days'}</span>
+                                            </p>
                                         </div>
                                     )}
                                 </div>

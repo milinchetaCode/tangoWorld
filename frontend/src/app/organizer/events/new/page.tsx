@@ -438,7 +438,7 @@ export default function CreateEventPage() {
 
                     <p className="text-sm text-slate-600 mb-6">
                         Set different pricing options for your event. Leave fields empty if that option is not available. 
-                        At least one pricing option should be provided.
+                        Pricing is optional - you can leave all fields empty if the event is free or payment will be arranged separately.
                     </p>
 
                     <div className="space-y-6">

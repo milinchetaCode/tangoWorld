@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApplicationsService } from './applications.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateApplicationDto } from './dto/create-application.dto';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -17,13 +18,12 @@ export class ApplicationsController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':eventId')
-  apply(@Param('eventId') eventId: string, @Body() body: any, @Request() req: any) {
-    const applicationData = {
-      pricingOption: body.pricingOption,
-      numberOfDays: body.numberOfDays,
-      totalPrice: body.totalPrice,
-    };
-    return this.applicationsService.apply(req.user.userId, eventId, applicationData);
+  apply(
+    @Param('eventId') eventId: string,
+    @Body() createApplicationDto: CreateApplicationDto,
+    @Request() req: any,
+  ) {
+    return this.applicationsService.apply(req.user.userId, eventId, createApplicationDto);
   }
 
   @UseGuards(JwtAuthGuard)
