@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign } from 'lucide-react';
+import { getApiUrl } from '@/lib/api';
 
 export default function CreateEventPage() {
     const router = useRouter();
@@ -27,11 +28,69 @@ export default function CreateEventPage() {
         priceDailyFood: '',
         priceDailyNoFood: '',
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Create event', formData);
-        router.push('/organizer');
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            // Get authentication token
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication required. Please log in again.');
+            }
+
+            // Prepare the event data
+            const eventData = {
+                title: formData.title,
+                startDate: new Date(formData.startDate).toISOString(),
+                endDate: new Date(formData.endDate).toISOString(),
+                location: formData.location,
+                latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+                longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+                venue: formData.venue,
+                imageUrl: formData.imageUrl || null,
+                guests: formData.guests || null,
+                djs: formData.djs || null,
+                schedule: formData.schedule || null,
+                capacity: formData.capacity,
+                maleCapacity: formData.maleCapacity,
+                femaleCapacity: formData.femaleCapacity,
+                priceFullEventFood: formData.priceFullEventFood ? parseFloat(formData.priceFullEventFood) : null,
+                priceFullEventAccommodation: formData.priceFullEventAccommodation ? parseFloat(formData.priceFullEventAccommodation) : null,
+                priceFullEventBoth: formData.priceFullEventBoth ? parseFloat(formData.priceFullEventBoth) : null,
+                priceDailyFood: formData.priceDailyFood ? parseFloat(formData.priceDailyFood) : null,
+                priceDailyNoFood: formData.priceDailyNoFood ? parseFloat(formData.priceDailyNoFood) : null,
+            };
+
+            // Make API call to create event
+            const response = await fetch(getApiUrl('/events'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(eventData),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create event');
+            }
+
+            const createdEvent = await response.json();
+            console.log('Event created successfully:', createdEvent);
+
+            // Redirect to organizer page
+            router.push('/organizer');
+        } catch (err) {
+            console.error('Error creating event:', err);
+            setError(err instanceof Error ? err.message : 'Failed to create event');
+            setIsLoading(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -56,6 +115,14 @@ export default function CreateEventPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
+                        <p className="font-medium">Error creating event</p>
+                        <p className="text-sm">{error}</p>
+                    </div>
+                )}
+
                 {/* Basic Information Section */}
                 <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
                     <div className="flex items-center gap-2 mb-6">
@@ -582,9 +649,10 @@ export default function CreateEventPage() {
                     </button>
                     <button
                         type="submit"
-                        className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-rose-600 to-rose-500 rounded-lg shadow-sm hover:from-rose-500 hover:to-rose-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 transition-all"
+                        disabled={isLoading}
+                        className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-rose-600 to-rose-500 rounded-lg shadow-sm hover:from-rose-500 hover:to-rose-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Create Event
+                        {isLoading ? 'Creating...' : 'Create Event'}
                     </button>
                 </div>
             </form>
