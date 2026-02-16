@@ -12,6 +12,7 @@ interface EventRegistrationProps {
     acceptedCount: number;
     startDate: string;
     endDate: string;
+    priceFullEventNoFoodNoAccommodation?: number;
     priceFullEventFood?: number;
     priceFullEventAccommodation?: number;
     priceFullEventBoth?: number;
@@ -19,7 +20,7 @@ interface EventRegistrationProps {
     priceDailyNoFood?: number;
 }
 
-export default function EventRegistration({ eventId, capacity, acceptedCount, startDate, endDate, priceFullEventFood, priceFullEventAccommodation, priceFullEventBoth, priceDailyFood, priceDailyNoFood }: EventRegistrationProps) {
+export default function EventRegistration({ eventId, capacity, acceptedCount, startDate, endDate, priceFullEventNoFoodNoAccommodation, priceFullEventFood, priceFullEventAccommodation, priceFullEventBoth, priceDailyFood, priceDailyNoFood }: EventRegistrationProps) {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userApplication, setUserApplication] = useState<Application | null>(null);
@@ -38,6 +39,8 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
         if (!selectedPricingOption) return null;
         
         switch (selectedPricingOption) {
+            case 'full_no_food_no_accommodation':
+                return priceFullEventNoFoodNoAccommodation;
             case 'full_food':
                 return priceFullEventFood;
             case 'full_accommodation':
@@ -240,14 +243,31 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
             ) : isLoggedIn ? (
                 <>
                     {/* Pricing Selection */}
-                    {(priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth || priceDailyFood || priceDailyNoFood) && (
+                    {(priceFullEventNoFoodNoAccommodation || priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth || priceDailyFood || priceDailyNoFood) && (
                         <div className="mb-6 space-y-4">
                             <h4 className="text-sm font-semibold text-slate-900">Select Pricing Option</h4>
                             
                             {/* Full Event Options */}
-                            {(priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth) && (
+                            {(priceFullEventNoFoodNoAccommodation || priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth) && (
                                 <div className="space-y-2">
                                     <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Full Event</p>
+                                    
+                                    {priceFullEventNoFoodNoAccommodation && (
+                                        <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="pricingOption"
+                                                    value="full_no_food_no_accommodation"
+                                                    checked={selectedPricingOption === 'full_no_food_no_accommodation'}
+                                                    onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                    className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
+                                                />
+                                                <span className="ml-3 text-sm text-slate-900">Basic (No Food/Accommodation)</span>
+                                            </div>
+                                            <span className="text-sm font-bold text-rose-600">${Number(priceFullEventNoFoodNoAccommodation).toFixed(2)}</span>
+                                        </label>
+                                    )}
                                     
                                     {priceFullEventFood && (
                                         <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-rose-50 hover:border-rose-300 transition-colors">

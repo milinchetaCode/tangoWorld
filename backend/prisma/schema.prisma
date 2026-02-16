@@ -49,6 +49,7 @@ model Event {
   organizerId    String
   status         String        @default("published") // "draft", "published", "cancelled"
   // Pricing options
+  priceFullEventNoFoodNoAccommodation Decimal?  @db.Decimal(10, 2) // Full event basic price (no food, no accommodation)
   priceFullEventFood          Decimal?  @db.Decimal(10, 2) // Full event price including food
   priceFullEventAccommodation Decimal?  @db.Decimal(10, 2) // Full event price including accommodation
   priceFullEventBoth          Decimal?  @db.Decimal(10, 2) // Full event including food and accommodation
@@ -70,7 +71,7 @@ model Application {
   status         String   @default("applied") // "applied", "accepted", "waitlisted", "rejected", "cancelled"
   paymentDone    Boolean  @default(false)
   // Pricing selection
-  pricingOption  String?  // "full_food", "full_accommodation", "full_both", "daily_food", "daily_no_food"
+  pricingOption  String?  // "full_no_food_no_accommodation", "full_food", "full_accommodation", "full_both", "daily_food", "daily_no_food"
   numberOfDays   Int?     // Only applicable for daily pricing options
   totalPrice     Decimal? @db.Decimal(10, 2) // Calculated total price based on selection
   appliedAt      DateTime @default(now())

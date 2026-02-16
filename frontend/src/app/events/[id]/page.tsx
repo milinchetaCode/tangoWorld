@@ -122,6 +122,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                         acceptedCount={event.acceptedCount || 0}
                         startDate={event.startDate}
                         endDate={event.endDate}
+                        priceFullEventNoFoodNoAccommodation={event.priceFullEventNoFoodNoAccommodation ? Number(event.priceFullEventNoFoodNoAccommodation) : undefined}
                         priceFullEventFood={event.priceFullEventFood ? Number(event.priceFullEventFood) : undefined}
                         priceFullEventAccommodation={event.priceFullEventAccommodation ? Number(event.priceFullEventAccommodation) : undefined}
                         priceFullEventBoth={event.priceFullEventBoth ? Number(event.priceFullEventBoth) : undefined}

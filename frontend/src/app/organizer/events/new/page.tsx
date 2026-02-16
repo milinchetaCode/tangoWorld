@@ -22,6 +22,7 @@ export default function CreateEventPage() {
         capacity: 100,
         maleCapacity: 50,
         femaleCapacity: 50,
+        priceFullEventNoFoodNoAccommodation: '',
         priceFullEventFood: '',
         priceFullEventAccommodation: '',
         priceFullEventBoth: '',
@@ -76,6 +77,7 @@ export default function CreateEventPage() {
                 capacity: Number(formData.capacity),
                 maleCapacity: Number(formData.maleCapacity),
                 femaleCapacity: Number(formData.femaleCapacity),
+                priceFullEventNoFoodNoAccommodation: parseFloatOrNull(formData.priceFullEventNoFoodNoAccommodation),
                 priceFullEventFood: parseFloatOrNull(formData.priceFullEventFood),
                 priceFullEventAccommodation: parseFloatOrNull(formData.priceFullEventAccommodation),
                 priceFullEventBoth: parseFloatOrNull(formData.priceFullEventBoth),
@@ -530,7 +532,30 @@ export default function CreateEventPage() {
                         {/* Full Event Pricing */}
                         <div className="border-t border-slate-200 pt-6 first:border-t-0 first:pt-0">
                             <h4 className="text-sm font-semibold text-slate-900 mb-4">Full Event Pricing</h4>
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                                <div>
+                                    <label htmlFor="priceFullEventNoFoodNoAccommodation" className="block text-sm font-medium text-slate-900">
+                                        Basic (No Food/Accommodation)
+                                    </label>
+                                    <p className="mt-1 text-xs text-slate-500">Full event base price</p>
+                                    <div className="mt-2 relative">
+                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span className="text-slate-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input
+                                            id="priceFullEventNoFoodNoAccommodation"
+                                            name="priceFullEventNoFoodNoAccommodation"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            value={formData.priceFullEventNoFoodNoAccommodation}
+                                            onChange={handleChange}
+                                            placeholder="0.00"
+                                            className="block w-full rounded-xl border-0 py-2.5 pl-7 pr-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                        />
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label htmlFor="priceFullEventFood" className="block text-sm font-medium text-slate-900">
                                         Including Food

@@ -32,7 +32,10 @@ export class UsersService {
   async requestOrganizer(id: string): Promise<User> {
     return this.prisma.user.update({
       where: { id },
-      data: { organizerStatus: 'pending' },
+      data: { 
+        role: 'organizer',
+        organizerStatus: 'approved' 
+      },
     });
   }
 
