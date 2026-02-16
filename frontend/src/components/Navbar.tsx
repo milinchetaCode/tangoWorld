@@ -49,7 +49,7 @@ export default function Navbar() {
                         <Link href="/" className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md text-base font-medium transition-colors">
                             Events
                         </Link>
-                        {user && user?.role !== 'organizer' && (
+                        {user && (
                             <Link href="/my-outings" className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md text-base font-medium transition-colors">
                                 My Outings
                             </Link>
@@ -101,7 +101,7 @@ export default function Navbar() {
                         <Link href="/" className="block pl-3 pr-4 py-2 border-l-4 border-rose-500 text-base font-medium text-rose-700 bg-rose-50">
                             Events
                         </Link>
-                        {user && user?.role !== 'organizer' && (
+                        {user && (
                             <Link href="/my-outings" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50 hover:border-slate-300">
                                 My Outings
                             </Link>
