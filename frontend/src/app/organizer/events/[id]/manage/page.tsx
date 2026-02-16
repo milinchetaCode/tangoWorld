@@ -290,6 +290,14 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                         {application.user?.dietaryNeeds && (
                                             <p className="mt-1 text-xs text-slate-600">Dietary needs: {application.user.dietaryNeeds}</p>
                                         )}
+                                        {application.pricingOption && (
+                                            <p className="mt-1 text-xs text-slate-600">
+                                                <DollarSign className="inline h-3 w-3 mr-1" />
+                                                {application.pricingOption.replace(/_/g, ' ')}
+                                                {application.numberOfDays && ` (${application.numberOfDays} days)`}
+                                                {application.totalPrice && ` - $${Number(application.totalPrice).toFixed(2)}`}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="flex w-full flex-none gap-x-4 sm:w-auto items-center">
                                         {getStatusBadge(application.status)}

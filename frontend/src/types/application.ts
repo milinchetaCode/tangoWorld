@@ -4,6 +4,9 @@ export interface Application {
     eventId: string;
     status: 'applied' | 'accepted' | 'waitlisted' | 'rejected' | 'cancelled';
     paymentDone: boolean;
+    pricingOption?: string;
+    numberOfDays?: number;
+    totalPrice?: number;
     appliedAt: string;
     updatedAt: string;
     user?: {
@@ -32,6 +35,11 @@ export interface Event {
     femaleCapacity: number;
     organizerId: string;
     status: string;
+    priceFullEventFood?: number;
+    priceFullEventAccommodation?: number;
+    priceFullEventBoth?: number;
+    priceDailyFood?: number;
+    priceDailyNoFood?: number;
     acceptedCount?: number;
     createdAt: string;
     updatedAt: string;
