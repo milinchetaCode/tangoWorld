@@ -43,11 +43,19 @@ export default function CreateEventPage() {
                 throw new Error('Authentication required. Please log in again.');
             }
 
+            // Validate dates
+            const startDate = new Date(formData.startDate);
+            const endDate = new Date(formData.endDate);
+            
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                throw new Error('Please provide valid start and end dates.');
+            }
+
             // Prepare the event data
             const eventData = {
                 title: formData.title,
-                startDate: new Date(formData.startDate).toISOString(),
-                endDate: new Date(formData.endDate).toISOString(),
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
                 location: formData.location,
                 latitude: formData.latitude ? parseFloat(formData.latitude) : null,
                 longitude: formData.longitude ? parseFloat(formData.longitude) : null,
@@ -56,9 +64,9 @@ export default function CreateEventPage() {
                 guests: formData.guests || null,
                 djs: formData.djs || null,
                 schedule: formData.schedule || null,
-                capacity: formData.capacity,
-                maleCapacity: formData.maleCapacity,
-                femaleCapacity: formData.femaleCapacity,
+                capacity: Number(formData.capacity),
+                maleCapacity: Number(formData.maleCapacity),
+                femaleCapacity: Number(formData.femaleCapacity),
                 priceFullEventFood: formData.priceFullEventFood ? parseFloat(formData.priceFullEventFood) : null,
                 priceFullEventAccommodation: formData.priceFullEventAccommodation ? parseFloat(formData.priceFullEventAccommodation) : null,
                 priceFullEventBoth: formData.priceFullEventBoth ? parseFloat(formData.priceFullEventBoth) : null,
@@ -89,6 +97,7 @@ export default function CreateEventPage() {
         } catch (err) {
             console.error('Error creating event:', err);
             setError(err instanceof Error ? err.message : 'Failed to create event');
+        } finally {
             setIsLoading(false);
         }
     };
