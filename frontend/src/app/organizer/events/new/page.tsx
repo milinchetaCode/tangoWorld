@@ -31,6 +31,15 @@ export default function CreateEventPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Helper function to safely parse float values
+    const parseFloatOrNull = (value: string | number): number | null => {
+        if (value === '' || value === null || value === undefined) {
+            return null;
+        }
+        const parsed = parseFloat(String(value));
+        return isNaN(parsed) ? null : parsed;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -57,8 +66,8 @@ export default function CreateEventPage() {
                 startDate: startDate.toISOString(),
                 endDate: endDate.toISOString(),
                 location: formData.location,
-                latitude: formData.latitude !== '' ? parseFloat(formData.latitude) : null,
-                longitude: formData.longitude !== '' ? parseFloat(formData.longitude) : null,
+                latitude: parseFloatOrNull(formData.latitude),
+                longitude: parseFloatOrNull(formData.longitude),
                 venue: formData.venue,
                 imageUrl: formData.imageUrl || null,
                 guests: formData.guests || null,
@@ -67,11 +76,11 @@ export default function CreateEventPage() {
                 capacity: Number(formData.capacity),
                 maleCapacity: Number(formData.maleCapacity),
                 femaleCapacity: Number(formData.femaleCapacity),
-                priceFullEventFood: formData.priceFullEventFood !== '' ? parseFloat(formData.priceFullEventFood) : null,
-                priceFullEventAccommodation: formData.priceFullEventAccommodation !== '' ? parseFloat(formData.priceFullEventAccommodation) : null,
-                priceFullEventBoth: formData.priceFullEventBoth !== '' ? parseFloat(formData.priceFullEventBoth) : null,
-                priceDailyFood: formData.priceDailyFood !== '' ? parseFloat(formData.priceDailyFood) : null,
-                priceDailyNoFood: formData.priceDailyNoFood !== '' ? parseFloat(formData.priceDailyNoFood) : null,
+                priceFullEventFood: parseFloatOrNull(formData.priceFullEventFood),
+                priceFullEventAccommodation: parseFloatOrNull(formData.priceFullEventAccommodation),
+                priceFullEventBoth: parseFloatOrNull(formData.priceFullEventBoth),
+                priceDailyFood: parseFloatOrNull(formData.priceDailyFood),
+                priceDailyNoFood: parseFloatOrNull(formData.priceDailyNoFood),
             };
 
             // Make API call to create event
