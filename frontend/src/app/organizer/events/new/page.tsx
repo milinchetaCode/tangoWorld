@@ -57,8 +57,8 @@ export default function CreateEventPage() {
                 startDate: startDate.toISOString(),
                 endDate: endDate.toISOString(),
                 location: formData.location,
-                latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-                longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+                latitude: formData.latitude !== '' ? parseFloat(formData.latitude) : null,
+                longitude: formData.longitude !== '' ? parseFloat(formData.longitude) : null,
                 venue: formData.venue,
                 imageUrl: formData.imageUrl || null,
                 guests: formData.guests || null,
@@ -67,11 +67,11 @@ export default function CreateEventPage() {
                 capacity: Number(formData.capacity),
                 maleCapacity: Number(formData.maleCapacity),
                 femaleCapacity: Number(formData.femaleCapacity),
-                priceFullEventFood: formData.priceFullEventFood ? parseFloat(formData.priceFullEventFood) : null,
-                priceFullEventAccommodation: formData.priceFullEventAccommodation ? parseFloat(formData.priceFullEventAccommodation) : null,
-                priceFullEventBoth: formData.priceFullEventBoth ? parseFloat(formData.priceFullEventBoth) : null,
-                priceDailyFood: formData.priceDailyFood ? parseFloat(formData.priceDailyFood) : null,
-                priceDailyNoFood: formData.priceDailyNoFood ? parseFloat(formData.priceDailyNoFood) : null,
+                priceFullEventFood: formData.priceFullEventFood !== '' ? parseFloat(formData.priceFullEventFood) : null,
+                priceFullEventAccommodation: formData.priceFullEventAccommodation !== '' ? parseFloat(formData.priceFullEventAccommodation) : null,
+                priceFullEventBoth: formData.priceFullEventBoth !== '' ? parseFloat(formData.priceFullEventBoth) : null,
+                priceDailyFood: formData.priceDailyFood !== '' ? parseFloat(formData.priceDailyFood) : null,
+                priceDailyNoFood: formData.priceDailyNoFood !== '' ? parseFloat(formData.priceDailyNoFood) : null,
             };
 
             // Make API call to create event
