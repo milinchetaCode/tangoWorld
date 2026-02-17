@@ -32,8 +32,8 @@ export class UsersService {
   async requestOrganizer(id: string): Promise<User> {
     // Set organizerStatus to 'pending' - requires manual admin approval.
     // Users can only request organizer status for themselves (verified in controller).
-    // Admins can approve pending organizers using the update-organizer.ts script:
-    //   npx ts-node prisma/update-organizer.ts
+    // Admins can approve pending organizers using the approve-organizer.ts script:
+    //   npx ts-node prisma/approve-organizer.ts user@example.com
     // After approval, users must log out and log back in to refresh their JWT token.
     return this.prisma.user.update({
       where: { id },
