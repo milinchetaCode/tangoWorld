@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin } from 'lucide-react';
-import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
-import { getApiUrl } from '@/lib/api';
 
 // Fix for default marker icons in Leaflet
 const iconPrototype = L.Icon.Default.prototype as L.Icon & {
@@ -35,96 +33,12 @@ interface EventMapProps {
 export default function EventMap({ events }: EventMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [geocodedEvents, setGeocodedEvents] = useState<Event[]>([]);
-  const [isGeocoding, setIsGeocoding] = useState(false);
-
-  // Function to save coordinates to the backend
-  const saveCoordinates = async (eventId: string, latitude: number, longitude: number) => {
-    try {
-      const token = localStorage.getItem('token');
-      const apiUrl = getApiUrl(`/events/${eventId}/coordinates`);
-      const response = await fetch(apiUrl, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` }),
-        },
-        body: JSON.stringify({ latitude, longitude }),
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Failed to save coordinates for event ${eventId}: ${response.status} ${errorText}`);
-      }
-    } catch (error) {
-      console.error(`Error saving coordinates for event ${eventId}:`, error);
-      // Don't throw - we want to continue even if saving fails
-    }
-  };
-
-  useEffect(() => {
-    // Geocode events that don't have coordinates
-    let isMounted = true;
-    
-    async function geocodeEvents() {
-      if (!isMounted) return;
-      setIsGeocoding(true);
-      
-      const eventsToGeocode = events.filter(e => !e.latitude || !e.longitude);
-      const eventsWithCoords = events.filter(e => e.latitude && e.longitude);
-      
-      if (eventsToGeocode.length === 0) {
-        if (isMounted) {
-          setGeocodedEvents(events);
-          setIsGeocoding(false);
-        }
-        return;
-      }
-
-      // Process events sequentially to respect rate limits (1 req/sec for Nominatim)
-      const geocodedResults = [];
-      for (let i = 0; i < eventsToGeocode.length; i++) {
-        if (!isMounted) break; // Stop processing if unmounted
-        
-        const event = eventsToGeocode[i];
-        const coords = await geocodeLocation(event.location);
-        
-        if (coords) {
-          geocodedResults.push({
-            ...event,
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-          });
-          // Save coordinates to backend for future use (non-blocking)
-          saveCoordinates(event.id, coords.latitude, coords.longitude);
-        } else {
-          geocodedResults.push(event);
-        }
-        
-        // Add delay between requests (except for the last one)
-        if (i < eventsToGeocode.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, GEOCODING_DELAY_MS));
-        }
-      }
-
-      if (isMounted) {
-        setGeocodedEvents([...eventsWithCoords, ...geocodedResults]);
-        setIsGeocoding(false);
-      }
-    }
-
-    geocodeEvents();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [events]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapContainerRef.current) return;
 
     // Filter events with coordinates
-    const eventsWithCoords = geocodedEvents.filter(e => e.latitude && e.longitude);
+    const eventsWithCoords = events.filter(e => e.latitude && e.longitude);
 
     if (eventsWithCoords.length === 0) {
       return;
@@ -187,25 +101,14 @@ export default function EventMap({ events }: EventMapProps) {
         mapRef.current = null;
       }
     };
-  }, [geocodedEvents]);
+  }, [events]);
 
   // Filter events with coordinates
-  const eventsWithCoords = geocodedEvents.filter(e => e.latitude && e.longitude);
-  const eventsWithoutCoords = geocodedEvents.length - eventsWithCoords.length;
+  const eventsWithCoords = events.filter(e => e.latitude && e.longitude);
+  const eventsWithoutCoords = events.length - eventsWithCoords.length;
 
   return (
     <div className="space-y-4">
-      {isGeocoding && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-          <p className="flex items-start gap-2">
-            <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-            <span>
-              Geocoding event locations... This may take a moment for events without coordinates.
-            </span>
-          </p>
-        </div>
-      )}
-      
       {eventsWithoutCoords > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
           <p className="flex items-start gap-2">

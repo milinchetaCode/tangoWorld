@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
+import { geocodeLocation } from '@/lib/geocoding';
 
 export default function CreateEventPage() {
     const router = useRouter();
@@ -31,6 +32,8 @@ export default function CreateEventPage() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isGeocoding, setIsGeocoding] = useState(false);
+    const [geocodingError, setGeocodingError] = useState<string | null>(null);
 
     // Helper function to safely parse float values
     const parseFloatOrNull = (value: string | number): number | null => {
@@ -40,6 +43,54 @@ export default function CreateEventPage() {
         const parsed = parseFloat(String(value));
         return isNaN(parsed) ? null : parsed;
     };
+
+    // Automatically geocode location when it changes
+    useEffect(() => {
+        let isMounted = true;
+
+        const geocodeLocationField = async () => {
+            const location = formData.location.trim();
+            
+            // Only geocode if location is provided and coordinates are not manually set
+            if (!location || (formData.latitude !== '' && formData.longitude !== '')) {
+                return;
+            }
+
+            setIsGeocoding(true);
+            setGeocodingError(null);
+
+            try {
+                const coords = await geocodeLocation(location);
+                
+                if (coords && isMounted) {
+                    setFormData(prev => ({
+                        ...prev,
+                        latitude: coords.latitude.toString(),
+                        longitude: coords.longitude.toString(),
+                    }));
+                } else if (isMounted) {
+                    setGeocodingError('Could not find coordinates for this location. You can enter them manually.');
+                }
+            } catch (error) {
+                if (isMounted) {
+                    console.error('Error geocoding location:', error);
+                    setGeocodingError('Error geocoding location. You can enter coordinates manually.');
+                }
+            } finally {
+                if (isMounted) {
+                    setIsGeocoding(false);
+                }
+            }
+        };
+
+        // Debounce the geocoding to avoid too many API calls
+        const timeoutId = setTimeout(geocodeLocationField, 1000);
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
+    }, [formData.location]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -237,6 +288,18 @@ export default function CreateEventPage() {
                                         className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
+                                {isGeocoding && (
+                                    <p className="mt-2 text-xs text-blue-600 flex items-center gap-1">
+                                        <span className="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></span>
+                                        Finding coordinates...
+                                    </p>
+                                )}
+                                {geocodingError && (
+                                    <p className="mt-2 text-xs text-amber-600">{geocodingError}</p>
+                                )}
+                                {!isGeocoding && formData.latitude && formData.longitude && formData.location && (
+                                    <p className="mt-2 text-xs text-green-600">✓ Coordinates found automatically</p>
+                                )}
                             </div>
 
                             <div>
