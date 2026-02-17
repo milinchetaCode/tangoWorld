@@ -178,6 +178,15 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                             Total Capacity: {acceptedCount} / {event.capacity} • Paid: {paidCount} / {acceptedCount}
                         </p>
                     </div>
+                    <div className="mt-4 flex md:ml-4 md:mt-0">
+                        <button
+                            onClick={() => router.push(`/organizer/events/${id}/business`)}
+                            className="inline-flex items-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+                        >
+                            <DollarSign className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+                            Business Dashboard
+                        </button>
+                    </div>
                 </div>
             </div>
 
