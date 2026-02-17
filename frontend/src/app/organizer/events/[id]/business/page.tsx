@@ -351,7 +351,7 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
                                         <Cell key={`cell-${index}`} fill={entry.fill} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+                                <Tooltip formatter={(value: number | undefined) => `$${(value ?? 0).toFixed(2)}`} />
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
@@ -382,7 +382,7 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+                                <Tooltip formatter={(value: number | undefined) => `$${(value ?? 0).toFixed(2)}`} />
                                 <Legend />
                             </PieChart>
                         </ResponsiveContainer>
@@ -402,7 +402,7 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
                         <YAxis />
-                        <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+                        <Tooltip formatter={(value: number | undefined) => `$${(value ?? 0).toFixed(2)}`} />
                         <Bar dataKey="value" fill="#8884d8">
                             {profitChartData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
