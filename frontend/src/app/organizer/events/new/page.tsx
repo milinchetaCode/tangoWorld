@@ -34,6 +34,7 @@ export default function CreateEventPage() {
     const [error, setError] = useState<string | null>(null);
     const [isGeocoding, setIsGeocoding] = useState(false);
     const [geocodingError, setGeocodingError] = useState<string | null>(null);
+    const [manualCoordinates, setManualCoordinates] = useState(false);
 
     // Helper function to safely parse float values
     const parseFloatOrNull = (value: string | number): number | null => {
@@ -51,8 +52,8 @@ export default function CreateEventPage() {
         const geocodeLocationField = async () => {
             const location = formData.location.trim();
             
-            // Only geocode if location is provided and coordinates are not manually set
-            if (!location || (formData.latitude !== '' && formData.longitude !== '')) {
+            // Only geocode if location is provided and coordinates were not manually set
+            if (!location || manualCoordinates) {
                 return;
             }
 
@@ -90,7 +91,7 @@ export default function CreateEventPage() {
             isMounted = false;
             clearTimeout(timeoutId);
         };
-    }, [formData.location]);
+    }, [formData.location, manualCoordinates]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -168,6 +169,12 @@ export default function CreateEventPage() {
         const { name, value, type } = e.target;
         // Convert to number for number inputs
         const finalValue = type === 'number' ? (value === '' ? 0 : Number(value)) : value;
+        
+        // Mark coordinates as manual if user is editing them
+        if (name === 'latitude' || name === 'longitude') {
+            setManualCoordinates(true);
+        }
+        
         setFormData(prev => ({ ...prev, [name]: finalValue }));
     };
 
