@@ -40,6 +40,19 @@ For a user to be a full organizer:
 
 ## Admin Process
 
+### Checking User Status
+To check a user's current status:
+
+```bash
+cd backend
+npx ts-node prisma/check-user-status.ts user@example.com
+```
+
+This will show:
+- User's current role and organizer status
+- Whether they can create events
+- What actions need to be taken
+
 ### Viewing Pending Requests
 Administrators can query pending organizers:
 
@@ -52,7 +65,19 @@ ORDER BY created_at DESC;
 
 ### Approving a Request
 
-#### Method 1: Update Script (Recommended)
+#### Method 1: Approval Script (Easiest)
+```bash
+cd backend
+npx ts-node prisma/approve-organizer.ts user@example.com
+```
+
+This script will:
+- Check if the user exists
+- Show current status
+- Update to `organizerStatus: 'approved'`
+- Display next steps for the user
+
+#### Method 2: Update Script
 1. Edit `/backend/prisma/update-organizer.ts` 
 2. Change the email on line 10 to the user's email
 3. Run:
@@ -61,14 +86,14 @@ cd backend
 npx ts-node prisma/update-organizer.ts
 ```
 
-#### Method 2: Direct SQL
+#### Method 3: Direct SQL
 ```sql
 UPDATE users 
 SET organizer_status = 'approved' 
 WHERE email = 'user@example.com';
 ```
 
-#### Method 3: Prisma Studio
+#### Method 4: Prisma Studio
 ```bash
 cd backend
 npx prisma studio

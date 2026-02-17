@@ -3,6 +3,22 @@
 ## Overview
 When users request to become organizers on the platform, they submit a request that sets their `organizerStatus` to `"pending"`. An administrator must manually approve these requests before users can create and manage events.
 
+## Quick Start for Admins
+
+### Check a User's Status
+```bash
+cd backend
+npx ts-node prisma/check-user-status.ts user@example.com
+```
+
+### Approve a Pending Organizer
+```bash
+cd backend
+npx ts-node prisma/approve-organizer.ts user@example.com
+```
+
+That's it! The user must then log out and log back in to access organizer features.
+
 ## User Roles and Status
 
 ### User Model Fields
