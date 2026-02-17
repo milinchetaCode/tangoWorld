@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { EventCostsModule } from './event-costs/event-costs.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ApplicationsModule } from './applications/applications.module';
     AuthModule,
     EventsModule,
     ApplicationsModule,
+    EventCostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
