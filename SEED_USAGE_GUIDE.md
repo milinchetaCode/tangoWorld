@@ -4,9 +4,10 @@
 The seed script (`backend/prisma/seed.ts`) is a development tool that populates the database with sample data for testing and development purposes.
 
 ## 🛡️ Production Safety
-**The seed script now includes environment protection** to prevent accidental execution in production:
-- The script checks `NODE_ENV` and **refuses to run if set to "production"**
-- This provides an additional safety layer beyond removing it from deployment commands
+**Multiple layers of protection prevent accidental data loss:**
+1. The seed configuration has been **removed from package.json** - Prisma will not automatically run the seed during any operations
+2. The seed script includes environment protection - it refuses to run if `NODE_ENV=production`
+3. The seed command has been removed from the deployment pipeline in render.yaml
 
 ## ⚠️ Important: Seed Script Behavior
 The seed script **deletes all existing events and applications** before inserting sample data:
@@ -20,18 +21,14 @@ This is **intentional for development** but **destructive for production data**.
 
 ## Usage
 
-### For Development
-Run the seed script manually when you need sample data:
+### For Development (Manual Execution Only)
+Since the seed configuration has been removed from package.json, you need to run it manually with ts-node:
 ```bash
 cd backend
-npx prisma db seed
+npx ts-node prisma/seed.ts
 ```
 
-Or via package.json:
-```bash
-cd backend
-npm run prisma db seed
-```
+**Note:** Make sure NODE_ENV is not set to "production" or the script will refuse to run.
 
 ### For Production
 **❌ DO NOT run the seed script in production!**
@@ -112,7 +109,9 @@ If you see an error like `❌ ERROR: Cannot run seed script in production enviro
 ### "I need to reset my development database"
 ```bash
 cd backend
-npx prisma migrate reset  # This will drop the database, run migrations, and seed
+npx prisma migrate reset  # This will drop the database and run migrations
+# If you need sample data, manually run the seed after:
+npx ts-node prisma/seed.ts
 ```
 
 ### "I want to add initial data to production"
