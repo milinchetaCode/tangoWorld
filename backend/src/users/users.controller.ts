@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthService } from '../auth/auth.service';
 
 interface UpdateProfileDto {
   city?: string;
@@ -19,16 +20,29 @@ interface UpdateProfileDto {
 }
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/request-organizer')
   async requestOrganizer(@Param('id') id: string, @Request() req: any) {
     // Simple security check: Ensure user can only request for themselves
     if (req.user.userId !== id) {
-      throw new Error('Unauthorized');
+      throw new UnauthorizedException('Unauthorized');
     }
-    return this.usersService.requestOrganizer(id);
+    
+    const updatedUser = await this.usersService.requestOrganizer(id);
+    
+    // Generate a new JWT token with updated organizerStatus
+    // This allows the frontend to immediately reflect the change without re-login
+    const loginResponse = await this.authService.login(updatedUser);
+    
+    return {
+      user: updatedUser,
+      access_token: loginResponse.access_token,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
