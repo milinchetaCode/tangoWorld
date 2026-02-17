@@ -152,18 +152,25 @@ function OrganizerDashboard() {
                                             <span>{percentFull}% Full</span>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-3 gap-2">
                                             <Link
                                                 href={`/events/${event.id}`}
-                                                className="flex justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
+                                                className="flex justify-center rounded-xl bg-white px-2 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
                                             >
                                                 View
                                             </Link>
                                             <Link
                                                 href={`/organizer/events/${event.id}/manage`}
-                                                className="flex justify-center rounded-xl bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
+                                                className="flex justify-center rounded-xl bg-slate-900 px-2 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
                                             >
                                                 Manage
+                                            </Link>
+                                            <Link
+                                                href={`/organizer/events/${event.id}/business`}
+                                                className="flex justify-center rounded-xl bg-rose-600 px-2 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500"
+                                                title="Business Dashboard"
+                                            >
+                                                Business
                                             </Link>
                                         </div>
                                     </div>
