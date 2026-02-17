@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
-import { geocodeLocation } from '@/lib/geocoding';
+import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
+
+// Debounce delay for geocoding user input (slightly shorter than API rate limit)
+const GEOCODING_DEBOUNCE_MS = 1000;
 
 export default function CreateEventPage() {
     const router = useRouter();
@@ -85,7 +88,7 @@ export default function CreateEventPage() {
         };
 
         // Debounce the geocoding to avoid too many API calls
-        const timeoutId = setTimeout(geocodeLocationField, 1000);
+        const timeoutId = setTimeout(geocodeLocationField, GEOCODING_DEBOUNCE_MS);
 
         return () => {
             isMounted = false;
