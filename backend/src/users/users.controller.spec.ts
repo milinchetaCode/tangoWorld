@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { AuthService } from '../auth/auth.service';
 import { UnauthorizedException, BadRequestException } from '@nestjs/common';
 
 describe('UsersController', () => {
@@ -11,6 +12,10 @@ describe('UsersController', () => {
     requestOrganizer: jest.fn(),
   };
 
+  const mockAuthService = {
+    login: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
@@ -18,6 +23,10 @@ describe('UsersController', () => {
         {
           provide: UsersService,
           useValue: mockUsersService,
+        },
+        {
+          provide: AuthService,
+          useValue: mockAuthService,
         },
       ],
     }).compile();
@@ -131,6 +140,56 @@ describe('UsersController', () => {
 
       expect(mockUsersService.updateProfile).toHaveBeenCalledWith(userId, updateData);
       expect(result.dietaryNeeds).toBe('vegan');
+    });
+  });
+
+  describe('requestOrganizer', () => {
+    const userId = 'test-user-id';
+    const mockUser = {
+      id: userId,
+      email: 'test@example.com',
+      name: 'John',
+      surname: 'Doe',
+      city: 'New York',
+      gender: 'male',
+      dietaryNeeds: 'none',
+      role: 'organizer',
+      organizerStatus: 'pending',
+      passwordHash: 'hash',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    it('should request organizer status and return new token', async () => {
+      const req = { user: { userId } };
+      const mockToken = 'new-jwt-token';
+
+      mockUsersService.requestOrganizer.mockResolvedValue(mockUser);
+      mockAuthService.login.mockResolvedValue({
+        access_token: mockToken,
+        user: mockUser,
+      });
+
+      const result = await controller.requestOrganizer(userId, req);
+
+      expect(mockUsersService.requestOrganizer).toHaveBeenCalledWith(userId);
+      expect(mockAuthService.login).toHaveBeenCalledWith(mockUser);
+      expect(result).toEqual({
+        user: mockUser,
+        access_token: mockToken,
+      });
+      expect(result.user.organizerStatus).toBe('pending');
+    });
+
+    it('should throw UnauthorizedException if user tries to request for another user', async () => {
+      const req = { user: { userId: 'different-user-id' } };
+
+      await expect(
+        controller.requestOrganizer(userId, req),
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(mockUsersService.requestOrganizer).not.toHaveBeenCalled();
+      expect(mockAuthService.login).not.toHaveBeenCalled();
     });
   });
 });

@@ -68,10 +68,12 @@ function ProfilePage() {
 
             if (!res.ok) throw new Error('Failed to request organizer status');
 
-            const updatedUser = { ...user, organizerStatus: 'pending' };
-            setUser(updatedUser);
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-            setMessage('Your request for organizer status has been submitted and is pending approval.');
+            // The API returns both the updated user and a new JWT token
+            const data = await res.json();
+            setUser(data.user);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            localStorage.setItem('token', data.access_token);
+            setMessage('Your request for organizer status has been submitted and is pending approval. Please contact an administrator for approval.');
         } catch {
             setMessage('Error submitting request. Please try again.');
         } finally {
