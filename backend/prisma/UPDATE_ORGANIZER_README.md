@@ -5,7 +5,13 @@ When users request to become organizers on the platform, they submit a request t
 
 ## Quick Start for Admins
 
-### Check a User's Status
+### List All Users Waiting for Approval
+```bash
+cd backend
+npx ts-node prisma/list-pending-organizers.ts
+```
+
+### Check a Specific User's Status
 ```bash
 cd backend
 npx ts-node prisma/check-user-status.ts user@example.com
@@ -18,6 +24,8 @@ npx ts-node prisma/approve-organizer.ts user@example.com
 ```
 
 That's it! The user must then log out and log back in to access organizer features.
+
+> **For detailed command documentation and examples, see [SHELL_COMMANDS.md](../SHELL_COMMANDS.md)**
 
 ## User Roles and Status
 
@@ -41,7 +49,20 @@ That's it! The user must then log out and log back in to access organizer featur
 
 ### How to Approve a Pending Organizer
 
-#### Option 1: Approval Script (Recommended - Easiest)
+#### Option 1: List All Pending Organizers (Recommended - Start Here)
+See all users waiting for approval:
+
+```bash
+cd backend
+npx ts-node prisma/list-pending-organizers.ts
+```
+
+This script will:
+- Show all users with `organizerStatus: 'pending'`
+- Display their name, email, city, and request date
+- Provide the exact command to approve each user
+
+#### Option 2: Approval Script (Easiest for Single User)
 Use the approval script which handles everything automatically:
 
 ```bash
@@ -55,7 +76,7 @@ This script will:
 - Update them to `organizerStatus: 'approved'`
 - Display clear next steps
 
-#### Option 2: Check and Update Script
+#### Option 3: Check and Update Script
 First check the user's status, then use the update script:
 
 ```bash
@@ -70,7 +91,7 @@ npx ts-node prisma/update-organizer.ts
 
 **Note**: The `update-organizer.ts` script requires manual editing to change the email address (line 10).
 
-#### Option 3: Direct Database Update
+#### Option 4: Direct Database Update
 If you have database access, you can update users directly:
 
 ```sql
@@ -85,7 +106,7 @@ SET organizer_status = 'approved'
 WHERE email = 'user@example.com';
 ```
 
-#### Option 4: Use Prisma Studio (Visual Interface)
+#### Option 5: Use Prisma Studio (Visual Interface)
 ```bash
 cd backend
 npx prisma studio
