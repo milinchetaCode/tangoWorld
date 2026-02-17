@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
+import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
+
+// Debounce delay for geocoding user input (longer than API rate limit for safety)
+const GEOCODING_DEBOUNCE_MS = 1500;
 
 export default function CreateEventPage() {
     const router = useRouter();
@@ -31,6 +35,10 @@ export default function CreateEventPage() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isGeocoding, setIsGeocoding] = useState(false);
+    const [geocodingError, setGeocodingError] = useState<string | null>(null);
+    const [manualCoordinates, setManualCoordinates] = useState(false);
+    const [autoGeocodedSuccess, setAutoGeocodedSuccess] = useState(false);
 
     // Helper function to safely parse float values
     const parseFloatOrNull = (value: string | number): number | null => {
@@ -40,6 +48,58 @@ export default function CreateEventPage() {
         const parsed = parseFloat(String(value));
         return isNaN(parsed) ? null : parsed;
     };
+
+    // Automatically geocode location when it changes
+    useEffect(() => {
+        let isMounted = true;
+
+        const geocodeLocationField = async () => {
+            const location = formData.location.trim();
+            
+            // Only geocode if location is provided and coordinates were not manually set
+            if (!location || manualCoordinates) {
+                return;
+            }
+
+            setIsGeocoding(true);
+            setGeocodingError(null);
+            setAutoGeocodedSuccess(false);
+
+            try {
+                const coords = await geocodeLocation(location);
+                
+                if (coords && isMounted) {
+                    setFormData(prev => ({
+                        ...prev,
+                        latitude: coords.latitude.toString(),
+                        longitude: coords.longitude.toString(),
+                    }));
+                    setAutoGeocodedSuccess(true);
+                } else if (isMounted) {
+                    setGeocodingError('Could not find coordinates for this location. You can enter them manually.');
+                }
+            } catch (error) {
+                if (isMounted) {
+                    console.error('Error geocoding location:', error);
+                    setGeocodingError('Error geocoding location. You can enter coordinates manually.');
+                }
+            } finally {
+                if (isMounted) {
+                    setIsGeocoding(false);
+                }
+            }
+        };
+
+        // Debounce the geocoding to avoid too many API calls
+        const timeoutId = setTimeout(geocodeLocationField, GEOCODING_DEBOUNCE_MS);
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
+        // Note: setFormData, setGeocodingError, setAutoGeocodedSuccess, and setIsGeocoding
+        // are stable functions from useState and don't need to be in the dependency array
+    }, [formData.location, manualCoordinates]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -117,6 +177,19 @@ export default function CreateEventPage() {
         const { name, value, type } = e.target;
         // Convert to number for number inputs
         const finalValue = type === 'number' ? (value === '' ? 0 : Number(value)) : value;
+        
+        // Mark coordinates as manual if user is editing them
+        if (name === 'latitude' || name === 'longitude') {
+            setManualCoordinates(true);
+            setAutoGeocodedSuccess(false);
+        }
+        
+        // Reset manual coordinates flag if location changes (allow re-geocoding)
+        if (name === 'location') {
+            setManualCoordinates(false);
+            setAutoGeocodedSuccess(false);
+        }
+        
         setFormData(prev => ({ ...prev, [name]: finalValue }));
     };
 
@@ -237,6 +310,18 @@ export default function CreateEventPage() {
                                         className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                                     />
                                 </div>
+                                {isGeocoding && (
+                                    <p className="mt-2 text-xs text-blue-600 flex items-center gap-1">
+                                        <span className="inline-block animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600"></span>
+                                        Finding coordinates...
+                                    </p>
+                                )}
+                                {geocodingError && (
+                                    <p className="mt-2 text-xs text-amber-600">{geocodingError}</p>
+                                )}
+                                {!isGeocoding && autoGeocodedSuccess && formData.latitude && formData.longitude && (
+                                    <p className="mt-2 text-xs text-green-600">✓ Coordinates found automatically</p>
+                                )}
                             </div>
 
                             <div>
