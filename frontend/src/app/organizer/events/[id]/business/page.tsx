@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useCallback } from 'react';
 import { ArrowLeft, DollarSign, TrendingUp, TrendingDown, Users, CreditCard, PlusCircle, Trash2 } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
@@ -53,7 +53,7 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
         date: new Date().toISOString().split('T')[0],
     });
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             router.push('/login');
@@ -87,12 +87,11 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [id, router]);
 
     useEffect(() => {
         fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, router]);
+    }, [fetchData]);
 
     const handleAddCost = async (e: React.FormEvent) => {
         e.preventDefault();
