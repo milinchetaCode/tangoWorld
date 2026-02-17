@@ -6,8 +6,8 @@ import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, Dollar
 import { getApiUrl } from '@/lib/api';
 import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
 
-// Debounce delay for geocoding user input (slightly shorter than API rate limit)
-const GEOCODING_DEBOUNCE_MS = 1000;
+// Debounce delay for geocoding user input (longer than API rate limit for safety)
+const GEOCODING_DEBOUNCE_MS = 1500;
 
 export default function CreateEventPage() {
     const router = useRouter();
@@ -97,6 +97,8 @@ export default function CreateEventPage() {
             isMounted = false;
             clearTimeout(timeoutId);
         };
+        // Note: setFormData, setGeocodingError, setAutoGeocodedSuccess, and setIsGeocoding
+        // are stable functions from useState and don't need to be in the dependency array
     }, [formData.location, manualCoordinates]);
 
     const handleSubmit = async (e: React.FormEvent) => {
