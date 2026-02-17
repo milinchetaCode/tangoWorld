@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EventCostsController, BusinessDashboardController } from './event-costs.controller';
+import {
+  EventCostsController,
+  BusinessDashboardController,
+} from './event-costs.controller';
 import { EventCostsService } from './event-costs.service';
 
 describe('EventCostsController', () => {
