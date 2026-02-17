@@ -52,10 +52,12 @@ The previous implementation auto-approved users when they requested organizer st
 ### 4. Documentation & Tools
 
 #### Created Files
-1. **check-user-status.ts**: Diagnostic tool to check any user's organizer status
-2. **approve-organizer.ts**: Easy-to-use script to approve pending organizers
-3. **UPDATE_ORGANIZER_README.md**: Comprehensive admin guide (updated)
-4. **ORGANIZER_UPDATE_SOLUTION.md**: Complete workflow documentation (updated)
+1. **list-pending-organizers.ts**: Lists all users waiting for organizer approval
+2. **check-user-status.ts**: Diagnostic tool to check any user's organizer status
+3. **approve-organizer.ts**: Easy-to-use script to approve pending organizers
+4. **SHELL_COMMANDS.md**: Comprehensive guide with all shell commands and examples
+5. **UPDATE_ORGANIZER_README.md**: Comprehensive admin guide (updated)
+6. **ORGANIZER_UPDATE_SOLUTION.md**: Complete workflow documentation (updated)
 
 #### Documentation Features
 - Multiple approval methods (script, SQL, Prisma Studio)
@@ -77,11 +79,12 @@ The previous implementation auto-approved users when they requested organizer st
 9. User cannot create events (backend blocks requests)
 
 ### Admin Flow
-1. Admin runs: `npx ts-node prisma/check-user-status.ts user@example.com`
-2. Sees user is pending approval
-3. Admin runs: `npx ts-node prisma/approve-organizer.ts user@example.com`
-4. Database updated to `organizerStatus: "approved"`
-5. Admin notifies user they've been approved
+1. Admin runs: `npx ts-node prisma/list-pending-organizers.ts` (to see all pending users)
+2. Or, admin checks specific user: `npx ts-node prisma/check-user-status.ts user@example.com`
+3. Sees user is pending approval
+4. Admin runs: `npx ts-node prisma/approve-organizer.ts user@example.com`
+5. Database updated to `organizerStatus: "approved"`
+6. Admin notifies user they've been approved
 
 ### After Approval
 1. User logs out and logs back in (gets new JWT token)
@@ -137,8 +140,10 @@ The previous implementation auto-approved users when they requested organizer st
 - `src/users/users.controller.ts` (modified)
 - `src/users/users.module.ts` (modified)
 - `src/users/users.controller.spec.ts` (modified)
+- `prisma/list-pending-organizers.ts` (created)
 - `prisma/check-user-status.ts` (created)
 - `prisma/approve-organizer.ts` (created)
+- `SHELL_COMMANDS.md` (created)
 - `prisma/UPDATE_ORGANIZER_README.md` (updated)
 
 ### Frontend
