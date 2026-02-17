@@ -100,10 +100,10 @@ If you see an error like `❌ ERROR: Cannot run seed script in production enviro
    ```bash
    # Option 1: Unset NODE_ENV
    unset NODE_ENV
-   npx prisma db seed
+   npx ts-node prisma/seed.ts
    
    # Option 2: Set to development
-   NODE_ENV=development npx prisma db seed
+   NODE_ENV=development npx ts-node prisma/seed.ts
    ```
 
 ### "I need to reset my development database"
