@@ -97,7 +97,7 @@ export default function CreateEventPage() {
             isMounted = false;
             clearTimeout(timeoutId);
         };
-    }, [formData.location]);
+    }, [formData.location, manualCoordinates]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -179,6 +179,12 @@ export default function CreateEventPage() {
         // Mark coordinates as manual if user is editing them
         if (name === 'latitude' || name === 'longitude') {
             setManualCoordinates(true);
+            setAutoGeocodedSuccess(false);
+        }
+        
+        // Reset manual coordinates flag if location changes (allow re-geocoding)
+        if (name === 'location') {
+            setManualCoordinates(false);
             setAutoGeocodedSuccess(false);
         }
         
