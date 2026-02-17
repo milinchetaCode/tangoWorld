@@ -4,6 +4,18 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
+    // SAFETY CHECK: Prevent seed from running in production
+    if (process.env.NODE_ENV === 'production') {
+        console.error('❌ ERROR: Cannot run seed script in production environment!');
+        console.error('This script deletes all events and applications.');
+        console.error('Set NODE_ENV to "development" or remove it to run seed script.');
+        process.exit(1);
+    }
+
+    console.log('🌱 Running database seed script...');
+    console.log(`📝 Environment: ${process.env.NODE_ENV || 'not set'}`);
+    console.log('⚠️  WARNING: This will delete all existing events and applications!');
+
     const passwordHash = await bcrypt.hash('password123', 10);
 
     // Users
@@ -103,7 +115,11 @@ async function main() {
         },
     });
 
-    console.log('Seed data created successfully!');
+    console.log('✅ Seed data created successfully!');
+    console.log('📊 Created:');
+    console.log('   - 2 users (organizer@example.com, user@example.com)');
+    console.log('   - 3 events (Berlin Tango Marathon, Paris Spring Festival, Buenos Aires Tango Week)');
+    console.log('   - 1 application');
 }
 
 main()
