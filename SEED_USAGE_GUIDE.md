@@ -3,6 +3,12 @@
 ## Overview
 The seed script (`backend/prisma/seed.ts`) is a development tool that populates the database with sample data for testing and development purposes.
 
+## 🛡️ Production Safety
+**Multiple layers of protection prevent accidental data loss:**
+1. The seed configuration has been **removed from package.json** - Prisma will not automatically run the seed during any operations
+2. The seed script includes environment protection - it refuses to run if `NODE_ENV=production`
+3. The seed command has been removed from the deployment pipeline in render.yaml
+
 ## ⚠️ Important: Seed Script Behavior
 The seed script **deletes all existing events and applications** before inserting sample data:
 ```typescript
@@ -15,18 +21,14 @@ This is **intentional for development** but **destructive for production data**.
 
 ## Usage
 
-### For Development
-Run the seed script manually when you need sample data:
+### For Development (Manual Execution Only)
+Since the seed configuration has been removed from package.json, you need to run it manually with ts-node:
 ```bash
 cd backend
-npx prisma db seed
+npx ts-node prisma/seed.ts
 ```
 
-Or via package.json:
-```bash
-cd backend
-npm run prisma db seed
-```
+**Note:** Make sure NODE_ENV is not set to "production" or the script will refuse to run.
 
 ### For Production
 **❌ DO NOT run the seed script in production!**
@@ -91,10 +93,25 @@ Note: **No seed script** in the start command. This ensures:
 
 ## Troubleshooting
 
+### "The seed script won't run / exits with error"
+If you see an error like `❌ ERROR: Cannot run seed script in production environment!`, this is the safety mechanism working correctly. To run the seed:
+1. Make sure you're in a development environment
+2. Either unset NODE_ENV or set it to "development":
+   ```bash
+   # Option 1: Unset NODE_ENV
+   unset NODE_ENV
+   npx ts-node prisma/seed.ts
+   
+   # Option 2: Set to development
+   NODE_ENV=development npx ts-node prisma/seed.ts
+   ```
+
 ### "I need to reset my development database"
 ```bash
 cd backend
-npx prisma migrate reset  # This will drop the database, run migrations, and seed
+npx prisma migrate reset  # This will drop the database and run migrations
+# If you need sample data, manually run the seed after:
+npx ts-node prisma/seed.ts
 ```
 
 ### "I want to add initial data to production"
@@ -103,7 +120,9 @@ npx prisma migrate reset  # This will drop the database, run migrations, and see
 3. Manually insert data using SQL (not recommended)
 
 ### "I accidentally ran seed in production"
-Unfortunately, if the seed script ran in production, all events and applications were deleted. You'll need to:
+**Good news:** With the new environment protection (added in this fix), the seed script will refuse to run if NODE_ENV=production, preventing data loss.
+
+**If you somehow bypassed this protection**, you'll need to:
 1. Restore from a database backup (if available)
 2. Recreate the data manually
 3. Contact Render support about database backups
