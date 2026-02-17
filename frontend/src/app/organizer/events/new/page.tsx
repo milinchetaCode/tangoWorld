@@ -38,6 +38,7 @@ export default function CreateEventPage() {
     const [isGeocoding, setIsGeocoding] = useState(false);
     const [geocodingError, setGeocodingError] = useState<string | null>(null);
     const [manualCoordinates, setManualCoordinates] = useState(false);
+    const [autoGeocodedSuccess, setAutoGeocodedSuccess] = useState(false);
 
     // Helper function to safely parse float values
     const parseFloatOrNull = (value: string | number): number | null => {
@@ -62,6 +63,7 @@ export default function CreateEventPage() {
 
             setIsGeocoding(true);
             setGeocodingError(null);
+            setAutoGeocodedSuccess(false);
 
             try {
                 const coords = await geocodeLocation(location);
@@ -72,6 +74,7 @@ export default function CreateEventPage() {
                         latitude: coords.latitude.toString(),
                         longitude: coords.longitude.toString(),
                     }));
+                    setAutoGeocodedSuccess(true);
                 } else if (isMounted) {
                     setGeocodingError('Could not find coordinates for this location. You can enter them manually.');
                 }
@@ -94,7 +97,7 @@ export default function CreateEventPage() {
             isMounted = false;
             clearTimeout(timeoutId);
         };
-    }, [formData.location, manualCoordinates]);
+    }, [formData.location]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -176,6 +179,7 @@ export default function CreateEventPage() {
         // Mark coordinates as manual if user is editing them
         if (name === 'latitude' || name === 'longitude') {
             setManualCoordinates(true);
+            setAutoGeocodedSuccess(false);
         }
         
         setFormData(prev => ({ ...prev, [name]: finalValue }));
@@ -307,7 +311,7 @@ export default function CreateEventPage() {
                                 {geocodingError && (
                                     <p className="mt-2 text-xs text-amber-600">{geocodingError}</p>
                                 )}
-                                {!isGeocoding && formData.latitude && formData.longitude && formData.location && (
+                                {!isGeocoding && autoGeocodedSuccess && formData.latitude && formData.longitude && (
                                     <p className="mt-2 text-xs text-green-600">✓ Coordinates found automatically</p>
                                 )}
                             </div>
