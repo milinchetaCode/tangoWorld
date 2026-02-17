@@ -1,72 +1,168 @@
-# User Role Update Solution
+# Organizer Approval Workflow
+
+## Overview
+This document describes the organizer approval workflow on the Tango World platform.
 
 ## Problem
-Update the user `organizer@example.com` to have organizer privileges on the Tango World platform.
+Users need to be able to request organizer privileges, but these requests should require manual approval by administrators before users can create and manage events.
 
 ## Solution
-Created a one-time script that updates the user's role and organizer status in the database.
+Implemented a two-step organizer approval workflow:
 
-## Files Created
+1. **User Request**: Users can request organizer status from their profile page
+2. **Admin Approval**: Administrators manually approve pending requests using database scripts
 
-### 1. `/backend/prisma/update-organizer.ts`
-A TypeScript script that:
-- Connects to the Prisma database
-- Finds the user `organizer@example.com`
-- Updates their `role` to `"organizer"`
-- Updates their `organizerStatus` to `"approved"`
-- Provides clear console output showing before/after status
+## User Flow
 
-### 2. `/backend/prisma/UPDATE_ORGANIZER_README.md`
-Documentation that explains:
-- What the script does
-- Prerequisites for running it
-- Step-by-step instructions
-- Expected output
-- Alternative methods (using seed script)
+### Requesting Organizer Status
+1. User navigates to their profile page (`/profile`)
+2. If their status is `"none"`, they see a "Request Organizer Status" button
+3. User clicks the button and confirms they understand it's for event organizers
+4. Backend updates their status to `"pending"` and issues a new JWT token
+5. User sees "Pending Approval" status on their profile
+6. User cannot create events until approved
 
-## Database Schema Reference
+### After Approval
+1. Administrator approves the user (see Admin Process below)
+2. User must log out and log back in to receive updated JWT token
+3. User sees "Organizer" status and the "Organizer" menu appears in navigation
+4. User can now create and manage events
+
+## Database Schema
 
 The User model has two relevant fields:
-- `role`: String with values "user", "organizer", or "admin" (default: "user")
-- `organizerStatus`: String with values "none", "pending", or "approved" (default: "none")
+- `role`: String - "user", "organizer", or "admin" (default: "user")
+- `organizerStatus`: String - "none", "pending", or "approved" (default: "none")
 
-For a user to be a full organizer, both fields should be set:
+For a user to be a full organizer:
 - `role: "organizer"`
 - `organizerStatus: "approved"`
 
-## How to Use
+## Admin Process
 
-1. Ensure the database is running and accessible
-2. Navigate to the backend directory: `cd backend`
-3. Run the script: `npx ts-node prisma/update-organizer.ts`
+### Viewing Pending Requests
+Administrators can query pending organizers:
 
-The script is:
-- **Idempotent**: Can be run multiple times safely
-- **Safe**: Checks if user exists before updating
-- **Informative**: Shows clear before/after status
+```sql
+SELECT id, email, name, surname, created_at
+FROM users
+WHERE organizer_status = 'pending'
+ORDER BY created_at DESC;
+```
 
-## What the User Can Do After Update
+### Approving a Request
 
-Once updated, `organizer@example.com` can:
+#### Method 1: Update Script (Recommended)
+1. Edit `/backend/prisma/update-organizer.ts` 
+2. Change the email on line 10 to the user's email
+3. Run:
+```bash
+cd backend
+npx ts-node prisma/update-organizer.ts
+```
+
+#### Method 2: Direct SQL
+```sql
+UPDATE users 
+SET organizer_status = 'approved' 
+WHERE email = 'user@example.com';
+```
+
+#### Method 3: Prisma Studio
+```bash
+cd backend
+npx prisma studio
+```
+Navigate to users table and update `organizerStatus` to "approved"
+
+## Files Modified
+
+### Backend
+1. `/backend/src/users/users.service.ts`
+   - Updated `requestOrganizer()` to set `organizerStatus: 'pending'` instead of auto-approving
+   - Added documentation explaining the approval workflow
+
+2. `/backend/src/users/users.controller.ts`
+   - Modified `requestOrganizer()` endpoint to return new JWT token with updated status
+   - Injected `AuthService` to generate new tokens
+
+3. `/backend/src/users/users.module.ts`
+   - Imported `AuthModule` to allow token generation
+
+4. `/backend/src/users/users.controller.spec.ts`
+   - Added tests for `requestOrganizer()` endpoint
+   - Tests verify token refresh and authorization
+
+### Frontend
+1. `/frontend/src/app/profile/page.tsx`
+   - Updated `handleRequestOrganizer()` to accept new JWT token from API
+   - Stores updated token in localStorage immediately
+   - Shows appropriate message about pending approval
+
+### Documentation
+1. `/backend/prisma/UPDATE_ORGANIZER_README.md`
+   - Comprehensive guide for administrators
+   - Multiple approval methods documented
+   - Authorization rules explained
+
+## Authorization Rules
+
+### Frontend Authorization
+- File: `/frontend/src/components/Navbar.tsx`
+- Lines: 57, 109
+- Logic: `user?.organizerStatus === 'approved'`
+- Effect: "Organizer" menu link only shows for approved organizers
+
+### Backend Authorization
+- File: `/backend/src/events/events.controller.ts`
+- Lines: 34, 47, 54
+- Decorator: `@SetMetadata('status', ['approved'])`
+- Guard: `RolesGuard` checks JWT payload's `organizerStatus`
+- Effect: Event creation/editing/deletion requires approved status
+
+## Security
+
+### Request Security
+- Users can only request organizer status for themselves (verified in controller)
+- Endpoint is protected by JWT authentication
+- User ID in JWT must match the ID in request parameters
+
+### Token Security
+- New JWT token issued immediately after status change
+- Token contains updated `organizerStatus` in payload
+- Frontend stores new token to enable immediate UI updates
+- Full authorization still requires login after admin approval
+
+## Current State vs Previous Implementation
+
+### Before (Auto-Approval)
+- Users were automatically approved when requesting organizer status
+- No manual review process
+- `organizerStatus` set to `"approved"` immediately
+
+### After (Manual Approval)
+- Users are set to `"pending"` when requesting organizer status
+- Administrators must manually approve requests
+- Users must re-login after approval to get updated JWT token
+- Clear separation between request and approval
+
+## What Users Can Do After Approval
+
+Approved organizers can:
 - Create new tango events
 - Edit their own events
 - View all applicants for their events
-- Accept, reject, or waitlist applicants
+- Accept, reject, or waitlist applicants  
 - Manage event capacity
 - Mark participants as paid
 - Access the organizer dashboard
 
-## Alternative: Fresh Database Setup
+## Future Enhancements
 
-If starting with a fresh database, the seed script (`prisma/seed.ts`) already creates the `organizer@example.com` user with correct permissions. Simply run:
-```bash
-npx prisma migrate deploy
-npx prisma db seed
-```
-
-## Security Note
-
-This is a manual, one-time administrative action. In production:
-- Only database administrators should run this script
-- The script should be run in a secure environment
-- Consider implementing a proper admin panel for role management in the future
+Consider implementing:
+- Admin dashboard UI for approving/rejecting requests
+- Email notifications when status changes  
+- Audit log of approval actions
+- Token refresh endpoint to avoid re-login requirement
+- Rejection workflow with feedback messages
+- Batch approval functionality
