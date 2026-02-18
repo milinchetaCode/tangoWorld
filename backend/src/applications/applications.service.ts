@@ -127,6 +127,7 @@ export class ApplicationsService {
         eventId: { not: eventId }, // Exclude current event
         event: {
           organizerId: event.organizerId, // Same organizer
+          endDate: { lt: new Date() }, // Only truly past events
         },
       },
       include: {
