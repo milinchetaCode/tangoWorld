@@ -171,6 +171,8 @@ async function main() {
             imageUrl: 'https://images.unsplash.com/photo-1514306191717-452ec28c7814?q=80&w=1000&auto=format&fit=crop',
             priceFullEventNoFoodNoAccommodation: 90.00,
             priceFullEventFood: 140.00,
+            priceFullEventAccommodation: 180.00,
+            priceFullEventBoth: 230.00,
             priceDailyFood: 50.00,
             priceDailyNoFood: 35.00,
             faq: 'Q: Dress code? A: Smart casual, comfortable shoes.\nQ: Can I come alone? A: Absolutely!',
@@ -286,7 +288,9 @@ async function main() {
     console.log('\n✅ Test data created successfully!\n');
     console.log('📊 Summary:');
     console.log('   - 5 test users created');
-    console.log('   - 2 events created for organizer@example.com');
+    console.log('   - 2 paid events created for organizer@example.com with different pricing offers:');
+    console.log('     • Mediterranean Tango Festival: €150-€350 (premium pricing)');
+    console.log('     • Summer Milonga Nights: €90-€230 (budget-friendly pricing)');
     console.log('   - 8 applications created with various statuses:');
     console.log('     • Accepted (paid): 2');
     console.log('     • Accepted (not paid): 1');

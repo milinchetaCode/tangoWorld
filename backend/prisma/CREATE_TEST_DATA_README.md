@@ -48,13 +48,25 @@ All test users have the password: `password123`
    - Location: Barcelona, Spain
    - Date: June 12-14, 2026
    - Capacity: 120 (60 male, 60 female)
-   - Pricing options available (full event and daily)
+   - **Pricing options (Premium Festival):**
+     - Full event basic: €150
+     - Full event + food: €220
+     - Full event + accommodation: €280
+     - Full event + both: €350
+     - Daily + food: €80
+     - Daily basic: €55
 
 2. **Summer Milonga Nights**
    - Location: Valencia, Spain
    - Date: July 20-22, 2026
    - Capacity: 80 (40 male, 40 female)
-   - Pricing options available
+   - **Pricing options (Budget Friendly):**
+     - Full event basic: €90
+     - Full event + food: €140
+     - Full event + accommodation: €180
+     - Full event + both: €230
+     - Daily + food: €50
+     - Daily basic: €35
 
 ## Application Distribution
 
