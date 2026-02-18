@@ -22,7 +22,11 @@ export default function PrintReportPage({ params }: { params: Promise<{ id: stri
 
             try {
                 // Fetch event details
-                const eventRes = await fetch(getApiUrl(`/events/${id}`));
+                const eventRes = await fetch(getApiUrl(`/events/${id}`), {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
                 if (!eventRes.ok) {
                     throw new Error('Failed to fetch event');
                 }
