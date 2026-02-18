@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, use, useCallback } from 'react';
-import { ArrowLeft, DollarSign, TrendingUp, TrendingDown, Users, CreditCard, PlusCircle, Trash2 } from 'lucide-react';
+import { ArrowLeft, DollarSign, TrendingUp, TrendingDown, Users, CreditCard, PlusCircle, Trash2, XCircle } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import toast from 'react-hot-toast';
@@ -166,8 +166,26 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
 
     if (error || !dashboardData) {
         return (
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-                <p className="text-red-600">{error || 'Dashboard data not found'}</p>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+                <div className="text-center py-12 bg-white rounded-2xl ring-1 ring-slate-200">
+                    <XCircle className="mx-auto h-12 w-12 text-red-500" />
+                    <h3 className="mt-4 text-lg font-semibold text-slate-900">Error Loading Dashboard</h3>
+                    <p className="mt-2 text-sm text-slate-500">{error || 'Dashboard data not found'}</p>
+                    <div className="mt-6 flex gap-4 justify-center">
+                        <button
+                            onClick={() => router.back()}
+                            className="inline-flex items-center rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 transition-colors"
+                        >
+                            Go Back
+                        </button>
+                        <button
+                            onClick={() => fetchData()}
+                            className="inline-flex items-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
