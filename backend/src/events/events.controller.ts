@@ -76,4 +76,17 @@ export class EventsController {
       body.longitude,
     );
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @SetMetadata('status', ['approved'])
+  @Patch(':id/publication')
+  updatePublicationStatus(
+    @Param('id') id: string,
+    @Body() body: { isPublished: boolean },
+  ) {
+    if (typeof body.isPublished !== 'boolean') {
+      throw new BadRequestException('isPublished must be a boolean value');
+    }
+    return this.eventsService.updatePublicationStatus(id, body.isPublished);
+  }
 }

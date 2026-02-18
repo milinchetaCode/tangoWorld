@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Event, Prisma } from '@prisma/client';
 
@@ -12,6 +12,9 @@ export class EventsService {
     // Filter by organizerId if provided
     if (organizerId) {
       whereConditions.organizerId = organizerId;
+    } else {
+      // Only show published events for public listing
+      whereConditions.isPublished = true;
     }
 
     // Add search conditions
@@ -105,5 +108,42 @@ export class EventsService {
       }
       throw error;
     }
+  }
+
+  async updatePublicationStatus(id: string, isPublished: boolean) {
+    // Fetch event with applications to check registrations
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      include: {
+        applications: {
+          where: {
+            status: 'accepted',
+          },
+        },
+      },
+    });
+
+    if (!event) {
+      throw new NotFoundException(`Event with ID ${id} not found`);
+    }
+
+    // If trying to unpublish (set to false) and event has accepted applications
+    // We allow it but the frontend will handle disabling registration
+    // The event will remain visible but with registration disabled
+    
+    return this.prisma.event.update({
+      where: { id },
+      data: {
+        isPublished,
+      },
+      include: {
+        applications: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
+      },
+    });
   }
 }
