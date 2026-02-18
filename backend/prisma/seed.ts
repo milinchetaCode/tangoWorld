@@ -5,10 +5,35 @@ const prisma = new PrismaClient();
 
 async function main() {
     // SAFETY CHECK: Prevent seed from running in production
+    // Check 1: NODE_ENV must not be production
     if (process.env.NODE_ENV === 'production') {
         console.error('❌ ERROR: Cannot run seed script in production environment!');
         console.error('This script deletes all events and applications.');
         console.error('Set NODE_ENV to "development" or remove it to run seed script.');
+        process.exit(1);
+    }
+
+    // Check 2: Detect production database URLs (Render, Heroku, AWS RDS, etc.)
+    const databaseUrl = process.env.DATABASE_URL || '';
+    const productionIndicators = [
+        'render.com',
+        '.aws.',
+        'amazonaws.com',
+        'heroku',
+        'production',
+        'prod-',
+        '-prod',
+    ];
+    
+    const isProductionDatabase = productionIndicators.some(indicator => 
+        databaseUrl.toLowerCase().includes(indicator)
+    );
+
+    if (isProductionDatabase) {
+        console.error('❌ ERROR: Cannot run seed script with production database!');
+        console.error('This script deletes all events and applications.');
+        console.error('Production database URL detected. Use a local/development database.');
+        console.error('Database URL contains production indicators.');
         process.exit(1);
     }
 

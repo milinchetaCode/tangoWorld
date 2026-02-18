@@ -4,7 +4,7 @@ services:
     name: tango-backend
     env: node
     rootDir: backend
-    buildCommand: npm install --include=dev && npx prisma generate && npm run build
+    buildCommand: NODE_ENV=production npm install --include=dev && npx prisma generate && npm run build
     startCommand: npx prisma migrate deploy && npx prisma generate && npm run start:prod
     envVars:
       - key: DATABASE_URL
