@@ -46,8 +46,8 @@ export class EventsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @SetMetadata('status', ['approved'])
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any) {
-    return this.eventsService.update(id, body);
+  update(@Param('id') id: string, @Body() body: any, @Request() req: any) {
+    return this.eventsService.update(id, body, req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
