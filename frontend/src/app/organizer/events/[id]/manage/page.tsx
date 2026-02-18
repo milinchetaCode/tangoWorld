@@ -459,7 +459,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                 {application.totalPrice && ` - $${Number(application.totalPrice).toFixed(2)}`}
                                             </p>
                                         )}
-                                        {application.user?.pastEventsWithOrganizer && application.user.pastEventsWithOrganizer.length > 0 && (
+                                        {application.user?.pastEventsWithOrganizer && application.user.pastEventsWithOrganizer.length > 0 ? (
                                             <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
                                                 <p className="text-xs font-medium text-blue-900 mb-1">
                                                     Past participation ({application.user.pastEventsWithOrganizer.length}):
@@ -471,6 +471,12 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                         </li>
                                                     ))}
                                                 </ul>
+                                            </div>
+                                        ) : application.user?.pastEventsWithOrganizer !== undefined && (
+                                            <div className="mt-2">
+                                                <p className="text-xs text-slate-500 italic">
+                                                    First-time participant with this organizer
+                                                </p>
                                             </div>
                                         )}
                                     </div>
