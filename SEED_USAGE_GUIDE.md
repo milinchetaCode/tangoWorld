@@ -11,7 +11,7 @@ The seed script (`backend/prisma/seed.ts`) is a development tool that populates 
    - **Layer 2:** Refuses to run if the DATABASE_URL hostname contains production hosting indicators:
      - `render.com` (Render platform)
      - `amazonaws.com` (AWS services including RDS)
-     - `heroku` or `.herokuapp.com` (Heroku platform)
+     - `herokuapp.com` (Heroku platform)
 3. The seed command has been removed from the deployment pipeline in render.yaml
 4. The render.yaml explicitly sets `NODE_ENV=production` in the buildCommand (not just runtime envVars) to ensure the protection is active from the very start of deployment
 

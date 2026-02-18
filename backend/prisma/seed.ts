@@ -37,8 +37,7 @@ async function main() {
     const productionIndicators = [
         'render.com',
         'amazonaws.com',  // Covers *.amazonaws.com including *.rds.amazonaws.com
-        'heroku',
-        '.herokuapp.com',
+        'herokuapp.com',  // Covers *.herokuapp.com
     ];
     
     const isProductionDatabase = productionIndicators.some(indicator => 
