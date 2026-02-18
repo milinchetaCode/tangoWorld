@@ -199,7 +199,10 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             'daily_food': 'Daily Rate with Food',
             'daily_no_food': 'Daily Rate (No Food)',
         };
-        return optionMap[option] || option.replace(/_/g, ' ');
+        // If not in map, capitalize each word for consistency
+        return optionMap[option] || option.split('_').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
     };
 
     if (isLoading) {
@@ -475,7 +478,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                     )}
                                                     {application.totalPrice && (
                                                         <span className="ml-2 font-semibold text-purple-700">
-                                                            ${Number(application.totalPrice).toFixed(2)}
+                                                            ${typeof application.totalPrice === 'number' ? application.totalPrice.toFixed(2) : Number(application.totalPrice).toFixed(2)}
                                                         </span>
                                                     )}
                                                 </div>
