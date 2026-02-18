@@ -91,7 +91,17 @@ export class ApplicationsService {
   }
 
   async findAllForEvent(eventId: string) {
-    return this.prisma.application.findMany({
+    // First, get the event to know the organizer
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      select: { organizerId: true },
+    });
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    const applications = await this.prisma.application.findMany({
       where: { eventId },
       include: {
         user: {
@@ -106,6 +116,61 @@ export class ApplicationsService {
         },
       },
     });
+
+    // Optimize: Fetch all past events for all users in a single query
+    const userIds = applications.map((app) => app.userId);
+    
+    const allPastEvents = await this.prisma.application.findMany({
+      where: {
+        userId: { in: userIds },
+        status: 'accepted',
+        eventId: { not: eventId }, // Exclude current event
+        event: {
+          organizerId: event.organizerId, // Same organizer
+          endDate: { lt: new Date() }, // Only truly past events
+        },
+      },
+      include: {
+        event: {
+          select: {
+            id: true,
+            title: true,
+            startDate: true,
+            endDate: true,
+          },
+        },
+      },
+      orderBy: {
+        event: {
+          startDate: 'desc',
+        },
+      },
+    });
+
+    // Group past events by userId
+    const pastEventsByUser = allPastEvents.reduce((acc, pe) => {
+      if (!acc[pe.userId]) {
+        acc[pe.userId] = [];
+      }
+      acc[pe.userId].push({
+        id: pe.event.id,
+        title: pe.event.title,
+        startDate: pe.event.startDate,
+        endDate: pe.event.endDate,
+      });
+      return acc;
+    }, {} as Record<string, Array<{ id: string; title: string; startDate: Date; endDate: Date }>>);
+
+    // Enrich applications with past events data
+    const applicationsWithHistory = applications.map((application) => ({
+      ...application,
+      user: {
+        ...application.user,
+        pastEventsWithOrganizer: pastEventsByUser[application.userId] || [],
+      },
+    }));
+
+    return applicationsWithHistory;
   }
 
   async findUserApplications(userId: string) {

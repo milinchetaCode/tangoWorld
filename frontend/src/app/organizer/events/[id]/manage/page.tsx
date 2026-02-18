@@ -459,6 +459,26 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                 {application.totalPrice && ` - $${Number(application.totalPrice).toFixed(2)}`}
                                             </p>
                                         )}
+                                        {application.user?.pastEventsWithOrganizer && application.user.pastEventsWithOrganizer.length > 0 ? (
+                                            <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
+                                                <p className="text-xs font-medium text-blue-900 mb-1">
+                                                    Past participation ({application.user.pastEventsWithOrganizer.length}):
+                                                </p>
+                                                <ul className="space-y-1">
+                                                    {application.user.pastEventsWithOrganizer.map((event) => (
+                                                        <li key={event.id} className="text-xs text-blue-800">
+                                                            • {event.title} - {new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ) : application.user?.pastEventsWithOrganizer !== undefined && (
+                                            <div className="mt-2">
+                                                <p className="text-xs text-slate-500 italic">
+                                                    First-time participant with this organizer
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex w-full flex-none gap-x-4 sm:w-auto items-center">
                                         {getStatusBadge(application.status)}

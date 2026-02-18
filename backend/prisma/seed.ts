@@ -88,11 +88,61 @@ async function main() {
         },
     });
 
+    const user3 = await prisma.user.upsert({
+        where: { email: 'mike@example.com' },
+        update: {},
+        create: {
+            email: 'mike@example.com',
+            passwordHash,
+            name: 'Mike',
+            surname: 'Leader',
+            city: 'London',
+            gender: 'male',
+            role: 'user',
+        },
+    });
+
     // Clear existing events and applications to avoid duplicates
     await prisma.application.deleteMany();
     await prisma.event.deleteMany();
 
-    // Events
+    // Events - Create past events and current events for testing
+    const pastEvent1 = await prisma.event.create({
+        data: {
+            title: 'Past Berlin Marathon 2025',
+            startDate: new Date('2025-05-15T20:00:00Z'),
+            endDate: new Date('2025-05-17T23:00:00Z'),
+            location: 'Berlin, Germany',
+            venue: 'Tango Kollektiv',
+            capacity: 200,
+            maleCapacity: 100,
+            femaleCapacity: 100,
+            organizerId: user1.id,
+            status: 'published',
+            schedule: 'Friday 20:00 - Sunday 23:00.',
+            guests: 'World-renowned maestros from Buenos Aires.',
+            djs: 'DJ Horacio, DJ Maria',
+            imageUrl: 'https://images.unsplash.com/photo-1545912458-8ff30a6c71c4?q=80&w=1000&auto=format&fit=crop',
+        },
+    });
+
+    const pastEvent2 = await prisma.event.create({
+        data: {
+            title: 'Paris Winter Festival 2025',
+            startDate: new Date('2025-12-10T18:00:00Z'),
+            endDate: new Date('2025-12-12T22:00:00Z'),
+            location: 'Paris, France',
+            venue: 'Espace Oxygene',
+            capacity: 150,
+            maleCapacity: 75,
+            femaleCapacity: 75,
+            organizerId: user1.id,
+            status: 'published',
+            schedule: 'Workshops in the morning, Milongas in the evening.',
+            imageUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1000&auto=format&fit=crop',
+        },
+    });
+
     const event1 = await prisma.event.create({
         data: {
             title: 'Berlin Tango Marathon',
@@ -146,7 +196,25 @@ async function main() {
         },
     });
 
-    // Applications
+    // Applications - Create history of past accepted events for user2 (Jane)
+    // Past events
+    await prisma.application.create({
+        data: {
+            userId: user2.id,
+            eventId: pastEvent1.id,
+            status: 'accepted',
+        },
+    });
+
+    await prisma.application.create({
+        data: {
+            userId: user2.id,
+            eventId: pastEvent2.id,
+            status: 'accepted',
+        },
+    });
+
+    // Current event applications
     await prisma.application.create({
         data: {
             userId: user2.id,
@@ -155,11 +223,20 @@ async function main() {
         },
     });
 
+    await prisma.application.create({
+        data: {
+            userId: user3.id,
+            eventId: event1.id,
+            status: 'applied',
+        },
+    });
+
     console.log('✅ Seed data created successfully!');
     console.log('📊 Created:');
-    console.log('   - 2 users (organizer@example.com, user@example.com)');
-    console.log('   - 3 events (Berlin Tango Marathon, Paris Spring Festival, Buenos Aires Tango Week)');
-    console.log('   - 1 application');
+    console.log('   - 3 users (organizer@example.com, user@example.com, mike@example.com)');
+    console.log('   - 5 events (2 past, 3 future)');
+    console.log('   - 4 applications (Jane has 2 past accepted events + 1 current, Mike has 1 current)');
+    console.log('   - Jane Dancer has participated in 2 past events by the same organizer');
 }
 
 main()
