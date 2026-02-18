@@ -35,8 +35,8 @@ export default function LoginPage() {
             toast.success('Login successful!');
             // Redirect to home
             window.location.href = '/';
-        } catch (err: any) {
-            const errorMsg = err.message || 'An error occurred. Please try again.';
+        } catch (err: unknown) {
+            const errorMsg = err instanceof Error ? err.message : 'An error occurred. Please try again.';
             toast.error(errorMsg);
         } finally {
             setIsLoading(false);
