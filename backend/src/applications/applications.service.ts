@@ -117,49 +117,57 @@ export class ApplicationsService {
       },
     });
 
-    // For each application, get the user's past accepted events from the same organizer
-    const applicationsWithHistory = await Promise.all(
-      applications.map(async (application) => {
-        const pastEvents = await this.prisma.application.findMany({
-          where: {
-            userId: application.userId,
-            status: 'accepted',
-            eventId: { not: eventId }, // Exclude current event
-            event: {
-              organizerId: event.organizerId, // Same organizer
-            },
+    // Optimize: Fetch all past events for all users in a single query
+    const userIds = applications.map((app) => app.userId);
+    
+    const allPastEvents = await this.prisma.application.findMany({
+      where: {
+        userId: { in: userIds },
+        status: 'accepted',
+        eventId: { not: eventId }, // Exclude current event
+        event: {
+          organizerId: event.organizerId, // Same organizer
+        },
+      },
+      include: {
+        event: {
+          select: {
+            id: true,
+            title: true,
+            startDate: true,
+            endDate: true,
           },
-          include: {
-            event: {
-              select: {
-                id: true,
-                title: true,
-                startDate: true,
-                endDate: true,
-              },
-            },
-          },
-          orderBy: {
-            event: {
-              startDate: 'desc',
-            },
-          },
-        });
+        },
+      },
+      orderBy: {
+        event: {
+          startDate: 'desc',
+        },
+      },
+    });
 
-        return {
-          ...application,
-          user: {
-            ...application.user,
-            pastEventsWithOrganizer: pastEvents.map((pe) => ({
-              id: pe.event.id,
-              title: pe.event.title,
-              startDate: pe.event.startDate,
-              endDate: pe.event.endDate,
-            })),
-          },
-        };
-      }),
-    );
+    // Group past events by userId
+    const pastEventsByUser = allPastEvents.reduce((acc, pe) => {
+      if (!acc[pe.userId]) {
+        acc[pe.userId] = [];
+      }
+      acc[pe.userId].push({
+        id: pe.event.id,
+        title: pe.event.title,
+        startDate: pe.event.startDate,
+        endDate: pe.event.endDate,
+      });
+      return acc;
+    }, {} as Record<string, Array<{ id: string; title: string; startDate: Date; endDate: Date }>>);
+
+    // Enrich applications with past events data
+    const applicationsWithHistory = applications.map((application) => ({
+      ...application,
+      user: {
+        ...application.user,
+        pastEventsWithOrganizer: pastEventsByUser[application.userId] || [],
+      },
+    }));
 
     return applicationsWithHistory;
   }
