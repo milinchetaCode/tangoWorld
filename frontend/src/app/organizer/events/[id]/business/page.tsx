@@ -6,6 +6,7 @@ import { ArrowLeft, DollarSign, TrendingUp, TrendingDown, Users, CreditCard, Plu
 import { getApiUrl } from '@/lib/api';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import toast from 'react-hot-toast';
+import DashboardSkeleton from '@/components/DashboardSkeleton';
 
 interface EventCost {
     id: string;
@@ -160,11 +161,7 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
     };
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     if (error || !dashboardData) {

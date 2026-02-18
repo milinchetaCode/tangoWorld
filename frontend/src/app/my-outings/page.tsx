@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users, Clock, CheckCircle, XCircle, AlertCircle } fro
 import { useState, useEffect } from 'react';
 import { withAuth } from '@/components/withAuth';
 import { getApiUrl } from '@/lib/api';
+import EventCardSkeleton from '@/components/EventCardSkeleton';
 
 interface Application {
     id: string;
@@ -120,8 +121,16 @@ const MyOutingsPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen pt-16">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+                <div className="mb-10">
+                    <h1 className="text-4xl font-extrabold text-slate-900">My Events</h1>
+                    <p className="mt-2 text-lg text-slate-600">Manage your event applications and registrations</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <EventCardSkeleton key={i} />
+                    ))}
+                </div>
             </div>
         );
     }

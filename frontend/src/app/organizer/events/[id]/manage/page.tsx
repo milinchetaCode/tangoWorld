@@ -6,6 +6,7 @@ import { Check, X, Clock, ArrowLeft, DollarSign } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { Application, Event } from '@/types/application';
 import toast from 'react-hot-toast';
+import ApplicationListSkeleton from '@/components/ApplicationListSkeleton';
 
 export default function ManageEventPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -143,8 +144,12 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-slate-900">Manage Applications</h1>
+                    <p className="mt-2 text-slate-600">Loading event applications...</p>
+                </div>
+                <ApplicationListSkeleton />
             </div>
         );
     }
