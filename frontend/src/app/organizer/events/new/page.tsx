@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign, Eye, EyeOff } from 'lucide-react';
+import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign, Eye, EyeOff, HelpCircle, Mail } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
 
@@ -32,6 +32,8 @@ export default function CreateEventPage() {
         priceFullEventBoth: '',
         priceDailyFood: '',
         priceDailyNoFood: '',
+        faq: '',
+        contact: '',
         isPublished: false,
     });
     const [isLoading, setIsLoading] = useState(false);
@@ -144,6 +146,8 @@ export default function CreateEventPage() {
                 priceFullEventBoth: parseFloatOrNull(formData.priceFullEventBoth),
                 priceDailyFood: parseFloatOrNull(formData.priceDailyFood),
                 priceDailyNoFood: parseFloatOrNull(formData.priceDailyNoFood),
+                faq: formData.faq || null,
+                contact: formData.contact || null,
                 isPublished: formData.isPublished,
             };
 
@@ -763,6 +767,62 @@ export default function CreateEventPage() {
                                         />
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* FAQ Section */}
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+                    <div className="flex items-center gap-2 mb-6">
+                        <HelpCircle className="h-5 w-5 text-rose-600" />
+                        <h3 className="text-lg font-semibold text-slate-900">Frequently Asked Questions</h3>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label htmlFor="faq" className="block text-sm font-medium text-slate-900">
+                                FAQ (Optional)
+                            </label>
+                            <p className="mt-1 text-xs text-slate-500">Share common questions and answers with dancers</p>
+                            <div className="mt-2">
+                                <textarea
+                                    id="faq"
+                                    name="faq"
+                                    rows={8}
+                                    value={formData.faq}
+                                    onChange={handleChange}
+                                    placeholder="Q: What is the dress code?&#10;A: Smart casual or tango attire.&#10;&#10;Q: Is parking available?&#10;A: Yes, free parking is available nearby."
+                                    className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Contact Section */}
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+                    <div className="flex items-center gap-2 mb-6">
+                        <Mail className="h-5 w-5 text-rose-600" />
+                        <h3 className="text-lg font-semibold text-slate-900">Contact Information</h3>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label htmlFor="contact" className="block text-sm font-medium text-slate-900">
+                                Contact Details (Optional)
+                            </label>
+                            <p className="mt-1 text-xs text-slate-500">Contact information visible only to accepted dancers</p>
+                            <div className="mt-2">
+                                <textarea
+                                    id="contact"
+                                    name="contact"
+                                    rows={5}
+                                    value={formData.contact}
+                                    onChange={handleChange}
+                                    placeholder="Phone: +1 234 567 890&#10;Email: organizer@example.com&#10;WhatsApp: +1 234 567 890&#10;Emergency contact: +1 987 654 321"
+                                    className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                                />
                             </div>
                         </div>
                     </div>
