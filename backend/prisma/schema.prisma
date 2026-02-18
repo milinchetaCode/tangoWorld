@@ -48,6 +48,7 @@ model Event {
   organizer      User          @relation(fields: [organizerId], references: [id])
   organizerId    String
   status         String        @default("published") // "draft", "published", "cancelled"
+  isPublished    Boolean       @default(false) // Whether event is visible to public
   // Pricing options
   priceFullEventNoFoodNoAccommodation Decimal?  @db.Decimal(10, 2) // Full event basic price (no food, no accommodation)
   priceFullEventFood          Decimal?  @db.Decimal(10, 2) // Full event price including food
