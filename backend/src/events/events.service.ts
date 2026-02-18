@@ -93,7 +93,7 @@ export class EventsService {
       }
 
       if (event.organizerId !== userId) {
-        throw new BadRequestException('You are not authorized to edit this event');
+        throw new BadRequestException('Only the event organizer can edit this event');
       }
     }
 
