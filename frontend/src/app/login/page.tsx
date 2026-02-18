@@ -9,12 +9,10 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
         setIsLoading(true);
 
         try {
@@ -37,9 +35,8 @@ export default function LoginPage() {
             toast.success('Login successful!');
             // Redirect to home
             window.location.href = '/';
-        } catch (err: any) {
-            const errorMsg = err.message || 'An error occurred. Please try again.';
-            setError(errorMsg);
+        } catch (err: unknown) {
+            const errorMsg = (err instanceof Error && err.message) || 'An error occurred. Please try again.';
             toast.error(errorMsg);
         } finally {
             setIsLoading(false);
@@ -56,11 +53,6 @@ export default function LoginPage() {
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                    {error && (
-                        <div className="rounded-xl bg-red-50 p-4 ring-1 ring-inset ring-red-600/20">
-                            <p className="text-sm font-medium text-red-800">{error}</p>
-                        </div>
-                    )}
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-slate-900">
                             Email address

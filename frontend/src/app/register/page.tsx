@@ -22,7 +22,6 @@ export default function RegisterPage() {
         dietaryNeeds: '',
     });
 
-    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
@@ -44,7 +43,6 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
         setSuccess(false);
         setIsLoading(true);
 
@@ -85,9 +83,6 @@ export default function RegisterPage() {
             let errorMsg = 'An error occurred. Please try again.';
             if (err instanceof Error) {
                 errorMsg = err.message;
-                setError(err.message);
-            } else {
-                setError(errorMsg);
             }
             toast.error(errorMsg);
         } finally {
@@ -108,11 +103,6 @@ export default function RegisterPage() {
                     Fields marked with <span className="text-rose-600">*</span> are required
                 </p>
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                    {error && (
-                        <div className="rounded-xl bg-red-50 p-4 ring-1 ring-inset ring-red-600/20">
-                            <p className="text-sm font-medium text-red-800">{error}</p>
-                        </div>
-                    )}
                     {success && (
                         <div className="rounded-xl bg-green-50 p-4 ring-1 ring-inset ring-green-600/20">
                             <p className="text-sm font-medium text-green-800">
