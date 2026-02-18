@@ -17,12 +17,13 @@ async function main() {
     const databaseUrl = process.env.DATABASE_URL || '';
     const productionIndicators = [
         'render.com',
-        '.aws.',
         'amazonaws.com',
+        'rds.amazonaws',
         'heroku',
-        'production',
-        'prod-',
-        '-prod',
+        '.herokuapp.com',
+        'prod.', // e.g., prod.example.com
+        '-prod.', // e.g., db-prod.example.com
+        '.prod-', // e.g., example.prod-cluster.com
     ];
     
     const isProductionDatabase = productionIndicators.some(indicator => 
