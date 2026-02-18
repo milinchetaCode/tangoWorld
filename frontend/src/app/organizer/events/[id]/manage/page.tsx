@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, use, useCallback } from 'react';
-import { Check, X, Clock, ArrowLeft, DollarSign, XCircle } from 'lucide-react';
+import { Check, X, Clock, ArrowLeft, DollarSign, XCircle, Eye, EyeOff } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { Application, Event } from '@/types/application';
 import toast from 'react-hot-toast';
@@ -133,6 +133,54 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
         }
     };
 
+    const handlePublicationToggle = async () => {
+        const token = localStorage.getItem('token');
+        if (!token || !event) return;
+
+        const newPublishedStatus = !event.isPublished;
+        const hasAcceptedApplications = applications.some(app => app.status === 'accepted');
+
+        // Show info message if trying to unpublish event with registrations
+        if (!newPublishedStatus && hasAcceptedApplications) {
+            toast('Event has registrations. It will remain visible but registration will be disabled.', {
+                icon: '⚠️',
+                duration: 4000,
+            });
+        }
+
+        // Store original state for rollback
+        const originalEvent = { ...event };
+
+        // Optimistic update
+        setEvent(prev => prev ? { ...prev, isPublished: newPublishedStatus } : null);
+
+        try {
+            const res = await fetch(getApiUrl(`/events/${id}/publication`), {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ isPublished: newPublishedStatus }),
+            });
+
+            if (res.ok) {
+                toast.success(`Event ${newPublishedStatus ? 'published' : 'unpublished'} successfully`);
+            } else {
+                // Rollback on error
+                setEvent(originalEvent);
+                const errorText = await res.text();
+                console.error('Failed to update publication status:', res.status, errorText);
+                toast.error('Failed to update publication status');
+            }
+        } catch (err) {
+            // Rollback on error
+            setEvent(originalEvent);
+            console.error('Error updating publication status:', err);
+            toast.error('Failed to update publication status. Please try again.');
+        }
+    };
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'accepted': return <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800 ring-1 ring-inset ring-green-700/20">Accepted</span>;
@@ -229,6 +277,68 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                             Business Dashboard
                         </button>
                     </div>
+                </div>
+            </div>
+
+            {/* Publication Status Section */}
+            <div className="mb-8">
+                <div className="bg-white shadow-sm ring-1 ring-slate-200 rounded-2xl p-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            {event.isPublished ? (
+                                <div className="flex items-center gap-2">
+                                    <Eye className="h-5 w-5 text-green-600" />
+                                    <div>
+                                        <h3 className="text-base font-semibold text-slate-900">Event is Published</h3>
+                                        <p className="text-sm text-slate-600">Visible to public on main page and search results</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <EyeOff className="h-5 w-5 text-slate-400" />
+                                    <div>
+                                        <h3 className="text-base font-semibold text-slate-900">Event is Offline</h3>
+                                        <p className="text-sm text-slate-600">Not visible to public - only you can see it</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <button
+                            onClick={handlePublicationToggle}
+                            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors ${
+                                event.isPublished
+                                    ? 'bg-slate-200 text-slate-900 hover:bg-slate-300'
+                                    : 'bg-green-600 text-white hover:bg-green-500'
+                            }`}
+                        >
+                            {event.isPublished ? (
+                                <>
+                                    <EyeOff className="h-4 w-4" />
+                                    Take Offline
+                                </>
+                            ) : (
+                                <>
+                                    <Eye className="h-4 w-4" />
+                                    Publish Online
+                                </>
+                            )}
+                        </button>
+                    </div>
+                    {!event.isPublished && acceptedApplications.length > 0 && (
+                        <div className="mt-4 rounded-lg bg-yellow-50 p-4 border border-yellow-200">
+                            <div className="flex">
+                                <div className="flex-shrink-0">
+                                    <XCircle className="h-5 w-5 text-yellow-600" aria-hidden="true" />
+                                </div>
+                                <div className="ml-3">
+                                    <p className="text-sm text-yellow-800">
+                                        This event has {acceptedApplications.length} accepted registration{acceptedApplications.length !== 1 ? 's' : ''}. 
+                                        It will remain visible to registered participants, but new registrations are disabled.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

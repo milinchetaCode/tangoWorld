@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign } from 'lucide-react';
+import { Calendar, MapPin, Users, Image as ImageIcon, Music, Star, Clock, DollarSign, Eye, EyeOff } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { geocodeLocation, GEOCODING_DELAY_MS } from '@/lib/geocoding';
 
@@ -32,6 +32,7 @@ export default function CreateEventPage() {
         priceFullEventBoth: '',
         priceDailyFood: '',
         priceDailyNoFood: '',
+        isPublished: false,
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -143,6 +144,7 @@ export default function CreateEventPage() {
                 priceFullEventBoth: parseFloatOrNull(formData.priceFullEventBoth),
                 priceDailyFood: parseFloatOrNull(formData.priceDailyFood),
                 priceDailyNoFood: parseFloatOrNull(formData.priceDailyNoFood),
+                isPublished: formData.isPublished,
             };
 
             // Make API call to create event
@@ -763,6 +765,54 @@ export default function CreateEventPage() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Publication Status Section */}
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+                    <div className="flex items-center gap-2 mb-6">
+                        {formData.isPublished ? <Eye className="h-5 w-5 text-rose-600" /> : <EyeOff className="h-5 w-5 text-slate-400" />}
+                        <h3 className="text-lg font-semibold text-slate-900">Publication Status</h3>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="flex items-start">
+                            <div className="flex items-center h-5">
+                                <input
+                                    id="isPublished"
+                                    name="isPublished"
+                                    type="checkbox"
+                                    checked={formData.isPublished}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
+                                    className="h-4 w-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                                />
+                            </div>
+                            <div className="ml-3 text-sm">
+                                <label htmlFor="isPublished" className="font-medium text-slate-900">
+                                    Publish event online
+                                </label>
+                                <p className="text-slate-500">
+                                    When published, your event will be visible on the main page and in search results. 
+                                    You can work on your event while it's offline and publish it when ready.
+                                </p>
+                            </div>
+                        </div>
+
+                        {!formData.isPublished && (
+                            <div className="rounded-lg bg-blue-50 p-4 border border-blue-200">
+                                <div className="flex">
+                                    <div className="flex-shrink-0">
+                                        <EyeOff className="h-5 w-5 text-blue-600" aria-hidden="true" />
+                                    </div>
+                                    <div className="ml-3">
+                                        <h3 className="text-sm font-medium text-blue-900">Event will be created as offline</h3>
+                                        <div className="mt-2 text-sm text-blue-800">
+                                            <p>Your event will not be visible to the public until you publish it from the organizer dashboard.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

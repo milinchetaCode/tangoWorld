@@ -12,6 +12,7 @@ interface EventRegistrationProps {
     acceptedCount: number;
     startDate: string;
     endDate: string;
+    isPublished: boolean;
     priceFullEventNoFoodNoAccommodation?: number;
     priceFullEventFood?: number;
     priceFullEventAccommodation?: number;
@@ -20,7 +21,7 @@ interface EventRegistrationProps {
     priceDailyNoFood?: number;
 }
 
-export default function EventRegistration({ eventId, capacity, acceptedCount, startDate, endDate, priceFullEventNoFoodNoAccommodation, priceFullEventFood, priceFullEventAccommodation, priceFullEventBoth, priceDailyFood, priceDailyNoFood }: EventRegistrationProps) {
+export default function EventRegistration({ eventId, capacity, acceptedCount, startDate, endDate, isPublished, priceFullEventNoFoodNoAccommodation, priceFullEventFood, priceFullEventAccommodation, priceFullEventBoth, priceDailyFood, priceDailyNoFood }: EventRegistrationProps) {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userApplication, setUserApplication] = useState<Application | null>(null);
@@ -395,25 +396,40 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                     
                     <button
                         onClick={handleApply}
-                        disabled={isLoading}
+                        disabled={isLoading || !isPublished}
                         aria-busy={isLoading}
-                        aria-label={isLoading ? 'Submitting application...' : 'Apply to participate in this event'}
+                        aria-label={isLoading ? 'Submitting application...' : !isPublished ? 'Registration is not available' : 'Apply to participate in this event'}
                         className={`w-full rounded-xl px-6 py-4 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] ${
                             isLoading
                                 ? 'bg-slate-400 cursor-wait'
+                                : !isPublished
+                                ? 'bg-slate-400 cursor-not-allowed'
                                 : 'bg-rose-600 hover:bg-rose-500 hover:shadow-md'
                         }`}
                     >
-                        {isLoading ? 'Applying...' : 'Apply to Participate'}
+                        {isLoading ? 'Applying...' : !isPublished ? 'Registration Not Available' : 'Apply to Participate'}
                     </button>
+                    
+                    {!isPublished && (
+                        <div className="mt-4 p-3 bg-yellow-50 rounded-xl border border-yellow-200">
+                            <p className="text-xs text-center text-yellow-800 leading-normal">
+                                Registration for this event is currently closed.
+                            </p>
+                        </div>
+                    )}
                 </>
             ) : (
                 <>
                     <button
                         onClick={() => router.push('/login')}
-                        className="w-full rounded-xl px-6 py-4 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] bg-rose-600 hover:bg-rose-500 hover:shadow-md"
+                        disabled={!isPublished}
+                        className={`w-full rounded-xl px-6 py-4 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] ${
+                            !isPublished
+                                ? 'bg-slate-400 cursor-not-allowed'
+                                : 'bg-rose-600 hover:bg-rose-500 hover:shadow-md'
+                        }`}
                     >
-                        Log In to Apply
+                        {!isPublished ? 'Registration Not Available' : 'Log In to Apply'}
                     </button>
                     <div className="mt-4 p-4 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
                         <p className="text-[11px] text-center text-slate-500 leading-normal">

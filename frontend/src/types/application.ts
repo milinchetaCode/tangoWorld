@@ -35,6 +35,7 @@ export interface Event {
     femaleCapacity: number;
     organizerId: string;
     status: string;
+    isPublished: boolean;
     priceFullEventFood?: number;
     priceFullEventAccommodation?: number;
     priceFullEventBoth?: number;

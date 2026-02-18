@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Calendar, MapPin, Users } from 'lucide-react';
+import { Plus, Calendar, MapPin, Users, Eye, EyeOff } from 'lucide-react';
 import { withAuth } from '@/components/withAuth';
 import { getApiUrl } from '@/lib/api';
 
@@ -13,6 +13,7 @@ interface Event {
     endDate: string;
     location: string;
     capacity: number;
+    isPublished: boolean;
     applications: Array<{ id: string; status: string }>;
 }
 
@@ -130,6 +131,21 @@ function OrganizerDashboard() {
                         
                         return (
                             <div key={event.id} className="relative flex flex-col overflow-hidden rounded-2xl ring-1 ring-slate-200 bg-white shadow-sm">
+                                {/* Publication Status Badge */}
+                                <div className="absolute top-3 right-3 z-10">
+                                    {event.isPublished ? (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-800 ring-1 ring-inset ring-green-600/20">
+                                            <Eye className="h-3 w-3" />
+                                            Published
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 ring-1 ring-inset ring-slate-600/20">
+                                            <EyeOff className="h-3 w-3" />
+                                            Offline
+                                        </span>
+                                    )}
+                                </div>
+                                
                                 <div className="flex h-full flex-col p-6">
                                     <h3 className="text-lg font-semibold text-slate-900">{event.title}</h3>
                                     <div className="mt-2 text-sm text-slate-500">
