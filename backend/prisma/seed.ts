@@ -5,10 +5,50 @@ const prisma = new PrismaClient();
 
 async function main() {
     // SAFETY CHECK: Prevent seed from running in production
+    // Check 1: NODE_ENV must not be production
     if (process.env.NODE_ENV === 'production') {
         console.error('❌ ERROR: Cannot run seed script in production environment!');
         console.error('This script deletes all events and applications.');
         console.error('Set NODE_ENV to "development" or remove it to run seed script.');
+        process.exit(1);
+    }
+
+    // Check 2: Detect production database URLs (Render, Heroku, AWS RDS, etc.)
+    // Extract hostname from DATABASE_URL to avoid checking credentials
+    const databaseUrl = process.env.DATABASE_URL || '';
+    let hostname = '';
+    
+    try {
+        // Parse the URL to extract only the hostname
+        // PostgreSQL URLs format: postgresql://user:password@hostname:port/database
+        const url = new URL(databaseUrl);
+        hostname = url.hostname.toLowerCase();
+    } catch (error) {
+        // If URL parsing fails, the DATABASE_URL is likely malformed or missing
+        // Exit with error - don't proceed with an invalid database URL
+        if (databaseUrl) {
+            console.error('❌ ERROR: Invalid DATABASE_URL format!');
+            console.error('Cannot parse database URL. Please check your DATABASE_URL configuration.');
+            process.exit(1);
+        }
+        // If DATABASE_URL is empty, hostname remains empty (likely development without DB)
+    }
+
+    const productionIndicators = [
+        'render.com',
+        'amazonaws.com',  // Covers *.amazonaws.com including *.rds.amazonaws.com
+        'herokuapp.com',  // Covers *.herokuapp.com
+    ];
+    
+    const isProductionDatabase = productionIndicators.some(indicator => 
+        hostname.includes(indicator)
+    );
+
+    if (isProductionDatabase) {
+        console.error('❌ ERROR: Cannot run seed script with production database!');
+        console.error('This script deletes all events and applications.');
+        console.error('Production database URL detected. Use a local/development database.');
+        console.error('Database URL hostname matches known production hosting platforms.');
         process.exit(1);
     }
 
