@@ -24,14 +24,19 @@ async function main() {
         const url = new URL(databaseUrl);
         hostname = url.hostname.toLowerCase();
     } catch (error) {
-        // If URL parsing fails, check the raw URL as fallback (but less secure)
-        hostname = databaseUrl.toLowerCase();
+        // If URL parsing fails, the DATABASE_URL is likely malformed or missing
+        // Exit with error - don't proceed with an invalid database URL
+        if (databaseUrl) {
+            console.error('❌ ERROR: Invalid DATABASE_URL format!');
+            console.error('Cannot parse database URL. Please check your DATABASE_URL configuration.');
+            process.exit(1);
+        }
+        // If DATABASE_URL is empty, hostname remains empty (likely development without DB)
     }
 
     const productionIndicators = [
         'render.com',
-        'amazonaws.com',
-        'rds.amazonaws',
+        'amazonaws.com',  // Covers *.amazonaws.com including *.rds.amazonaws.com
         'heroku',
         '.herokuapp.com',
     ];

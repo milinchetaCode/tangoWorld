@@ -10,12 +10,12 @@ The seed script (`backend/prisma/seed.ts`) is a development tool that populates 
    - **Layer 1:** Refuses to run if `NODE_ENV=production`
    - **Layer 2:** Refuses to run if the DATABASE_URL hostname contains production hosting indicators:
      - `render.com` (Render platform)
-     - `amazonaws.com` or `rds.amazonaws` (AWS RDS)
+     - `amazonaws.com` (AWS services including RDS)
      - `heroku` or `.herokuapp.com` (Heroku platform)
 3. The seed command has been removed from the deployment pipeline in render.yaml
-4. The render.yaml explicitly sets `NODE_ENV=production` during both build and runtime phases
+4. The render.yaml explicitly sets `NODE_ENV=production` in the buildCommand (not just runtime envVars) to ensure the protection is active from the very start of deployment
 
-Note: The protection checks only the hostname portion of the DATABASE_URL for security (avoiding exposure of credentials).
+Note: The protection parses only the hostname portion of the DATABASE_URL for security (avoiding exposure of credentials in memory).
 
 ## ⚠️ Important: Seed Script Behavior
 The seed script **deletes all existing events and applications** before inserting sample data:
@@ -96,12 +96,17 @@ buildCommand: NODE_ENV=production npm install --include=dev && npx prisma genera
 startCommand: npx prisma migrate deploy && npx prisma generate && npm run start:prod
 ```
 
-Note: **No seed script** in the commands, and NODE_ENV is explicitly set to production. This ensures:
+**Important:** NODE_ENV is set explicitly in the buildCommand (before running npm install) rather than relying solely on envVars. This is crucial because:
+- Environment variables from `envVars` section are available at runtime
+- But setting NODE_ENV in the buildCommand ensures it's available immediately, even before npm packages are installed
+- This prevents any potential seed execution if Prisma or any package tries to run the seed during installation or build phases
+
+Note: **No seed script** in the commands. This ensures:
 - ✅ Production data persists across deployments
 - ✅ Database migrations run automatically
 - ✅ Schema updates are applied
 - ✅ User data is preserved
-- ✅ Seed script cannot accidentally run even if triggered
+- ✅ Seed script cannot accidentally run even if triggered by build tools
 
 ## Troubleshooting
 
