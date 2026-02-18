@@ -478,7 +478,7 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                     )}
                                                     {application.totalPrice && (
                                                         <span className="ml-2 font-semibold text-purple-700">
-                                                            ${typeof application.totalPrice === 'number' ? application.totalPrice.toFixed(2) : Number(application.totalPrice).toFixed(2)}
+                                                            ${Number(application.totalPrice).toFixed(2)}
                                                         </span>
                                                     )}
                                                 </div>
