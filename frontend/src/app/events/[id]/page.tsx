@@ -4,6 +4,7 @@ import { Calendar, MapPin, Users, ArrowLeft, CheckCircle, Clock, Info } from 'lu
 
 import { getApiUrl } from '@/lib/api';
 import EventRegistration from '@/components/EventRegistration';
+import EventFaqAndContact from '@/components/EventFaqAndContact';
 
 async function getEvent(id: string) {
     try {
@@ -112,6 +113,13 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                             </div>
                         </section>
                     )}
+
+                    {/* FAQ and Contact Sections */}
+                    <EventFaqAndContact 
+                        eventId={event.id}
+                        faq={event.faq}
+                        contact={event.contact}
+                    />
                 </div>
 
                 {/* Sidebar / Actions */}

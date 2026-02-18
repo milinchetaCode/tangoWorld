@@ -11,73 +11,75 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
-  passwordHash String
-  name         String
-  surname      String
-  city         String
-  gender       String        // "male", "female"
-  dietaryNeeds String?
+  id              String        @id @default(uuid())
+  email           String        @unique
+  passwordHash    String
+  name            String
+  surname         String
+  city            String
+  gender          String // "male", "female"
+  dietaryNeeds    String?
   role            String        @default("user") // "user", "organizer", "admin"
   organizerStatus String        @default("none") @map("organizer_status") // "none", "pending", "approved"
   createdAt       DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  events       Event[]
-  applications Application[]
+  updatedAt       DateTime      @updatedAt
+  events          Event[]
+  applications    Application[]
 
   @@map("users")
 }
 
 model Event {
-  id             String        @id @default(uuid())
-  title          String
-  startDate      DateTime
-  endDate        DateTime
-  location       String
-  latitude       Float?
-  longitude      Float?
-  venue          String
-  imageUrl       String?
-  guests         String?
-  djs            String?
-  schedule       String?
-  capacity       Int
-  maleCapacity   Int
-  femaleCapacity Int
-  organizer      User          @relation(fields: [organizerId], references: [id])
-  organizerId    String
-  status         String        @default("published") // "draft", "published", "cancelled"
-  isPublished    Boolean       @default(false) // Whether event is visible to public
+  id                                  String        @id @default(uuid())
+  title                               String
+  startDate                           DateTime
+  endDate                             DateTime
+  location                            String
+  latitude                            Float?
+  longitude                           Float?
+  venue                               String
+  imageUrl                            String?
+  guests                              String?
+  djs                                 String?
+  schedule                            String?
+  capacity                            Int
+  maleCapacity                        Int
+  femaleCapacity                      Int
+  organizer                           User          @relation(fields: [organizerId], references: [id])
+  organizerId                         String
+  status                              String        @default("published") // "draft", "published", "cancelled"
+  isPublished                         Boolean       @default(false) // Whether event is visible to public
   // Pricing options
-  priceFullEventNoFoodNoAccommodation Decimal?  @db.Decimal(10, 2) // Full event basic price (no food, no accommodation)
-  priceFullEventFood          Decimal?  @db.Decimal(10, 2) // Full event price including food
-  priceFullEventAccommodation Decimal?  @db.Decimal(10, 2) // Full event price including accommodation
-  priceFullEventBoth          Decimal?  @db.Decimal(10, 2) // Full event including food and accommodation
-  priceDailyFood              Decimal?  @db.Decimal(10, 2) // Daily price including food
-  priceDailyNoFood            Decimal?  @db.Decimal(10, 2) // Daily price without food
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  applications   Application[]
-  costs          EventCost[]
+  priceFullEventNoFoodNoAccommodation Decimal?      @db.Decimal(10, 2) // Full event basic price (no food, no accommodation)
+  priceFullEventFood                  Decimal?      @db.Decimal(10, 2) // Full event price including food
+  priceFullEventAccommodation         Decimal?      @db.Decimal(10, 2) // Full event price including accommodation
+  priceFullEventBoth                  Decimal?      @db.Decimal(10, 2) // Full event including food and accommodation
+  priceDailyFood                      Decimal?      @db.Decimal(10, 2) // Daily price including food
+  priceDailyNoFood                    Decimal?      @db.Decimal(10, 2) // Daily price without food
+  faq                                 String? // Frequently Asked Questions for dancers (optional)
+  contact                             String? // Contact information for organizers (optional, visible only to accepted users)
+  createdAt                           DateTime      @default(now())
+  updatedAt                           DateTime      @updatedAt
+  applications                        Application[]
+  costs                               EventCost[]
 
   @@map("events")
 }
 
 model Application {
-  id             String   @id @default(uuid())
-  user           User     @relation(fields: [userId], references: [id])
-  userId         String
-  event          Event    @relation(fields: [eventId], references: [id])
-  eventId        String
-  status         String   @default("applied") // "applied", "accepted", "waitlisted", "rejected", "cancelled"
-  paymentDone    Boolean  @default(false)
+  id            String   @id @default(uuid())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+  event         Event    @relation(fields: [eventId], references: [id])
+  eventId       String
+  status        String   @default("applied") // "applied", "accepted", "waitlisted", "rejected", "cancelled"
+  paymentDone   Boolean  @default(false)
   // Pricing selection
-  pricingOption  String?  // "full_no_food_no_accommodation", "full_food", "full_accommodation", "full_both", "daily_food", "daily_no_food"
-  numberOfDays   Int?     // Only applicable for daily pricing options
-  totalPrice     Decimal? @db.Decimal(10, 2) // Calculated total price based on selection
-  appliedAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  pricingOption String? // "full_no_food_no_accommodation", "full_food", "full_accommodation", "full_both", "daily_food", "daily_no_food"
+  numberOfDays  Int? // Only applicable for daily pricing options
+  totalPrice    Decimal? @db.Decimal(10, 2) // Calculated total price based on selection
+  appliedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@unique([userId, eventId])
   @@map("applications")
@@ -87,7 +89,7 @@ model EventCost {
   id          String   @id @default(uuid())
   event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId     String
-  category    String   // "rent", "insurance", "marketing", "food", "other"
+  category    String // "rent", "insurance", "marketing", "food", "other"
   description String
   amount      Decimal  @db.Decimal(10, 2)
   date        DateTime @default(now())
