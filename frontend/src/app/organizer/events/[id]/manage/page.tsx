@@ -190,6 +190,18 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
         }
     };
 
+    const formatPricingOption = (option: string) => {
+        const optionMap: Record<string, string> = {
+            'full_no_food_no_accommodation': 'Full Event (Basic)',
+            'full_food': 'Full Event with Food',
+            'full_accommodation': 'Full Event with Accommodation',
+            'full_both': 'Full Event with Food & Accommodation',
+            'daily_food': 'Daily Rate with Food',
+            'daily_no_food': 'Daily Rate (No Food)',
+        };
+        return optionMap[option] || option.replace(/_/g, ' ');
+    };
+
     if (isLoading) {
         return (
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
@@ -451,13 +463,23 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                         {application.user?.dietaryNeeds && (
                                             <p className="mt-1 text-xs text-slate-600">Dietary needs: {application.user.dietaryNeeds}</p>
                                         )}
-                                        {application.pricingOption && (
-                                            <p className="mt-1 text-xs text-slate-600">
-                                                <DollarSign className="inline h-3 w-3 mr-1" />
-                                                {application.pricingOption.replace(/_/g, ' ')}
-                                                {application.numberOfDays && ` (${application.numberOfDays} days)`}
-                                                {application.totalPrice && ` - $${Number(application.totalPrice).toFixed(2)}`}
-                                            </p>
+                                        {(application.pricingOption || application.totalPrice) && (
+                                            <div className="mt-2 inline-flex items-center gap-2 rounded-lg bg-purple-50 px-3 py-1.5 border border-purple-200">
+                                                <DollarSign className="h-4 w-4 text-purple-700" />
+                                                <div className="text-xs">
+                                                    {application.pricingOption && (
+                                                        <span className="font-medium text-purple-900">
+                                                            {formatPricingOption(application.pricingOption)}
+                                                            {application.numberOfDays && ` (${application.numberOfDays} days)`}
+                                                        </span>
+                                                    )}
+                                                    {application.totalPrice && (
+                                                        <span className="ml-2 font-semibold text-purple-700">
+                                                            ${Number(application.totalPrice).toFixed(2)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
                                         )}
                                         {application.user?.pastEventsWithOrganizer && application.user.pastEventsWithOrganizer.length > 0 ? (
                                             <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
