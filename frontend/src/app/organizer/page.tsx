@@ -168,12 +168,19 @@ function OrganizerDashboard() {
                                             <span>{percentFull}% Full</span>
                                         </div>
 
-                                        <div className="grid grid-cols-3 gap-2">
+                                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                                             <Link
                                                 href={`/events/${event.id}`}
                                                 className="flex justify-center rounded-xl bg-white px-2 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50"
                                             >
                                                 View
+                                            </Link>
+                                            <Link
+                                                href={`/organizer/events/${event.id}/edit`}
+                                                className="flex justify-center rounded-xl bg-blue-600 px-2 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
+                                                title="Edit Event"
+                                            >
+                                                Edit
                                             </Link>
                                             <Link
                                                 href={`/organizer/events/${event.id}/manage`}

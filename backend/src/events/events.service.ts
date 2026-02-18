@@ -80,7 +80,23 @@ export class EventsService {
     });
   }
 
-  async update(id: string, data: Prisma.EventUpdateInput) {
+  async update(id: string, data: Prisma.EventUpdateInput, userId?: string) {
+    // If userId is provided, verify that the user is the organizer of this event
+    if (userId) {
+      const event = await this.prisma.event.findUnique({
+        where: { id },
+        select: { organizerId: true },
+      });
+
+      if (!event) {
+        throw new NotFoundException(`Event with ID ${id} not found`);
+      }
+
+      if (event.organizerId !== userId) {
+        throw new BadRequestException('Only the event organizer can edit this event');
+      }
+    }
+
     return this.prisma.event.update({
       where: { id },
       data,
