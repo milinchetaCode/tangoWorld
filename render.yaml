@@ -7,12 +7,25 @@ services:
     buildCommand: npm install --include=dev && npx prisma generate && npm run build
     startCommand: npx prisma migrate deploy && npx prisma generate && npm run start:prod
     envVars:
+      # Database connection string - REQUIRED
+      # Set this to your external/internal PostgreSQL database URL in Render Dashboard
+      # Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
       - key: DATABASE_URL
-        # Set this to your external/internal PostgreSQL database URL in Render Dashboard
+        # Value should be set in Render Dashboard, typically from a PostgreSQL service
+      
+      # JWT secret for token signing - REQUIRED
+      # Use Render's "Generate Value" feature for secure random secret
       - key: JWT_SECRET
         generateValue: true
+      
+      # Application environment - defaults to production
       - key: NODE_ENV
         value: production
+      
+      # Application port - OPTIONAL (Render sets this automatically)
+      # Uncomment if you need to override the default port
+      # - key: PORT
+      #   value: 3001
 
   # Frontend service
   - type: web
@@ -22,6 +35,9 @@ services:
     buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:
+      # Backend API URL - REQUIRED
+      # Automatically configured to use the backend service URL
+      # This is exposed to the browser (NEXT_PUBLIC_* variables)
       - key: NEXT_PUBLIC_API_URL
         fromService:
           name: tango-backend
