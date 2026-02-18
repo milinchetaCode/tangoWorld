@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 export class CreateApplicationDto {
   @IsOptional()
   @IsString()
-  @IsIn(['full_food', 'full_accommodation', 'full_both', 'daily_food', 'daily_no_food'])
+  @IsIn(['full_no_food_no_accommodation', 'full_food', 'full_accommodation', 'full_both', 'daily_food', 'daily_no_food'])
   pricingOption?: string;
 
   @IsOptional()
