@@ -16,6 +16,12 @@ export interface Application {
         email: string;
         gender: string;
         dietaryNeeds?: string;
+        pastEventsWithOrganizer?: {
+            id: string;
+            title: string;
+            startDate: string;
+            endDate: string;
+        }[];
     };
 }
 

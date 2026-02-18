@@ -91,7 +91,17 @@ export class ApplicationsService {
   }
 
   async findAllForEvent(eventId: string) {
-    return this.prisma.application.findMany({
+    // First, get the event to know the organizer
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      select: { organizerId: true },
+    });
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    const applications = await this.prisma.application.findMany({
       where: { eventId },
       include: {
         user: {
@@ -106,6 +116,52 @@ export class ApplicationsService {
         },
       },
     });
+
+    // For each application, get the user's past accepted events from the same organizer
+    const applicationsWithHistory = await Promise.all(
+      applications.map(async (application) => {
+        const pastEvents = await this.prisma.application.findMany({
+          where: {
+            userId: application.userId,
+            status: 'accepted',
+            eventId: { not: eventId }, // Exclude current event
+            event: {
+              organizerId: event.organizerId, // Same organizer
+            },
+          },
+          include: {
+            event: {
+              select: {
+                id: true,
+                title: true,
+                startDate: true,
+                endDate: true,
+              },
+            },
+          },
+          orderBy: {
+            event: {
+              startDate: 'desc',
+            },
+          },
+        });
+
+        return {
+          ...application,
+          user: {
+            ...application.user,
+            pastEventsWithOrganizer: pastEvents.map((pe) => ({
+              id: pe.event.id,
+              title: pe.event.title,
+              startDate: pe.event.startDate,
+              endDate: pe.event.endDate,
+            })),
+          },
+        };
+      }),
+    );
+
+    return applicationsWithHistory;
   }
 
   async findUserApplications(userId: string) {
