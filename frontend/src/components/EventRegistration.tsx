@@ -26,7 +26,6 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userApplication, setUserApplication] = useState<Application | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [selectedPricingOption, setSelectedPricingOption] = useState<string>('');
 
     const isFull = capacity > 0 && acceptedCount >= capacity;
@@ -105,7 +104,6 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
         }
 
         setIsLoading(true);
-        setError(null);
 
         try {
             const body: any = {};
@@ -137,12 +135,10 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
             } else {
                 const errorData = await res.json();
                 const errorMsg = errorData.message || 'Failed to apply';
-                setError(errorMsg);
                 toast.error(errorMsg);
             }
         } catch (err) {
             const errorMsg = 'An error occurred. Please try again.';
-            setError(errorMsg);
             toast.error(errorMsg);
             console.error('Error applying to event:', err);
         } finally {
@@ -219,12 +215,6 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                     </div>
                 )}
             </div>
-
-            {error && (
-                <div className="mb-4 p-3 bg-red-50 ring-1 ring-inset ring-red-600/20 rounded-xl">
-                    <p className="text-sm text-red-600">{error}</p>
-                </div>
-            )}
 
             {userApplication ? (
                 <div className="p-4 bg-slate-50 rounded-xl ring-1 ring-slate-200">
