@@ -14,20 +14,17 @@ async function main() {
     }
 
     // Check 2: Detect production database URLs (Render, Heroku, AWS RDS, etc.)
-    const databaseUrl = process.env.DATABASE_URL || '';
+    const databaseUrl = (process.env.DATABASE_URL || '').toLowerCase();
     const productionIndicators = [
         'render.com',
         'amazonaws.com',
         'rds.amazonaws',
         'heroku',
         '.herokuapp.com',
-        'prod.', // e.g., prod.example.com
-        '-prod.', // e.g., db-prod.example.com
-        '.prod-', // e.g., example.prod-cluster.com
     ];
     
     const isProductionDatabase = productionIndicators.some(indicator => 
-        databaseUrl.toLowerCase().includes(indicator)
+        databaseUrl.includes(indicator)
     );
 
     if (isProductionDatabase) {
