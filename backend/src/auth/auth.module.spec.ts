@@ -1,15 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { PrismaModule } from '../prisma/prisma.module';
+import configuration from '../config/configuration';
+import { validationSchema } from '../config/validation.schema';
 
 describe('AuthModule', () => {
   let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [AuthModule, UsersModule, PrismaModule],
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [configuration],
+          validationSchema: validationSchema,
+          validationOptions: {
+            allowUnknown: true,
+            abortEarly: false,
+          },
+        }),
+        AuthModule,
+        UsersModule,
+        PrismaModule,
+      ],
     }).compile();
   });
 
