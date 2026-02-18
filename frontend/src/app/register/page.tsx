@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-
 import { getApiUrl } from '@/lib/api';
+import toast from 'react-hot-toast';
 
 const REDIRECT_DELAY_MS = 2000;
 
@@ -75,17 +75,21 @@ export default function RegisterPage() {
 
             // Registration successful - show success message and redirect
             setSuccess(true);
+            toast.success('Registration successful! Redirecting to login...');
             redirectTimeoutRef.current = setTimeout(() => {
                 if (isMountedRef.current) {
                     router.push('/login');
                 }
             }, REDIRECT_DELAY_MS);
         } catch (err: unknown) {
+            let errorMsg = 'An error occurred. Please try again.';
             if (err instanceof Error) {
+                errorMsg = err.message;
                 setError(err.message);
             } else {
-                setError('An error occurred. Please try again.');
+                setError(errorMsg);
             }
+            toast.error(errorMsg);
         } finally {
             setIsLoading(false);
         }

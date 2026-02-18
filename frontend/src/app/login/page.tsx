@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-
 import { getApiUrl } from '@/lib/api';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -34,10 +34,13 @@ export default function LoginPage() {
             localStorage.setItem('token', data.access_token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
+            toast.success('Login successful!');
             // Redirect to home
             window.location.href = '/';
         } catch (err: any) {
-            setError(err.message || 'An error occurred. Please try again.');
+            const errorMsg = err.message || 'An error occurred. Please try again.';
+            setError(errorMsg);
+            toast.error(errorMsg);
         } finally {
             setIsLoading(false);
         }

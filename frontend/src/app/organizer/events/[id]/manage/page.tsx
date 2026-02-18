@@ -2,9 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, use, useCallback } from 'react';
-import { Check, X, Clock, ArrowLeft, DollarSign } from 'lucide-react';
+import { Check, X, Clock, ArrowLeft, DollarSign, XCircle } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { Application, Event } from '@/types/application';
+import toast from 'react-hot-toast';
+import ApplicationListSkeleton from '@/components/ApplicationListSkeleton';
 
 export default function ManageEventPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -57,6 +59,14 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
         const token = localStorage.getItem('token');
         if (!token) return;
 
+        // Store original state for rollback
+        const originalApplications = [...applications];
+
+        // Optimistic update
+        setApplications(prev => prev.map(app =>
+            app.id === applicationId ? { ...app, status: newStatus } : app
+        ));
+
         try {
             const res = await fetch(getApiUrl(`/applications/${applicationId}/status`), {
                 method: 'PATCH',
@@ -68,24 +78,33 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             });
 
             if (res.ok) {
-                // Update local state
-                setApplications(prev => prev.map(app =>
-                    app.id === applicationId ? { ...app, status: newStatus } : app
-                ));
+                toast.success(`Status updated to ${newStatus}`);
             } else {
+                // Rollback on error
+                setApplications(originalApplications);
                 const errorText = await res.text();
                 console.error('Failed to update status:', res.status, errorText);
-                alert(`Failed to update status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
+                toast.error(`Failed to update status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
             }
         } catch (err) {
+            // Rollback on error
+            setApplications(originalApplications);
             console.error('Error updating status:', err);
-            alert('Failed to update status. Please try again.');
+            toast.error('Failed to update status. Please try again.');
         }
     };
 
     const handlePaymentChange = async (applicationId: string, paymentDone: boolean) => {
         const token = localStorage.getItem('token');
         if (!token) return;
+
+        // Store original state for rollback
+        const originalApplications = [...applications];
+
+        // Optimistic update
+        setApplications(prev => prev.map(app =>
+            app.id === applicationId ? { ...app, paymentDone } : app
+        ));
 
         try {
             const res = await fetch(getApiUrl(`/applications/${applicationId}/payment`), {
@@ -98,18 +117,19 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             });
 
             if (res.ok) {
-                // Update local state
-                setApplications(prev => prev.map(app =>
-                    app.id === applicationId ? { ...app, paymentDone } : app
-                ));
+                toast.success(`Payment marked as ${paymentDone ? 'paid' : 'unpaid'}`);
             } else {
+                // Rollback on error
+                setApplications(originalApplications);
                 const errorText = await res.text();
                 console.error('Failed to update payment status:', res.status, errorText);
-                alert(`Failed to update payment status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
+                toast.error(`Failed to update payment status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
             }
         } catch (err) {
+            // Rollback on error
+            setApplications(originalApplications);
             console.error('Error updating payment:', err);
-            alert('Failed to update payment status. Please try again.');
+            toast.error('Failed to update payment status. Please try again.');
         }
     };
 
@@ -124,16 +144,38 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600"></div>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-slate-900">Manage Applications</h1>
+                    <p className="mt-2 text-slate-600">Loading event applications...</p>
+                </div>
+                <ApplicationListSkeleton />
             </div>
         );
     }
 
     if (error || !event) {
         return (
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-                <p className="text-red-600">{error || 'Event not found'}</p>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 bg-slate-50 min-h-screen">
+                <div className="text-center py-12 bg-white rounded-2xl ring-1 ring-slate-200">
+                    <XCircle className="mx-auto h-12 w-12 text-red-500" />
+                    <h3 className="mt-4 text-lg font-semibold text-slate-900">Error Loading Event</h3>
+                    <p className="mt-2 text-sm text-slate-500">{error || 'Event not found'}</p>
+                    <div className="mt-6 flex gap-4 justify-center">
+                        <button
+                            onClick={() => router.back()}
+                            className="inline-flex items-center rounded-xl bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 transition-colors"
+                        >
+                            Go Back
+                        </button>
+                        <button
+                            onClick={() => fetchEventAndApplications()}
+                            className="inline-flex items-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
