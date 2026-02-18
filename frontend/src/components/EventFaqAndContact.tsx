@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { HelpCircle, Mail, Lock } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
+import { Application } from '@/types/application';
 
 interface EventFaqAndContactProps {
     eventId: string;
@@ -30,8 +31,8 @@ export default function EventFaqAndContact({ eventId, faq, contact }: EventFaqAn
                 });
 
                 if (res.ok) {
-                    const applications = await res.json();
-                    const application = applications.find((app: any) => app.eventId === eventId);
+                    const applications: Application[] = await res.json();
+                    const application = applications.find((app) => app.eventId === eventId);
                     if (application && application.status === 'accepted') {
                         setIsAccepted(true);
                     }
