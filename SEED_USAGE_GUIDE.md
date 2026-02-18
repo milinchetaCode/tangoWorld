@@ -8,9 +8,14 @@ The seed script (`backend/prisma/seed.ts`) is a development tool that populates 
 1. The seed configuration has been **removed from package.json** - Prisma will not automatically run the seed during any operations
 2. The seed script includes **double-layer environment protection**:
    - **Layer 1:** Refuses to run if `NODE_ENV=production`
-   - **Layer 2:** Refuses to run if `DATABASE_URL` contains production hosting indicators (render.com, amazonaws.com, rds.amazonaws, heroku, herokuapp.com)
+   - **Layer 2:** Refuses to run if the DATABASE_URL hostname contains production hosting indicators:
+     - `render.com` (Render platform)
+     - `amazonaws.com` or `rds.amazonaws` (AWS RDS)
+     - `heroku` or `.herokuapp.com` (Heroku platform)
 3. The seed command has been removed from the deployment pipeline in render.yaml
 4. The render.yaml explicitly sets `NODE_ENV=production` during both build and runtime phases
+
+Note: The protection checks only the hostname portion of the DATABASE_URL for security (avoiding exposure of credentials).
 
 ## ⚠️ Important: Seed Script Behavior
 The seed script **deletes all existing events and applications** before inserting sample data:

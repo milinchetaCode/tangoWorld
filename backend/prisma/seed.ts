@@ -14,7 +14,20 @@ async function main() {
     }
 
     // Check 2: Detect production database URLs (Render, Heroku, AWS RDS, etc.)
-    const databaseUrl = (process.env.DATABASE_URL || '').toLowerCase();
+    // Extract hostname from DATABASE_URL to avoid checking credentials
+    const databaseUrl = process.env.DATABASE_URL || '';
+    let hostname = '';
+    
+    try {
+        // Parse the URL to extract only the hostname
+        // PostgreSQL URLs format: postgresql://user:password@hostname:port/database
+        const url = new URL(databaseUrl);
+        hostname = url.hostname.toLowerCase();
+    } catch (error) {
+        // If URL parsing fails, check the raw URL as fallback (but less secure)
+        hostname = databaseUrl.toLowerCase();
+    }
+
     const productionIndicators = [
         'render.com',
         'amazonaws.com',
@@ -24,14 +37,14 @@ async function main() {
     ];
     
     const isProductionDatabase = productionIndicators.some(indicator => 
-        databaseUrl.includes(indicator)
+        hostname.includes(indicator)
     );
 
     if (isProductionDatabase) {
         console.error('❌ ERROR: Cannot run seed script with production database!');
         console.error('This script deletes all events and applications.');
         console.error('Production database URL detected. Use a local/development database.');
-        console.error('Database URL contains production indicators.');
+        console.error('Database URL hostname matches known production hosting platforms.');
         process.exit(1);
     }
 
