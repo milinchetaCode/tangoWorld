@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -31,7 +31,7 @@ async function main() {
 
     console.log('👥 Creating test users...');
 
-    const testUsers = [];
+    const testUsers: User[] = [];
 
     const user1 = await prisma.user.upsert({
         where: { email: 'alice.dancer@test.com' },
