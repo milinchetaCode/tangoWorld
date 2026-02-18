@@ -5,6 +5,7 @@ import { useState, useEffect, use, useCallback } from 'react';
 import { ArrowLeft, DollarSign, TrendingUp, TrendingDown, Users, CreditCard, PlusCircle, Trash2 } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import toast from 'react-hot-toast';
 
 interface EventCost {
     id: string;
@@ -121,13 +122,14 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
                     date: new Date().toISOString().split('T')[0],
                 });
                 setShowAddCostForm(false);
+                toast.success('Cost added successfully');
                 await fetchData();
             } else {
-                alert('Failed to add cost. Please try again.');
+                toast.error('Failed to add cost. Please try again.');
             }
         } catch (err) {
             console.error('Error adding cost:', err);
-            alert('Failed to add cost. Please try again.');
+            toast.error('Failed to add cost. Please try again.');
         }
     };
 
@@ -146,13 +148,14 @@ export default function BusinessDashboardPage({ params }: { params: Promise<{ id
             });
 
             if (res.ok) {
+                toast.success('Cost deleted successfully');
                 await fetchData();
             } else {
-                alert('Failed to delete cost. Please try again.');
+                toast.error('Failed to delete cost. Please try again.');
             }
         } catch (err) {
             console.error('Error deleting cost:', err);
-            alert('Failed to delete cost. Please try again.');
+            toast.error('Failed to delete cost. Please try again.');
         }
     };
 

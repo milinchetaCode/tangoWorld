@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getApiUrl } from '@/lib/api';
 import { Application } from '@/types/application';
+import toast from 'react-hot-toast';
 
 interface EventRegistrationProps {
     eventId: string;
@@ -99,7 +99,7 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
         // Validate pricing option selection if pricing is available
         const hasPricing = priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth || priceDailyFood || priceDailyNoFood;
         if (hasPricing && !selectedPricingOption) {
-            setError('Please select a pricing option');
+            toast.error('Please select a pricing option');
             return;
         }
 
@@ -130,14 +130,19 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
             if (res.ok) {
                 const application = await res.json();
                 setUserApplication(application);
+                toast.success('Application submitted successfully!');
                 // Refresh the page to update the accepted count
                 router.refresh();
             } else {
                 const errorData = await res.json();
-                setError(errorData.message || 'Failed to apply');
+                const errorMsg = errorData.message || 'Failed to apply';
+                setError(errorMsg);
+                toast.error(errorMsg);
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            const errorMsg = 'An error occurred. Please try again.';
+            setError(errorMsg);
+            toast.error(errorMsg);
             console.error('Error applying to event:', err);
         } finally {
             setIsLoading(false);

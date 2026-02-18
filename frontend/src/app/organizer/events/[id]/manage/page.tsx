@@ -5,6 +5,7 @@ import { useState, useEffect, use, useCallback } from 'react';
 import { Check, X, Clock, ArrowLeft, DollarSign } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
 import { Application, Event } from '@/types/application';
+import toast from 'react-hot-toast';
 
 export default function ManageEventPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -57,6 +58,14 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
         const token = localStorage.getItem('token');
         if (!token) return;
 
+        // Store original state for rollback
+        const originalApplications = [...applications];
+
+        // Optimistic update
+        setApplications(prev => prev.map(app =>
+            app.id === applicationId ? { ...app, status: newStatus } : app
+        ));
+
         try {
             const res = await fetch(getApiUrl(`/applications/${applicationId}/status`), {
                 method: 'PATCH',
@@ -68,24 +77,33 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             });
 
             if (res.ok) {
-                // Update local state
-                setApplications(prev => prev.map(app =>
-                    app.id === applicationId ? { ...app, status: newStatus } : app
-                ));
+                toast.success(`Status updated to ${newStatus}`);
             } else {
+                // Rollback on error
+                setApplications(originalApplications);
                 const errorText = await res.text();
                 console.error('Failed to update status:', res.status, errorText);
-                alert(`Failed to update status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
+                toast.error(`Failed to update status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
             }
         } catch (err) {
+            // Rollback on error
+            setApplications(originalApplications);
             console.error('Error updating status:', err);
-            alert('Failed to update status. Please try again.');
+            toast.error('Failed to update status. Please try again.');
         }
     };
 
     const handlePaymentChange = async (applicationId: string, paymentDone: boolean) => {
         const token = localStorage.getItem('token');
         if (!token) return;
+
+        // Store original state for rollback
+        const originalApplications = [...applications];
+
+        // Optimistic update
+        setApplications(prev => prev.map(app =>
+            app.id === applicationId ? { ...app, paymentDone } : app
+        ));
 
         try {
             const res = await fetch(getApiUrl(`/applications/${applicationId}/payment`), {
@@ -98,18 +116,19 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
             });
 
             if (res.ok) {
-                // Update local state
-                setApplications(prev => prev.map(app =>
-                    app.id === applicationId ? { ...app, paymentDone } : app
-                ));
+                toast.success(`Payment marked as ${paymentDone ? 'paid' : 'unpaid'}`);
             } else {
+                // Rollback on error
+                setApplications(originalApplications);
                 const errorText = await res.text();
                 console.error('Failed to update payment status:', res.status, errorText);
-                alert(`Failed to update payment status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
+                toast.error(`Failed to update payment status: ${res.status === 403 ? 'Not authorized' : 'An error occurred'}`);
             }
         } catch (err) {
+            // Rollback on error
+            setApplications(originalApplications);
             console.error('Error updating payment:', err);
-            alert('Failed to update payment status. Please try again.');
+            toast.error('Failed to update payment status. Please try again.');
         }
     };
 
