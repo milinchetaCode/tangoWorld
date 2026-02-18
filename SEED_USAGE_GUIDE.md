@@ -6,8 +6,11 @@ The seed script (`backend/prisma/seed.ts`) is a development tool that populates 
 ## 🛡️ Production Safety
 **Multiple layers of protection prevent accidental data loss:**
 1. The seed configuration has been **removed from package.json** - Prisma will not automatically run the seed during any operations
-2. The seed script includes environment protection - it refuses to run if `NODE_ENV=production`
+2. The seed script includes **double-layer environment protection**:
+   - **Layer 1:** Refuses to run if `NODE_ENV=production`
+   - **Layer 2:** Refuses to run if `DATABASE_URL` contains production indicators (render.com, aws, amazonaws.com, heroku, production keywords)
 3. The seed command has been removed from the deployment pipeline in render.yaml
+4. The render.yaml explicitly sets `NODE_ENV=production` during both build and runtime phases
 
 ## ⚠️ Important: Seed Script Behavior
 The seed script **deletes all existing events and applications** before inserting sample data:
@@ -28,7 +31,9 @@ cd backend
 npx ts-node prisma/seed.ts
 ```
 
-**Note:** Make sure NODE_ENV is not set to "production" or the script will refuse to run.
+**Note:** Make sure NODE_ENV is not set to "production" and you're using a local/development database. The script will refuse to run if:
+- NODE_ENV is set to "production"
+- DATABASE_URL contains production indicators (render.com, aws, heroku, etc.)
 
 ### For Production
 **❌ DO NOT run the seed script in production!**
@@ -82,21 +87,24 @@ The seed script has been removed from the production deployment pipeline (`rende
 
 The production deployment (`render.yaml`) now uses:
 ```yaml
+buildCommand: NODE_ENV=production npm install --include=dev && npx prisma generate && npm run build
 startCommand: npx prisma migrate deploy && npx prisma generate && npm run start:prod
 ```
 
-Note: **No seed script** in the start command. This ensures:
+Note: **No seed script** in the commands, and NODE_ENV is explicitly set to production. This ensures:
 - ✅ Production data persists across deployments
 - ✅ Database migrations run automatically
 - ✅ Schema updates are applied
 - ✅ User data is preserved
+- ✅ Seed script cannot accidentally run even if triggered
 
 ## Troubleshooting
 
 ### "The seed script won't run / exits with error"
-If you see an error like `❌ ERROR: Cannot run seed script in production environment!`, this is the safety mechanism working correctly. To run the seed:
+If you see an error like `❌ ERROR: Cannot run seed script in production environment!` or `❌ ERROR: Cannot run seed script with production database!`, this is the safety mechanism working correctly. To run the seed:
 1. Make sure you're in a development environment
-2. Either unset NODE_ENV or set it to "development":
+2. Make sure you're using a local/development database (not a production database URL)
+3. Either unset NODE_ENV or set it to "development":
    ```bash
    # Option 1: Unset NODE_ENV
    unset NODE_ENV
@@ -120,9 +128,13 @@ npx ts-node prisma/seed.ts
 3. Manually insert data using SQL (not recommended)
 
 ### "I accidentally ran seed in production"
-**Good news:** With the new environment protection (added in this fix), the seed script will refuse to run if NODE_ENV=production, preventing data loss.
+**Good news:** With the enhanced environment protection, the seed script will refuse to run if:
+- NODE_ENV=production, OR
+- DATABASE_URL contains production database indicators
 
-**If you somehow bypassed this protection**, you'll need to:
+This prevents data loss through multiple safety checks.
+
+**If you somehow bypassed these protections**, you'll need to:
 1. Restore from a database backup (if available)
 2. Recreate the data manually
 3. Contact Render support about database backups
