@@ -137,6 +137,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                         priceFullEventBoth={event.priceFullEventBoth ? Number(event.priceFullEventBoth) : undefined}
                         priceDailyFood={event.priceDailyFood ? Number(event.priceDailyFood) : undefined}
                         priceDailyNoFood={event.priceDailyNoFood ? Number(event.priceDailyNoFood) : undefined}
+                        dailyRateDates={event.dailyRateDates ? JSON.parse(event.dailyRateDates) : undefined}
                     />
                 </div>
             </div>

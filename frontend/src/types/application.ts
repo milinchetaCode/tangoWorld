@@ -6,6 +6,7 @@ export interface Application {
     paymentDone: boolean;
     pricingOption?: string;
     numberOfDays?: number;
+    selectedDates?: string[];
     totalPrice?: number;
     appliedAt: string;
     updatedAt: string;
@@ -47,6 +48,7 @@ export interface Event {
     priceFullEventBoth?: number;
     priceDailyFood?: number;
     priceDailyNoFood?: number;
+    dailyRateDates?: string[];
     acceptedCount?: number;
     createdAt: string;
     updatedAt: string;

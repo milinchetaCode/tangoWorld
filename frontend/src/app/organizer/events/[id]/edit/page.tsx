@@ -38,6 +38,7 @@ export default function EditEventPage() {
         contact: '',
         isPublished: false,
     });
+    const [dailyRateDates, setDailyRateDates] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isFetchingEvent, setIsFetchingEvent] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -100,6 +101,15 @@ export default function EditEventPage() {
                     contact: event.contact || '',
                     isPublished: event.isPublished || false,
                 });
+
+                // Populate dailyRateDates from JSON string if present
+                if (event.dailyRateDates) {
+                    try {
+                        setDailyRateDates(JSON.parse(event.dailyRateDates));
+                    } catch {
+                        setDailyRateDates([]);
+                    }
+                }
 
                 // If coordinates are already set, mark them as manual to prevent auto-geocoding
                 if (event.latitude && event.longitude) {
@@ -221,6 +231,7 @@ export default function EditEventPage() {
                 priceFullEventBoth: parseFloatOrNull(formData.priceFullEventBoth),
                 priceDailyFood: parseFloatOrNull(formData.priceDailyFood),
                 priceDailyNoFood: parseFloatOrNull(formData.priceDailyNoFood),
+                dailyRateDates: dailyRateDates.length > 0 ? JSON.stringify([...dailyRateDates].sort()) : null,
                 faq: formData.faq || null,
                 contact: formData.contact || null,
                 isPublished: formData.isPublished,
@@ -272,6 +283,27 @@ export default function EditEventPage() {
         }
         
         setFormData(prev => ({ ...prev, [name]: finalValue }));
+    };
+
+    // Generate list of YYYY-MM-DD strings between startDate and endDate (inclusive)
+    const getEventDays = (): string[] => {
+        if (!formData.startDate || !formData.endDate) return [];
+        const start = new Date(formData.startDate + 'T00:00:00');
+        const end = new Date(formData.endDate + 'T00:00:00');
+        if (isNaN(start.getTime()) || isNaN(end.getTime()) || end < start) return [];
+        const days: string[] = [];
+        const cur = new Date(start);
+        while (cur <= end) {
+            days.push(cur.toISOString().split('T')[0]);
+            cur.setDate(cur.getDate() + 1);
+        }
+        return days;
+    };
+
+    const toggleDailyRateDate = (date: string) => {
+        setDailyRateDates(prev =>
+            prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date]
+        );
     };
 
     const capacityWarning = (formData.maleCapacity + formData.femaleCapacity) > formData.capacity;
@@ -857,6 +889,43 @@ export default function EditEventPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Available dates for daily rate */}
+                            {(formData.priceDailyFood || formData.priceDailyNoFood) && getEventDays().length > 0 && (
+                                <div className="mt-6">
+                                    <label className="block text-sm font-medium text-slate-900 mb-1">
+                                        Days that accept daily rate
+                                    </label>
+                                    <p className="text-xs text-slate-500 mb-3">
+                                        Select which days of the event are available for daily passes.
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                        {getEventDays().map((date) => (
+                                            <label
+                                                key={date}
+                                                className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer text-sm transition-colors ${
+                                                    dailyRateDates.includes(date)
+                                                        ? 'bg-rose-50 border-rose-400 text-rose-800 font-medium'
+                                                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-white'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={dailyRateDates.includes(date)}
+                                                    onChange={() => toggleDailyRateDate(date)}
+                                                    className="h-3.5 w-3.5 rounded text-rose-600 focus:ring-rose-500 border-slate-300"
+                                                />
+                                                {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    {getEventDays().length > 0 && (
+                                        <p className="mt-2 text-xs text-slate-500">
+                                            {dailyRateDates.length} of {getEventDays().length} days selected
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

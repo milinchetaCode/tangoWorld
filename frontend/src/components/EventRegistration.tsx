@@ -6,6 +6,10 @@ import { getApiUrl } from '@/lib/api';
 import { Application } from '@/types/application';
 import toast from 'react-hot-toast';
 
+// Format a YYYY-MM-DD date string for display (avoids timezone shift from Date constructor)
+const formatDate = (date: string, options: Intl.DateTimeFormatOptions) =>
+    new Date(date + 'T00:00:00').toLocaleDateString('en-US', options);
+
 interface EventRegistrationProps {
     eventId: string;
     capacity: number;
@@ -19,20 +23,25 @@ interface EventRegistrationProps {
     priceFullEventBoth?: number;
     priceDailyFood?: number;
     priceDailyNoFood?: number;
+    dailyRateDates?: string[];
 }
 
-export default function EventRegistration({ eventId, capacity, acceptedCount, startDate, endDate, isPublished, priceFullEventNoFoodNoAccommodation, priceFullEventFood, priceFullEventAccommodation, priceFullEventBoth, priceDailyFood, priceDailyNoFood }: EventRegistrationProps) {
+export default function EventRegistration({ eventId, capacity, acceptedCount, startDate, endDate, isPublished, priceFullEventNoFoodNoAccommodation, priceFullEventFood, priceFullEventAccommodation, priceFullEventBoth, priceDailyFood, priceDailyNoFood, dailyRateDates }: EventRegistrationProps) {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userApplication, setUserApplication] = useState<Application | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedPricingOption, setSelectedPricingOption] = useState<string>('');
+    const [selectedDates, setSelectedDates] = useState<string[]>([]);
 
     const isFull = capacity > 0 && acceptedCount >= capacity;
 
-    // Calculate event duration in days (automatically from event dates)
-    // Using inclusive date range: e.g., Jan 1-2 is 2 days, Jan 1-1 is 1 day
-    const numberOfDays = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    // Toggle a date in/out of the selectedDates array
+    const toggleDate = (date: string) => {
+        setSelectedDates(prev =>
+            prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date]
+        );
+    };
 
     // Calculate total price based on selection
     const calculateTotalPrice = () => {
@@ -40,17 +49,21 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
         
         switch (selectedPricingOption) {
             case 'full_no_food_no_accommodation':
-                return priceFullEventNoFoodNoAccommodation;
+                return priceFullEventNoFoodNoAccommodation ?? null;
             case 'full_food':
-                return priceFullEventFood;
+                return priceFullEventFood ?? null;
             case 'full_accommodation':
-                return priceFullEventAccommodation;
+                return priceFullEventAccommodation ?? null;
             case 'full_both':
-                return priceFullEventBoth;
+                return priceFullEventBoth ?? null;
             case 'daily_food':
-                return priceDailyFood ? priceDailyFood * numberOfDays : null;
+                return priceDailyFood && selectedDates.length > 0
+                    ? priceDailyFood * selectedDates.length
+                    : null;
             case 'daily_no_food':
-                return priceDailyNoFood ? priceDailyNoFood * numberOfDays : null;
+                return priceDailyNoFood && selectedDates.length > 0
+                    ? priceDailyNoFood * selectedDates.length
+                    : null;
             default:
                 return null;
         }
@@ -70,6 +83,14 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                 const applications: Application[] = await res.json();
                 const existingApp = applications.find((app) => app.eventId === eventId);
                 if (existingApp) {
+                    // Parse selectedDates from JSON string if present
+                    if (typeof (existingApp as any).selectedDates === 'string') {
+                        try {
+                            (existingApp as any).selectedDates = JSON.parse((existingApp as any).selectedDates);
+                        } catch {
+                            (existingApp as any).selectedDates = [];
+                        }
+                    }
                     setUserApplication(existingApp);
                 }
             }
@@ -97,9 +118,15 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
         }
 
         // Validate pricing option selection if pricing is available
-        const hasPricing = priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth || priceDailyFood || priceDailyNoFood;
+        const hasPricing = priceFullEventNoFoodNoAccommodation || priceFullEventFood || priceFullEventAccommodation || priceFullEventBoth || priceDailyFood || priceDailyNoFood;
         if (hasPricing && !selectedPricingOption) {
             toast.error('Please select a pricing option');
+            return;
+        }
+
+        // Validate date selection for daily pricing
+        if (selectedPricingOption.startsWith('daily_') && selectedDates.length === 0) {
+            toast.error('Please select at least one date for the daily pass');
             return;
         }
 
@@ -110,7 +137,8 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
             if (selectedPricingOption) {
                 body.pricingOption = selectedPricingOption;
                 if (selectedPricingOption.startsWith('daily_')) {
-                    body.numberOfDays = numberOfDays;
+                    body.numberOfDays = selectedDates.length;
+                    body.selectedDates = JSON.stringify([...selectedDates].sort());
                 }
                 if (totalPrice !== null) {
                     body.totalPrice = totalPrice;
@@ -226,8 +254,20 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                             <p className="text-xs text-slate-600">
                                 <span className="font-semibold">Selected option:</span>{' '}
                                 {userApplication.pricingOption.replace(/_/g, ' ')}
-                                {userApplication.numberOfDays && ` (${userApplication.numberOfDays} days)`}
+                                {userApplication.numberOfDays && userApplication.numberOfDays > 0 && ` (${userApplication.numberOfDays} ${userApplication.numberOfDays === 1 ? 'day' : 'days'})`}
                             </p>
+                            {userApplication.selectedDates && userApplication.selectedDates.length > 0 && (
+                                <div className="mt-1">
+                                    <span className="text-xs font-semibold text-slate-600">Days:</span>
+                                    <ul className="mt-0.5 space-y-0.5">
+                                        {userApplication.selectedDates.map((date) => (
+                                            <li key={date} className="text-xs text-slate-600 pl-2">
+                                                {formatDate(date, { weekday: 'short', month: 'short', day: 'numeric' })}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                             {userApplication.totalPrice && (
                                 <p className="text-xs text-slate-600 mt-1">
                                     <span className="font-semibold">Total:</span> ${Number(userApplication.totalPrice).toFixed(2)}
@@ -332,7 +372,7 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                                                         name="pricingOption"
                                                         value="daily_food"
                                                         checked={selectedPricingOption === 'daily_food'}
-                                                        onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                        onChange={(e) => { setSelectedPricingOption(e.target.value); setSelectedDates([]); }}
                                                         className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
                                                     />
                                                     <span className="ml-3 text-sm text-slate-900">Daily with Food</span>
@@ -351,7 +391,7 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                                                         name="pricingOption"
                                                         value="daily_no_food"
                                                         checked={selectedPricingOption === 'daily_no_food'}
-                                                        onChange={(e) => setSelectedPricingOption(e.target.value)}
+                                                        onChange={(e) => { setSelectedPricingOption(e.target.value); setSelectedDates([]); }}
                                                         className="h-4 w-4 text-rose-600 focus:ring-rose-500 border-slate-300"
                                                     />
                                                     <span className="ml-3 text-sm text-slate-900">Daily without Food</span>
@@ -361,12 +401,38 @@ export default function EventRegistration({ eventId, capacity, acceptedCount, st
                                         </label>
                                     )}
                                     
-                                    {/* Display event duration for daily options */}
-                                    {selectedPricingOption.startsWith('daily_') && (
-                                        <div className="pl-7 pt-2">
-                                            <p className="text-xs text-slate-600">
-                                                Event duration: <span className="font-semibold">{numberOfDays} {numberOfDays === 1 ? 'day' : 'days'}</span>
+                                    {/* Date checkboxes — shown once a daily option is selected */}
+                                    {selectedPricingOption.startsWith('daily_') && dailyRateDates && dailyRateDates.length > 0 && (
+                                        <div className="mt-3 pl-1">
+                                            <p className="text-xs font-semibold text-slate-700 mb-2">
+                                                Select your day(s):
                                             </p>
+                                            <div className="grid grid-cols-1 gap-1.5">
+                                                {dailyRateDates.map((date) => (
+                                                    <label
+                                                        key={date}
+                                                        className={`flex items-center p-2.5 rounded-lg border cursor-pointer transition-colors text-sm ${
+                                                            selectedDates.includes(date)
+                                                                ? 'bg-rose-50 border-rose-400 text-rose-800 font-medium'
+                                                                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                                        }`}
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            value={date}
+                                                            checked={selectedDates.includes(date)}
+                                                            onChange={() => toggleDate(date)}
+                                                            className="h-3.5 w-3.5 rounded text-rose-600 focus:ring-rose-500 border-slate-300 mr-2"
+                                                        />
+                                                        {formatDate(date, { weekday: 'short', month: 'short', day: 'numeric' })}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                            {selectedDates.length > 0 && (
+                                                <p className="mt-1.5 text-xs text-slate-500">
+                                                    {selectedDates.length} {selectedDates.length === 1 ? 'day' : 'days'} selected
+                                                </p>
+                                            )}
                                         </div>
                                     )}
                                 </div>

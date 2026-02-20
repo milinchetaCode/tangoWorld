@@ -139,6 +139,58 @@ describe('ApplicationsService - Pricing', () => {
       });
     });
 
+    it('should create application with daily pricing and selected dates', async () => {
+      const userId = 'user-id';
+      const eventId = 'event-id';
+      const pricingData = {
+        pricingOption: 'daily_food',
+        numberOfDays: 2,
+        selectedDates: '["2024-05-20","2024-05-21"]',
+        totalPrice: 120.00,
+      };
+
+      const mockEvent = {
+        id: eventId,
+        capacity: 100,
+        maleCapacity: 50,
+        femaleCapacity: 50,
+        applications: [],
+      };
+
+      const mockUser = {
+        id: userId,
+        gender: 'female',
+      };
+
+      mockPrismaService.event.findUnique.mockResolvedValue(mockEvent);
+      mockPrismaService.application.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      mockPrismaService.application.create.mockResolvedValue({
+        id: 'app-id',
+        userId,
+        eventId,
+        status: 'applied',
+        pricingOption: pricingData.pricingOption,
+        numberOfDays: pricingData.numberOfDays,
+        selectedDates: pricingData.selectedDates,
+        totalPrice: pricingData.totalPrice,
+      });
+
+      const result = await service.apply(userId, eventId, pricingData);
+
+      expect(result).toBeDefined();
+      expect(mockPrismaService.application.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          user: { connect: { id: userId } },
+          event: { connect: { id: eventId } },
+          pricingOption: pricingData.pricingOption,
+          numberOfDays: pricingData.numberOfDays,
+          selectedDates: pricingData.selectedDates,
+          totalPrice: pricingData.totalPrice,
+        }),
+      });
+    });
+
     it('should create application without pricing when not provided', async () => {
       const userId = 'user-id';
       const eventId = 'event-id';

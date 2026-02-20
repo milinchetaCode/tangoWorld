@@ -56,6 +56,7 @@ model Event {
   priceFullEventBoth                  Decimal?      @db.Decimal(10, 2) // Full event including food and accommodation
   priceDailyFood                      Decimal?      @db.Decimal(10, 2) // Daily price including food
   priceDailyNoFood                    Decimal?      @db.Decimal(10, 2) // Daily price without food
+  dailyRateDates                      String? // JSON array of date strings (e.g. ["2024-05-20","2024-05-21"]) that accept daily rates
   faq                                 String? // Frequently Asked Questions for dancers (optional)
   contact                             String? // Contact information for organizers (optional, visible only to accepted users)
   createdAt                           DateTime      @default(now())
@@ -77,6 +78,7 @@ model Application {
   // Pricing selection
   pricingOption String? // "full_no_food_no_accommodation", "full_food", "full_accommodation", "full_both", "daily_food", "daily_no_food"
   numberOfDays  Int? // Only applicable for daily pricing options
+  selectedDates String? // JSON array of ISO date strings (YYYY-MM-DD) chosen for a daily pass
   totalPrice    Decimal? @db.Decimal(10, 2) // Calculated total price based on selection
   appliedAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
