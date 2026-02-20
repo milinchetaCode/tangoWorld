@@ -51,7 +51,7 @@ describe('EventsService', () => {
       const result = await service.findAll();
 
       expect(prismaService.event.findMany).toHaveBeenCalledWith({
-        where: {},
+        where: { isPublished: true },
         include: {
           organizer: {
             select: {
@@ -112,6 +112,7 @@ describe('EventsService', () => {
 
       expect(prismaService.event.findMany).toHaveBeenCalledWith({
         where: {
+          isPublished: true,
           OR: [
             { title: { contains: search, mode: 'insensitive' } },
             { location: { contains: search, mode: 'insensitive' } },
