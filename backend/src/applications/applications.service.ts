@@ -10,6 +10,7 @@ import { Prisma } from '@prisma/client';
 interface ApplicationPricingData {
   pricingOption?: string;
   numberOfDays?: number;
+  selectedDates?: string;
   totalPrice?: number;
 }
 
@@ -64,7 +65,7 @@ export class ApplicationsService {
     }
 
     // Prepare application data
-    const data: Prisma.ApplicationCreateInput = {
+    const data: Prisma.ApplicationCreateInput & { selectedDates?: string } = {
       user: {
         connect: { id: userId },
       },
@@ -80,6 +81,9 @@ export class ApplicationsService {
     }
     if (applicationData?.numberOfDays) {
       data.numberOfDays = applicationData.numberOfDays;
+    }
+    if (applicationData?.selectedDates) {
+      data.selectedDates = applicationData.selectedDates;
     }
     if (applicationData?.totalPrice) {
       data.totalPrice = applicationData.totalPrice;

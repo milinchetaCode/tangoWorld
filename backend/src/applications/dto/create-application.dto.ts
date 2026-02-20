@@ -14,6 +14,10 @@ export class CreateApplicationDto {
   numberOfDays?: number;
 
   @IsOptional()
+  @IsString()
+  selectedDates?: string;
+
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   @Min(0)
