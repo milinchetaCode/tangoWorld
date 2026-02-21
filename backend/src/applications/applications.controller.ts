@@ -28,8 +28,8 @@ export class ApplicationsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('event/:eventId')
-  getEventApplications(@Param('eventId') eventId: string) {
-    return this.applicationsService.findAllForEvent(eventId);
+  getEventApplications(@Param('eventId') eventId: string, @Request() req: any) {
+    return this.applicationsService.findAllForEvent(eventId, req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)
