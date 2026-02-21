@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -32,12 +31,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        {/* BEGIN Travelpayouts reference program - remove this block if no longer needed */}
-        <Script
-          strategy="afterInteractive"
-          src="https://c121.travelpayouts.com/content?trs=279710&shmarker=279710&locale=en&curr=USD&powered_by=true&promo_id=4132"
-        />
-        {/* END Travelpayouts reference program */}
         <ToastProvider />
         <ClientErrorBoundary>
           <Navbar />
