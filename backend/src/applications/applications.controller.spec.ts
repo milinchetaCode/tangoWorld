@@ -22,7 +22,25 @@ describe('ApplicationsController', () => {
     controller = module.get<ApplicationsController>(ApplicationsController);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('getEventApplications', () => {
+    it('should call findAllForEvent with eventId and userId from request', async () => {
+      const eventId = 'event-123';
+      const userId = 'organizer-456';
+      const req = { user: { userId } };
+      mockApplicationsService.findAllForEvent.mockResolvedValue([]);
+
+      const result = await controller.getEventApplications(eventId, req);
+
+      expect(mockApplicationsService.findAllForEvent).toHaveBeenCalledWith(eventId, userId);
+      expect(result).toEqual([]);
+    });
   });
 });

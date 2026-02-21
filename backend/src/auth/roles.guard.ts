@@ -6,14 +6,14 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.get<string[]>(
-      'roles',
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>('roles', [
       context.getHandler(),
-    );
-    const requiredStatus = this.reflector.get<string[]>(
-      'status',
+      context.getClass(),
+    ]);
+    const requiredStatus = this.reflector.getAllAndOverride<string[]>('status', [
       context.getHandler(),
-    );
+      context.getClass(),
+    ]);
 
     const { user } = context.switchToHttp().getRequest();
 

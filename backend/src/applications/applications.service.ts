@@ -94,7 +94,7 @@ export class ApplicationsService {
     });
   }
 
-  async findAllForEvent(eventId: string) {
+  async findAllForEvent(eventId: string, userId: string) {
     // First, get the event to know the organizer
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
@@ -103,6 +103,13 @@ export class ApplicationsService {
 
     if (!event) {
       throw new NotFoundException('Event not found');
+    }
+
+    // Verify the user is the organizer of the event
+    if (event.organizerId !== userId) {
+      throw new ForbiddenException(
+        'Only the event organizer can view applications',
+      );
     }
 
     const applications = await this.prisma.application.findMany({
