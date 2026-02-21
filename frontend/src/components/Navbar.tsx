@@ -155,7 +155,8 @@ export default function Navbar() {
                             </Link>
                         )}
                         {user?.organizerStatus === 'approved' && (
-                            <Link href="/organizer" className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md text-base font-medium transition-colors">
+                            <Link href="/organizer" className="flex items-center gap-1.5 bg-slate-800 text-amber-400 hover:bg-slate-700 hover:text-amber-300 px-3 py-2 rounded-md text-base font-medium transition-colors ring-1 ring-amber-500/40">
+                                <ShieldCheck className="h-4 w-4 text-amber-500" aria-hidden="true" />
                                 Organizer
                             </Link>
                         )}
@@ -207,7 +208,8 @@ export default function Navbar() {
                             </Link>
                         )}
                         {user?.organizerStatus === 'approved' && (
-                            <Link href="/organizer" className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-50 hover:border-slate-300">
+                            <Link href="/organizer" className="flex items-center gap-1.5 pl-3 pr-4 py-2 border-l-4 border-amber-500 text-base font-medium text-amber-600 bg-slate-800/10 hover:bg-slate-800/20 hover:text-amber-700">
+                                <ShieldCheck className="h-4 w-4 text-amber-500" aria-hidden="true" />
                                 Organizer
                             </Link>
                         )}
