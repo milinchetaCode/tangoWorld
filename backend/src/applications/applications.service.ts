@@ -1,5 +1,6 @@
 import {
   Injectable,
+  BadRequestException,
   ConflictException,
   NotFoundException,
   ForbiddenException,
@@ -212,6 +213,11 @@ export class ApplicationsService {
   }
 
   async updateStatus(id: string, status: string, userId: string) {
+    const VALID_STATUSES = ['applied', 'accepted', 'waitlisted', 'rejected', 'cancelled'];
+    if (!VALID_STATUSES.includes(status)) {
+      throw new BadRequestException(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`);
+    }
+
     // Get the application with event info to verify authorization
     const application = await this.prisma.application.findUnique({
       where: { id },
