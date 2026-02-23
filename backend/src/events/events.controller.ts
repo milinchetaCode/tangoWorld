@@ -20,6 +20,13 @@ import { RolesGuard } from '../auth/roles.guard';
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @SetMetadata('status', ['approved'])
+  @Get('mine')
+  findMine(@Request() req: any, @Query('search') search?: string) {
+    return this.eventsService.findAll(search, req.user.userId);
+  }
+
   @Get()
   findAll(@Query('search') search?: string, @Query('organizerId') organizerId?: string) {
     return this.eventsService.findAll(search, organizerId);

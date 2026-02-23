@@ -77,6 +77,28 @@ describe('EventsController', () => {
     });
   });
 
+  describe('findMine', () => {
+    it('should call service.findAll with the authenticated user id', async () => {
+      const mockReq = { user: { userId: 'organizer-abc' } };
+      const myEvents = [{ id: 'e1', title: 'My Event' }];
+      mockEventsService.findAll.mockResolvedValue(myEvents);
+
+      const result = await controller.findMine(mockReq);
+
+      expect(service.findAll).toHaveBeenCalledWith(undefined, 'organizer-abc');
+      expect(result).toEqual(myEvents);
+    });
+
+    it('should pass search parameter along with authenticated user id', async () => {
+      const mockReq = { user: { userId: 'organizer-abc' } };
+      mockEventsService.findAll.mockResolvedValue([]);
+
+      await controller.findMine(mockReq, 'tango');
+
+      expect(service.findAll).toHaveBeenCalledWith('tango', 'organizer-abc');
+    });
+  });
+
   describe('updateCoordinates', () => {
     const mockReq = { user: { userId: 'organizer-123' } };
 
