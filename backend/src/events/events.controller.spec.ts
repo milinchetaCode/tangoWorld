@@ -78,6 +78,8 @@ describe('EventsController', () => {
   });
 
   describe('updateCoordinates', () => {
+    const mockReq = { user: { userId: 'organizer-123' } };
+
     it('should update coordinates with valid data', async () => {
       const eventId = 'test-event-id';
       const body = { latitude: 48.8566, longitude: 2.3522 };
@@ -85,12 +87,13 @@ describe('EventsController', () => {
 
       mockEventsService.updateCoordinates.mockResolvedValue(updatedEvent);
 
-      const result = await controller.updateCoordinates(eventId, body);
+      const result = await controller.updateCoordinates(eventId, body, mockReq);
 
       expect(service.updateCoordinates).toHaveBeenCalledWith(
         eventId,
         body.latitude,
         body.longitude,
+        mockReq.user.userId,
       );
       expect(result).toEqual(updatedEvent);
     });
@@ -99,10 +102,10 @@ describe('EventsController', () => {
       const eventId = 'test-event-id';
       const body = { latitude: -91, longitude: 2.3522 };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         'Latitude must be between -90 and 90',
       );
     });
@@ -111,10 +114,10 @@ describe('EventsController', () => {
       const eventId = 'test-event-id';
       const body = { latitude: 91, longitude: 2.3522 };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         'Latitude must be between -90 and 90',
       );
     });
@@ -123,10 +126,10 @@ describe('EventsController', () => {
       const eventId = 'test-event-id';
       const body = { latitude: 48.8566, longitude: -181 };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         'Longitude must be between -180 and 180',
       );
     });
@@ -135,10 +138,10 @@ describe('EventsController', () => {
       const eventId = 'test-event-id';
       const body = { latitude: 48.8566, longitude: 181 };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, mockReq)).toThrow(
         'Longitude must be between -180 and 180',
       );
     });
@@ -150,12 +153,13 @@ describe('EventsController', () => {
 
       mockEventsService.updateCoordinates.mockResolvedValue(updatedEvent);
 
-      const result = await controller.updateCoordinates(eventId, body);
+      const result = await controller.updateCoordinates(eventId, body, mockReq);
 
       expect(service.updateCoordinates).toHaveBeenCalledWith(
         eventId,
         body.latitude,
         body.longitude,
+        mockReq.user.userId,
       );
       expect(result).toEqual(updatedEvent);
     });
@@ -167,12 +171,13 @@ describe('EventsController', () => {
 
       mockEventsService.updateCoordinates.mockResolvedValue(updatedEvent);
 
-      const result = await controller.updateCoordinates(eventId, body);
+      const result = await controller.updateCoordinates(eventId, body, mockReq);
 
       expect(service.updateCoordinates).toHaveBeenCalledWith(
         eventId,
         body.latitude,
         body.longitude,
+        mockReq.user.userId,
       );
       expect(result).toEqual(updatedEvent);
     });

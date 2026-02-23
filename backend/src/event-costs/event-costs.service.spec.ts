@@ -6,10 +6,17 @@ describe('EventCostsService', () => {
   let service: EventCostsService;
   let prisma: PrismaService;
 
+  const ORGANIZER_ID = 'organizer-123';
+  const EVENT_ID = 'event-123';
+
   const mockPrismaService = {
+    event: {
+      findUnique: jest.fn(),
+    },
     eventCost: {
       create: jest.fn(),
       findMany: jest.fn(),
+      findUnique: jest.fn(),
       delete: jest.fn(),
     },
     application: {
@@ -30,6 +37,9 @@ describe('EventCostsService', () => {
 
     service = module.get<EventCostsService>(EventCostsService);
     prisma = module.get<PrismaService>(PrismaService);
+
+    // Default: ownership check passes
+    mockPrismaService.event.findUnique.mockResolvedValue({ organizerId: ORGANIZER_ID });
   });
 
   afterEach(() => {
@@ -43,7 +53,7 @@ describe('EventCostsService', () => {
   describe('create', () => {
     it('should create a new event cost', async () => {
       const costData = {
-        event: { connect: { id: 'event-123' } },
+        event: { connect: { id: EVENT_ID } },
         category: 'rent',
         description: 'Venue rental',
         amount: 1000,
@@ -52,7 +62,7 @@ describe('EventCostsService', () => {
 
       mockPrismaService.eventCost.create.mockResolvedValue(expectedResult);
 
-      const result = await service.create(costData);
+      const result = await service.create(costData, ORGANIZER_ID);
 
       expect(prisma.eventCost.create).toHaveBeenCalledWith({ data: costData });
       expect(result).toEqual(expectedResult);
@@ -61,18 +71,17 @@ describe('EventCostsService', () => {
 
   describe('findAllByEventId', () => {
     it('should return all costs for an event', async () => {
-      const eventId = 'event-123';
       const expectedCosts = [
-        { id: 'cost-1', eventId, category: 'rent', amount: 1000 },
-        { id: 'cost-2', eventId, category: 'insurance', amount: 500 },
+        { id: 'cost-1', eventId: EVENT_ID, category: 'rent', amount: 1000 },
+        { id: 'cost-2', eventId: EVENT_ID, category: 'insurance', amount: 500 },
       ];
 
       mockPrismaService.eventCost.findMany.mockResolvedValue(expectedCosts);
 
-      const result = await service.findAllByEventId(eventId);
+      const result = await service.findAllByEventId(EVENT_ID, ORGANIZER_ID);
 
       expect(prisma.eventCost.findMany).toHaveBeenCalledWith({
-        where: { eventId },
+        where: { eventId: EVENT_ID },
         orderBy: { date: 'desc' },
       });
       expect(result).toEqual(expectedCosts);
@@ -84,9 +93,10 @@ describe('EventCostsService', () => {
       const costId = 'cost-123';
       const expectedResult = { id: costId };
 
+      mockPrismaService.eventCost.findUnique.mockResolvedValue({ eventId: EVENT_ID });
       mockPrismaService.eventCost.delete.mockResolvedValue(expectedResult);
 
-      const result = await service.remove(costId);
+      const result = await service.remove(costId, ORGANIZER_ID);
 
       expect(prisma.eventCost.delete).toHaveBeenCalledWith({
         where: { id: costId },
@@ -97,8 +107,6 @@ describe('EventCostsService', () => {
 
   describe('getBusinessDashboardData', () => {
     it('should calculate business dashboard metrics correctly', async () => {
-      const eventId = 'event-123';
-
       const mockCosts = [
         { id: 'cost-1', category: 'rent', amount: 1000, date: new Date() },
         { id: 'cost-2', category: 'insurance', amount: 500, date: new Date() },
@@ -133,7 +141,7 @@ describe('EventCostsService', () => {
         mockApplications,
       );
 
-      const result = await service.getBusinessDashboardData(eventId);
+      const result = await service.getBusinessDashboardData(EVENT_ID, ORGANIZER_ID);
 
       expect(result.totalCosts).toBe(1500);
       expect(result.confirmedRevenue).toBe(200);
@@ -151,12 +159,10 @@ describe('EventCostsService', () => {
     });
 
     it('should handle events with no costs or applications', async () => {
-      const eventId = 'event-123';
-
       mockPrismaService.eventCost.findMany.mockResolvedValue([]);
       mockPrismaService.application.findMany.mockResolvedValue([]);
 
-      const result = await service.getBusinessDashboardData(eventId);
+      const result = await service.getBusinessDashboardData(EVENT_ID, ORGANIZER_ID);
 
       expect(result.totalCosts).toBe(0);
       expect(result.confirmedRevenue).toBe(0);

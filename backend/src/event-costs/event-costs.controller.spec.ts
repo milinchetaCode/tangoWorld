@@ -9,6 +9,8 @@ describe('EventCostsController', () => {
   let controller: EventCostsController;
   let service: EventCostsService;
 
+  const mockReq = { user: { userId: 'organizer-123' } };
+
   const mockEventCostsService = {
     create: jest.fn(),
     findAllByEventId: jest.fn(),
@@ -52,7 +54,7 @@ describe('EventCostsController', () => {
 
       mockEventCostsService.create.mockResolvedValue(expectedResult);
 
-      const result = await controller.create(eventId, body);
+      const result = await controller.create(eventId, body, mockReq);
 
       expect(service.create).toHaveBeenCalledWith({
         event: { connect: { id: eventId } },
@@ -60,7 +62,7 @@ describe('EventCostsController', () => {
         description: body.description,
         amount: body.amount,
         date: new Date(body.date),
-      });
+      }, mockReq.user.userId);
       expect(result).toEqual(expectedResult);
     });
 
@@ -74,7 +76,7 @@ describe('EventCostsController', () => {
 
       mockEventCostsService.create.mockResolvedValue({});
 
-      await controller.create(eventId, body);
+      await controller.create(eventId, body, mockReq);
 
       expect(service.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -84,6 +86,7 @@ describe('EventCostsController', () => {
           amount: body.amount,
           date: expect.any(Date),
         }),
+        mockReq.user.userId,
       );
     });
   });
@@ -98,9 +101,9 @@ describe('EventCostsController', () => {
 
       mockEventCostsService.findAllByEventId.mockResolvedValue(expectedCosts);
 
-      const result = await controller.findAll(eventId);
+      const result = await controller.findAll(eventId, mockReq);
 
-      expect(service.findAllByEventId).toHaveBeenCalledWith(eventId);
+      expect(service.findAllByEventId).toHaveBeenCalledWith(eventId, mockReq.user.userId);
       expect(result).toEqual(expectedCosts);
     });
   });
@@ -112,9 +115,9 @@ describe('EventCostsController', () => {
 
       mockEventCostsService.remove.mockResolvedValue(expectedResult);
 
-      const result = await controller.remove(costId);
+      const result = await controller.remove(costId, mockReq);
 
-      expect(service.remove).toHaveBeenCalledWith(costId);
+      expect(service.remove).toHaveBeenCalledWith(costId, mockReq.user.userId);
       expect(result).toEqual(expectedResult);
     });
   });
@@ -123,6 +126,8 @@ describe('EventCostsController', () => {
 describe('BusinessDashboardController', () => {
   let controller: BusinessDashboardController;
   let service: EventCostsService;
+
+  const mockReq = { user: { userId: 'organizer-123' } };
 
   const mockEventCostsService = {
     create: jest.fn(),
@@ -177,9 +182,9 @@ describe('BusinessDashboardController', () => {
         expectedData,
       );
 
-      const result = await controller.getBusinessDashboard(eventId);
+      const result = await controller.getBusinessDashboard(eventId, mockReq);
 
-      expect(service.getBusinessDashboardData).toHaveBeenCalledWith(eventId);
+      expect(service.getBusinessDashboardData).toHaveBeenCalledWith(eventId, mockReq.user.userId);
       expect(result).toEqual(expectedData);
     });
   });

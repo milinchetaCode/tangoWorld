@@ -13,6 +13,11 @@ services:
         generateValue: true
       - key: NODE_ENV
         value: production
+      - key: FRONTEND_URL
+        fromService:
+          name: tango-frontend
+          type: web
+          property: url
 
   # Frontend service
   - type: web

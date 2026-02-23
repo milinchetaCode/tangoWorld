@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
@@ -6,26 +6,56 @@ import { Prisma } from '@prisma/client';
 export class EventCostsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.EventCostCreateInput) {
+  async verifyEventOwnership(eventId: string, userId: string): Promise<void> {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      select: { organizerId: true },
+    });
+
+    if (!event) {
+      throw new NotFoundException(`Event with ID ${eventId} not found`);
+    }
+
+    if (event.organizerId !== userId) {
+      throw new ForbiddenException('Only the event organizer can access this resource');
+    }
+  }
+
+  async create(data: Prisma.EventCostCreateInput, userId: string) {
+    await this.verifyEventOwnership(data.event.connect!.id as string, userId);
     return this.prisma.eventCost.create({
       data,
     });
   }
 
-  async findAllByEventId(eventId: string) {
+  async findAllByEventId(eventId: string, userId: string) {
+    await this.verifyEventOwnership(eventId, userId);
     return this.prisma.eventCost.findMany({
       where: { eventId },
       orderBy: { date: 'desc' },
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
+    const cost = await this.prisma.eventCost.findUnique({
+      where: { id },
+      select: { eventId: true },
+    });
+
+    if (!cost) {
+      throw new NotFoundException(`Cost with ID ${id} not found`);
+    }
+
+    await this.verifyEventOwnership(cost.eventId, userId);
+
     return this.prisma.eventCost.delete({
       where: { id },
     });
   }
 
-  async getBusinessDashboardData(eventId: string) {
+  async getBusinessDashboardData(eventId: string, userId: string) {
+    await this.verifyEventOwnership(eventId, userId);
+
     // Get all costs for the event
     const costs = await this.prisma.eventCost.findMany({
       where: { eventId },

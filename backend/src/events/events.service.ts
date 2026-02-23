@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Event, Prisma } from '@prisma/client';
 
@@ -103,13 +103,43 @@ export class EventsService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId?: string) {
+    if (userId) {
+      const event = await this.prisma.event.findUnique({
+        where: { id },
+        select: { organizerId: true },
+      });
+
+      if (!event) {
+        throw new NotFoundException(`Event with ID ${id} not found`);
+      }
+
+      if (event.organizerId !== userId) {
+        throw new ForbiddenException('You do not have permission to delete this event');
+      }
+    }
+
     return this.prisma.event.delete({
       where: { id },
     });
   }
 
-  async updateCoordinates(id: string, latitude: number, longitude: number) {
+  async updateCoordinates(id: string, latitude: number, longitude: number, userId?: string) {
+    if (userId) {
+      const event = await this.prisma.event.findUnique({
+        where: { id },
+        select: { organizerId: true },
+      });
+
+      if (!event) {
+        throw new NotFoundException(`Event with ID ${id} not found`);
+      }
+
+      if (event.organizerId !== userId) {
+        throw new ForbiddenException('You do not have permission to update coordinates for this event');
+      }
+    }
+
     try {
       return await this.prisma.event.update({
         where: { id },
@@ -126,7 +156,7 @@ export class EventsService {
     }
   }
 
-  async updatePublicationStatus(id: string, isPublished: boolean) {
+  async updatePublicationStatus(id: string, isPublished: boolean, userId?: string) {
     // Fetch event with applications to check registrations
     const event = await this.prisma.event.findUnique({
       where: { id },
@@ -141,6 +171,10 @@ export class EventsService {
 
     if (!event) {
       throw new NotFoundException(`Event with ID ${id} not found`);
+    }
+
+    if (userId && event.organizerId !== userId) {
+      throw new ForbiddenException('You do not have permission to update publication status for this event');
     }
 
     // If trying to unpublish (set to false) and event has accepted applications

@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   SetMetadata,
+  Request,
 } from '@nestjs/common';
 import { EventCostsService } from './event-costs.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -28,6 +29,7 @@ export class EventCostsController {
       amount: number;
       date?: string;
     },
+    @Request() req: any,
   ) {
     return this.eventCostsService.create({
       event: { connect: { id: eventId } },
@@ -35,17 +37,17 @@ export class EventCostsController {
       description: body.description,
       amount: body.amount,
       date: body.date ? new Date(body.date) : new Date(),
-    });
+    }, req.user.userId);
   }
 
   @Get()
-  findAll(@Param('eventId') eventId: string) {
-    return this.eventCostsService.findAllByEventId(eventId);
+  findAll(@Param('eventId') eventId: string, @Request() req: any) {
+    return this.eventCostsService.findAllByEventId(eventId, req.user.userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.eventCostsService.remove(id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.eventCostsService.remove(id, req.user.userId);
   }
 }
 
@@ -56,7 +58,7 @@ export class BusinessDashboardController {
   constructor(private readonly eventCostsService: EventCostsService) {}
 
   @Get()
-  getBusinessDashboard(@Param('eventId') eventId: string) {
-    return this.eventCostsService.getBusinessDashboardData(eventId);
+  getBusinessDashboard(@Param('eventId') eventId: string, @Request() req: any) {
+    return this.eventCostsService.getBusinessDashboardData(eventId, req.user.userId);
   }
 }
