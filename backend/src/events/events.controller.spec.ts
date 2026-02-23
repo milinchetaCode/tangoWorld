@@ -9,11 +9,14 @@ describe('EventsController', () => {
 
   const mockEventsService = {
     findAll: jest.fn(),
+    findMyEvents: jest.fn(),
     findOne: jest.fn(),
+    findOneContact: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
     updateCoordinates: jest.fn(),
+    updatePublicationStatus: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -77,20 +80,45 @@ describe('EventsController', () => {
     });
   });
 
+  describe('findMyEvents', () => {
+    it('should call service.findMyEvents with the authenticated user id', async () => {
+      const req = { user: { userId: 'organizer-123' } };
+      mockEventsService.findMyEvents.mockResolvedValue([]);
+
+      await controller.findMyEvents(req);
+
+      expect(service.findMyEvents).toHaveBeenCalledWith('organizer-123');
+    });
+  });
+
+  describe('remove', () => {
+    it('should call service.remove with eventId and userId', async () => {
+      const eventId = 'event-123';
+      const req = { user: { userId: 'organizer-456' } };
+      mockEventsService.remove.mockResolvedValue({ id: eventId });
+
+      await controller.remove(eventId, req);
+
+      expect(service.remove).toHaveBeenCalledWith(eventId, 'organizer-456');
+    });
+  });
+
   describe('updateCoordinates', () => {
     it('should update coordinates with valid data', async () => {
       const eventId = 'test-event-id';
       const body = { latitude: 48.8566, longitude: 2.3522 };
+      const req = { user: { userId: 'organizer-123' } };
       const updatedEvent = { id: eventId, ...body };
 
       mockEventsService.updateCoordinates.mockResolvedValue(updatedEvent);
 
-      const result = await controller.updateCoordinates(eventId, body);
+      const result = await controller.updateCoordinates(eventId, body, req);
 
       expect(service.updateCoordinates).toHaveBeenCalledWith(
         eventId,
         body.latitude,
         body.longitude,
+        'organizer-123',
       );
       expect(result).toEqual(updatedEvent);
     });
@@ -98,11 +126,12 @@ describe('EventsController', () => {
     it('should throw BadRequestException for invalid latitude (too low)', () => {
       const eventId = 'test-event-id';
       const body = { latitude: -91, longitude: 2.3522 };
+      const req = { user: { userId: 'organizer-123' } };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         'Latitude must be between -90 and 90',
       );
     });
@@ -110,11 +139,12 @@ describe('EventsController', () => {
     it('should throw BadRequestException for invalid latitude (too high)', () => {
       const eventId = 'test-event-id';
       const body = { latitude: 91, longitude: 2.3522 };
+      const req = { user: { userId: 'organizer-123' } };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         'Latitude must be between -90 and 90',
       );
     });
@@ -122,11 +152,12 @@ describe('EventsController', () => {
     it('should throw BadRequestException for invalid longitude (too low)', () => {
       const eventId = 'test-event-id';
       const body = { latitude: 48.8566, longitude: -181 };
+      const req = { user: { userId: 'organizer-123' } };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         'Longitude must be between -180 and 180',
       );
     });
@@ -134,11 +165,12 @@ describe('EventsController', () => {
     it('should throw BadRequestException for invalid longitude (too high)', () => {
       const eventId = 'test-event-id';
       const body = { latitude: 48.8566, longitude: 181 };
+      const req = { user: { userId: 'organizer-123' } };
 
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         BadRequestException,
       );
-      expect(() => controller.updateCoordinates(eventId, body)).toThrow(
+      expect(() => controller.updateCoordinates(eventId, body, req)).toThrow(
         'Longitude must be between -180 and 180',
       );
     });
@@ -146,16 +178,18 @@ describe('EventsController', () => {
     it('should accept valid edge case coordinates', async () => {
       const eventId = 'test-event-id';
       const body = { latitude: -90, longitude: -180 };
+      const req = { user: { userId: 'organizer-123' } };
       const updatedEvent = { id: eventId, ...body };
 
       mockEventsService.updateCoordinates.mockResolvedValue(updatedEvent);
 
-      const result = await controller.updateCoordinates(eventId, body);
+      const result = await controller.updateCoordinates(eventId, body, req);
 
       expect(service.updateCoordinates).toHaveBeenCalledWith(
         eventId,
         body.latitude,
         body.longitude,
+        'organizer-123',
       );
       expect(result).toEqual(updatedEvent);
     });
@@ -163,16 +197,18 @@ describe('EventsController', () => {
     it('should accept valid edge case coordinates (max values)', async () => {
       const eventId = 'test-event-id';
       const body = { latitude: 90, longitude: 180 };
+      const req = { user: { userId: 'organizer-123' } };
       const updatedEvent = { id: eventId, ...body };
 
       mockEventsService.updateCoordinates.mockResolvedValue(updatedEvent);
 
-      const result = await controller.updateCoordinates(eventId, body);
+      const result = await controller.updateCoordinates(eventId, body, req);
 
       expect(service.updateCoordinates).toHaveBeenCalledWith(
         eventId,
         body.latitude,
         body.longitude,
+        'organizer-123',
       );
       expect(result).toEqual(updatedEvent);
     });

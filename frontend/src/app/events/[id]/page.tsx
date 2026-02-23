@@ -118,7 +118,6 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                     <EventFaqAndContact 
                         eventId={event.id}
                         faq={event.faq}
-                        contact={event.contact}
                     />
                 </div>
 

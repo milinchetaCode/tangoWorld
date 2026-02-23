@@ -25,17 +25,19 @@ function OrganizerDashboard() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const userStr = localStorage.getItem('user');
-                if (!userStr) {
+        const userStr = localStorage.getItem('user');
+                const token = localStorage.getItem('token');
+                if (!userStr || !token) {
                     setError('Authentication data not found. Please log in again.');
                     setIsLoading(false);
                     return;
                 }
                 
-                const user = JSON.parse(userStr);
-                const userId = user.id;
-
-                const response = await fetch(getApiUrl(`/events?organizerId=${userId}`));
+                const response = await fetch(getApiUrl('/events/my-events'), {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch events');
                 }
