@@ -3,12 +3,11 @@ import {
   Post,
   Body,
   UnauthorizedException,
-  Get,
-  UseGuards,
-  Request,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,13 +15,13 @@ export class AuthController {
 
   @Throttle({ auth: { ttl: 60000, limit: 5 } })
   @Post('register')
-  async register(@Body() body: any) {
+  async register(@Body() body: RegisterDto) {
     return this.authService.register(body);
   }
 
   @Throttle({ auth: { ttl: 60000, limit: 5 } })
   @Post('login')
-  async login(@Body() body: any) {
+  async login(@Body() body: LoginDto) {
     const user = await this.authService.validateUser(body.email, body.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

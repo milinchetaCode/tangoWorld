@@ -46,26 +46,7 @@ describe('EventsController', () => {
 
       await controller.findAll(search);
 
-      expect(service.findAll).toHaveBeenCalledWith(search, undefined);
-    });
-
-    it('should call service.findAll with organizerId parameter', async () => {
-      const organizerId = 'user-123';
-      mockEventsService.findAll.mockResolvedValue([]);
-
-      await controller.findAll(undefined, organizerId);
-
-      expect(service.findAll).toHaveBeenCalledWith(undefined, organizerId);
-    });
-
-    it('should call service.findAll with both search and organizerId parameters', async () => {
-      const search = 'tango';
-      const organizerId = 'user-123';
-      mockEventsService.findAll.mockResolvedValue([]);
-
-      await controller.findAll(search, organizerId);
-
-      expect(service.findAll).toHaveBeenCalledWith(search, organizerId);
+      expect(service.findAll).toHaveBeenCalledWith(search);
     });
 
     it('should call service.findAll with no parameters', async () => {
@@ -73,7 +54,7 @@ describe('EventsController', () => {
 
       await controller.findAll();
 
-      expect(service.findAll).toHaveBeenCalledWith(undefined, undefined);
+      expect(service.findAll).toHaveBeenCalledWith(undefined);
     });
   });
 

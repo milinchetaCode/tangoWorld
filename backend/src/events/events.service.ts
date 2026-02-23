@@ -97,9 +97,12 @@ export class EventsService {
       }
     }
 
+    // Strip organizerId to prevent ownership transfer
+    const { organizerId: _removed, ...safeData } = data as any;
+
     return this.prisma.event.update({
       where: { id },
-      data,
+      data: safeData,
     });
   }
 

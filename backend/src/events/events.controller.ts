@@ -28,8 +28,8 @@ export class EventsController {
   }
 
   @Get()
-  findAll(@Query('search') search?: string, @Query('organizerId') organizerId?: string) {
-    return this.eventsService.findAll(search, organizerId);
+  findAll(@Query('search') search?: string) {
+    return this.eventsService.findAll(search);
   }
 
   @Get(':id')
