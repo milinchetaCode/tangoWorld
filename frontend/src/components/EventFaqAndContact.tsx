@@ -3,48 +3,55 @@
 import { useState, useEffect } from 'react';
 import { HelpCircle, Mail, Lock } from 'lucide-react';
 import { getApiUrl } from '@/lib/api';
-import { Application } from '@/types/application';
 
 interface EventFaqAndContactProps {
     eventId: string;
     faq?: string;
-    contact?: string;
 }
 
-export default function EventFaqAndContact({ eventId, faq, contact }: EventFaqAndContactProps) {
-    const [isAccepted, setIsAccepted] = useState(false);
+export default function EventFaqAndContact({ eventId, faq }: EventFaqAndContactProps) {
+    const [contact, setContact] = useState<string | null>(null);
+    const [isLocked, setIsLocked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const checkApplicationStatus = async () => {
+        const fetchContact = async () => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) {
+                    setIsLocked(true);
                     setIsLoading(false);
                     return;
                 }
 
-                const res = await fetch(getApiUrl('/applications/me'), {
+                const res = await fetch(getApiUrl(`/events/${eventId}/contact`), {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
 
                 if (res.ok) {
-                    const applications: Application[] = await res.json();
-                    const application = applications.find((app) => app.eventId === eventId);
-                    if (application && application.status === 'accepted') {
-                        setIsAccepted(true);
+                    const data = await res.json();
+                    if (data.contact) {
+                        setContact(data.contact);
+                    } else {
+                        // Event has no contact info set
+                        setIsLoading(false);
+                        return;
                     }
+                } else {
+                    // 403 means not accepted; other errors mean no contact or not found
+                    setIsLocked(true);
                 }
             } catch (err) {
-                console.error('Error checking application status:', err);
+                console.error('Error fetching contact information:', err);
+                setIsLocked(true);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        checkApplicationStatus();
+        fetchContact();
     }, [eventId]);
 
     return (
@@ -63,13 +70,13 @@ export default function EventFaqAndContact({ eventId, faq, contact }: EventFaqAn
             )}
 
             {/* Contact Section - Only visible to accepted users */}
-            {contact && !isLoading && (
+            {!isLoading && (contact || isLocked) && (
                 <section className="bg-white rounded-2xl p-8 shadow-sm ring-1 ring-slate-200">
                     <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center">
                         <Mail className="mr-3 h-6 w-6 text-rose-500" />
                         Contact Information
                     </h2>
-                    {isAccepted ? (
+                    {contact ? (
                         <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-wrap">
                             {contact}
                         </div>

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Event, Prisma } from '@prisma/client';
 
@@ -7,14 +12,13 @@ export class EventsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(search?: string, organizerId?: string) {
-    const whereConditions: Prisma.EventWhereInput = {};
+    const whereConditions: Prisma.EventWhereInput = {
+      // Always restrict the public listing to published events only
+      isPublished: true,
+    };
 
-    // Filter by organizerId if provided
     if (organizerId) {
       whereConditions.organizerId = organizerId;
-    } else {
-      // Only show published events for public listing
-      whereConditions.isPublished = true;
     }
 
     // Add search conditions
@@ -48,8 +52,32 @@ export class EventsService {
     });
   }
 
+  async findMyEvents(userId: string) {
+    // Returns ALL events (including unpublished) owned by the authenticated organizer
+    return this.prisma.event.findMany({
+      where: { organizerId: userId },
+      include: {
+        organizer: {
+          select: {
+            name: true,
+            surname: true,
+          },
+        },
+        applications: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
+      },
+      orderBy: {
+        startDate: 'asc',
+      },
+    });
+  }
+
   async findOne(id: string) {
-    return this.prisma.event.findUnique({
+    const event = await this.prisma.event.findUnique({
       where: { id },
       include: {
         organizer: {
@@ -72,6 +100,37 @@ export class EventsService {
         },
       },
     });
+
+    if (!event) return null;
+
+    // Exclude contact – it is only returned via the protected /events/:id/contact endpoint
+    const { contact: _contact, ...eventWithoutContact } = event;
+    return eventWithoutContact;
+  }
+
+  async findOneContact(id: string, userId: string) {
+    // Verify that the requesting user has an accepted application for this event
+    const application = await this.prisma.application.findUnique({
+      where: { userId_eventId: { userId, eventId: id } },
+      select: { status: true },
+    });
+
+    if (!application || application.status !== 'accepted') {
+      throw new ForbiddenException(
+        'Contact information is only available to accepted dancers',
+      );
+    }
+
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      select: { contact: true },
+    });
+
+    if (!event) {
+      throw new NotFoundException(`Event with ID ${id} not found`);
+    }
+
+    return { contact: event.contact };
   }
 
   async create(data: Prisma.EventCreateInput) {
@@ -103,31 +162,61 @@ export class EventsService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      select: { organizerId: true },
+    });
+
+    if (!event) {
+      throw new NotFoundException(`Event with ID ${id} not found`);
+    }
+
+    if (event.organizerId !== userId) {
+      throw new ForbiddenException('Only the event organizer can delete this event');
+    }
+
     return this.prisma.event.delete({
       where: { id },
     });
   }
 
-  async updateCoordinates(id: string, latitude: number, longitude: number) {
-    try {
-      return await this.prisma.event.update({
-        where: { id },
-        data: {
-          latitude,
-          longitude,
-        },
-      });
-    } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Event with ID ${id} not found`);
-      }
-      throw error;
+  async updateCoordinates(
+    id: string,
+    latitude: number,
+    longitude: number,
+    userId: string,
+  ) {
+    const event = await this.prisma.event.findUnique({
+      where: { id },
+      select: { organizerId: true },
+    });
+
+    if (!event) {
+      throw new NotFoundException(`Event with ID ${id} not found`);
     }
+
+    if (event.organizerId !== userId) {
+      throw new ForbiddenException(
+        'Only the event organizer can update this event',
+      );
+    }
+
+    return this.prisma.event.update({
+      where: { id },
+      data: {
+        latitude,
+        longitude,
+      },
+    });
   }
 
-  async updatePublicationStatus(id: string, isPublished: boolean) {
-    // Fetch event with applications to check registrations
+  async updatePublicationStatus(
+    id: string,
+    isPublished: boolean,
+    userId: string,
+  ) {
+    // Fetch event to verify ownership and get applications
     const event = await this.prisma.event.findUnique({
       where: { id },
       include: {
@@ -143,10 +232,16 @@ export class EventsService {
       throw new NotFoundException(`Event with ID ${id} not found`);
     }
 
+    if (event.organizerId !== userId) {
+      throw new ForbiddenException(
+        'Only the event organizer can update publication status',
+      );
+    }
+
     // If trying to unpublish (set to false) and event has accepted applications
     // We allow it but the frontend will handle disabling registration
     // The event will remain visible but with registration disabled
-    
+
     return this.prisma.event.update({
       where: { id },
       data: {

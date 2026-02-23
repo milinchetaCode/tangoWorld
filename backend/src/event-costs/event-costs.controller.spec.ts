@@ -42,6 +42,7 @@ describe('EventCostsController', () => {
   describe('create', () => {
     it('should create a new cost', async () => {
       const eventId = 'event-123';
+      const req = { user: { userId: 'organizer-456' } };
       const body = {
         category: 'rent',
         description: 'Venue rental',
@@ -52,20 +53,24 @@ describe('EventCostsController', () => {
 
       mockEventCostsService.create.mockResolvedValue(expectedResult);
 
-      const result = await controller.create(eventId, body);
+      const result = await controller.create(eventId, body, req);
 
-      expect(service.create).toHaveBeenCalledWith({
-        event: { connect: { id: eventId } },
-        category: body.category,
-        description: body.description,
-        amount: body.amount,
-        date: new Date(body.date),
-      });
+      expect(service.create).toHaveBeenCalledWith(
+        eventId,
+        {
+          category: body.category,
+          description: body.description,
+          amount: body.amount,
+          date: new Date(body.date),
+        },
+        'organizer-456',
+      );
       expect(result).toEqual(expectedResult);
     });
 
     it('should create a cost with current date when no date provided', async () => {
       const eventId = 'event-123';
+      const req = { user: { userId: 'organizer-456' } };
       const body = {
         category: 'insurance',
         description: 'Event insurance',
@@ -74,16 +79,17 @@ describe('EventCostsController', () => {
 
       mockEventCostsService.create.mockResolvedValue({});
 
-      await controller.create(eventId, body);
+      await controller.create(eventId, body, req);
 
       expect(service.create).toHaveBeenCalledWith(
+        eventId,
         expect.objectContaining({
-          event: { connect: { id: eventId } },
           category: body.category,
           description: body.description,
           amount: body.amount,
           date: expect.any(Date),
         }),
+        'organizer-456',
       );
     });
   });
@@ -91,6 +97,7 @@ describe('EventCostsController', () => {
   describe('findAll', () => {
     it('should return all costs for an event', async () => {
       const eventId = 'event-123';
+      const req = { user: { userId: 'organizer-456' } };
       const expectedCosts = [
         { id: 'cost-1', category: 'rent', amount: 1000 },
         { id: 'cost-2', category: 'insurance', amount: 500 },
@@ -98,9 +105,9 @@ describe('EventCostsController', () => {
 
       mockEventCostsService.findAllByEventId.mockResolvedValue(expectedCosts);
 
-      const result = await controller.findAll(eventId);
+      const result = await controller.findAll(eventId, req);
 
-      expect(service.findAllByEventId).toHaveBeenCalledWith(eventId);
+      expect(service.findAllByEventId).toHaveBeenCalledWith(eventId, 'organizer-456');
       expect(result).toEqual(expectedCosts);
     });
   });
@@ -108,13 +115,14 @@ describe('EventCostsController', () => {
   describe('remove', () => {
     it('should delete a cost', async () => {
       const costId = 'cost-123';
+      const req = { user: { userId: 'organizer-456' } };
       const expectedResult = { id: costId };
 
       mockEventCostsService.remove.mockResolvedValue(expectedResult);
 
-      const result = await controller.remove(costId);
+      const result = await controller.remove(costId, req);
 
-      expect(service.remove).toHaveBeenCalledWith(costId);
+      expect(service.remove).toHaveBeenCalledWith(costId, 'organizer-456');
       expect(result).toEqual(expectedResult);
     });
   });
@@ -159,6 +167,7 @@ describe('BusinessDashboardController', () => {
   describe('getBusinessDashboard', () => {
     it('should return business dashboard data for an event', async () => {
       const eventId = 'event-123';
+      const req = { user: { userId: 'organizer-456' } };
       const expectedData = {
         costs: [],
         costsByCategory: {},
@@ -177,9 +186,9 @@ describe('BusinessDashboardController', () => {
         expectedData,
       );
 
-      const result = await controller.getBusinessDashboard(eventId);
+      const result = await controller.getBusinessDashboard(eventId, req);
 
-      expect(service.getBusinessDashboardData).toHaveBeenCalledWith(eventId);
+      expect(service.getBusinessDashboardData).toHaveBeenCalledWith(eventId, 'organizer-456');
       expect(result).toEqual(expectedData);
     });
   });

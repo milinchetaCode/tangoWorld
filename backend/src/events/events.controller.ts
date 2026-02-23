@@ -25,9 +25,22 @@ export class EventsController {
     return this.eventsService.findAll(search, organizerId);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @SetMetadata('status', ['approved'])
+  @Get('my-events')
+  findMyEvents(@Request() req: any) {
+    return this.eventsService.findMyEvents(req.user.userId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.eventsService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/contact')
+  getContact(@Param('id') id: string, @Request() req: any) {
+    return this.eventsService.findOneContact(id, req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -53,15 +66,17 @@ export class EventsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @SetMetadata('status', ['approved'])
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.eventsService.remove(id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.eventsService.remove(id, req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @SetMetadata('status', ['approved'])
   @Patch(':id/coordinates')
   updateCoordinates(
     @Param('id') id: string,
     @Body() body: { latitude: number; longitude: number },
+    @Request() req: any,
   ) {
     // Validate coordinate ranges
     if (body.latitude < -90 || body.latitude > 90) {
@@ -74,6 +89,7 @@ export class EventsController {
       id,
       body.latitude,
       body.longitude,
+      req.user.userId,
     );
   }
 
@@ -83,6 +99,7 @@ export class EventsController {
   updatePublicationStatus(
     @Param('id') id: string,
     @Body() body: { isPublished: boolean },
+    @Request() req: any,
   ) {
     if (body.isPublished === undefined || body.isPublished === null) {
       throw new BadRequestException('isPublished field is required');
@@ -90,6 +107,6 @@ export class EventsController {
     if (typeof body.isPublished !== 'boolean') {
       throw new BadRequestException('isPublished must be a boolean value');
     }
-    return this.eventsService.updatePublicationStatus(id, body.isPublished);
+    return this.eventsService.updatePublicationStatus(id, body.isPublished, req.user.userId);
   }
 }
