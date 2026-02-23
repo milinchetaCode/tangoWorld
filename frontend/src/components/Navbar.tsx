@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Menu, X, LogOut, User as UserIcon, ShieldCheck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import GoogleTranslate from './GoogleTranslate';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -84,7 +83,6 @@ export default function Navbar() {
                                     Sign In
                                 </Link>
                             )}
-                            <GoogleTranslate />
                         </div>
 
                         <div className="-mr-2 flex items-center sm:hidden">
@@ -130,9 +128,6 @@ export default function Navbar() {
                                     Sign In
                                 </Link>
                             )}
-                            <div className="pl-3 pr-4 py-2">
-                                <GoogleTranslate />
-                            </div>
                         </div>
                     </div>
                 )}
@@ -187,7 +182,6 @@ export default function Navbar() {
                                 Sign In
                             </Link>
                         )}
-                        <GoogleTranslate />
                     </div>
 
                     <div className="-mr-2 flex items-center sm:hidden">
@@ -237,9 +231,6 @@ export default function Navbar() {
                                 Sign In
                             </Link>
                         )}
-                        <div className="pl-3 pr-4 py-2">
-                            <GoogleTranslate />
-                        </div>
                     </div>
                 </div>
             )}
