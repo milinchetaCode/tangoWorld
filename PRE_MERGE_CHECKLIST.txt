@@ -1,0 +1,53 @@
+═══════════════════════════════════════════════════════════════
+                    PRE-MERGE CHECKLIST
+═══════════════════════════════════════════════════════════════
+
+Complete this checklist before merging the environment configuration PR.
+
+STEP 1: CHECK RENDER CONFIGURATION
+───────────────────────────────────────────────────────────────
+[ ] Logged into Render Dashboard
+[ ] Opened "tango-backend" service
+[ ] Checked "Environment" tab
+[ ] Verified DATABASE_URL exists
+    → If NO: Add it before merging (see QUICK_MERGE_GUIDE.md)
+    → If YES: Continue to Step 2
+
+STEP 2: INFORM YOUR TEAM
+───────────────────────────────────────────────────────────────
+[ ] Notified team about .env file requirement for local dev
+[ ] Shared ENVIRONMENT_CONFIGURATION.md guide
+[ ] Team knows to run:
+    cd backend && cp .env.example .env
+    cd frontend && cp .env.example .env.local
+
+STEP 3: INFORM USERS (Optional)
+───────────────────────────────────────────────────────────────
+[ ] If JWT_SECRET will change: Notified users they'll need to re-login
+    (Check: Does JWT_SECRET already exist in Render Dashboard?)
+    → If NO: It will be auto-generated, users need to re-login
+    → If YES: Users won't be affected
+
+STEP 4: PREPARE FOR DEPLOYMENT
+───────────────────────────────────────────────────────────────
+[ ] Reviewed MERGE_IMPACT_ASSESSMENT.md
+[ ] Ready to monitor deployment logs
+[ ] Know how to rollback if needed (revert merge)
+
+STEP 5: MERGE!
+───────────────────────────────────────────────────────────────
+[ ] All above steps completed
+[ ] Merge the PR
+[ ] Monitor Render deployment logs
+[ ] Verify backend starts successfully
+[ ] Test frontend connection
+[ ] Test user login
+
+═══════════════════════════════════════════════════════════════
+
+CRITICAL: If you see "DATABASE_URL is required" error after merge:
+→ Go to Render Dashboard
+→ Add DATABASE_URL to tango-backend service
+→ Trigger manual redeploy
+
+═══════════════════════════════════════════════════════════════
