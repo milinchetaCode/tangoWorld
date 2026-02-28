@@ -17,6 +17,7 @@ interface UpdateProfileDto {
   city?: string;
   gender?: string;
   dietaryNeeds?: string;
+  facebookUrl?: string;
 }
 @Controller('users')
 export class UsersController {
@@ -58,7 +59,7 @@ export class UsersController {
     }
 
     // Validate that only allowed fields are being updated
-    const allowedFields = ['city', 'gender', 'dietaryNeeds'];
+    const allowedFields = ['city', 'gender', 'dietaryNeeds', 'facebookUrl'];
     const updateKeys = Object.keys(updateData);
     const invalidFields = updateKeys.filter(
       (key) => !allowedFields.includes(key),

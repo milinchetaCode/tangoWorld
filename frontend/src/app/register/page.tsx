@@ -20,6 +20,7 @@ export default function RegisterPage() {
         city: '',
         gender: 'female',
         dietaryNeeds: '',
+        facebookUrl: '',
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -230,6 +231,23 @@ export default function RegisterPage() {
                                 rows={3}
                                 value={formData.dietaryNeeds}
                                 onChange={handleChange}
+                                className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="facebookUrl" className="block text-sm font-medium text-slate-900">
+                            Facebook Profile URL
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                id="facebookUrl"
+                                name="facebookUrl"
+                                type="url"
+                                value={formData.facebookUrl}
+                                onChange={handleChange}
+                                placeholder="https://www.facebook.com/yourprofile"
                                 className="block w-full rounded-xl border-0 py-2.5 px-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-rose-500 sm:text-sm"
                             />
                         </div>

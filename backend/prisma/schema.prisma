@@ -19,6 +19,7 @@ model User {
   city            String
   gender          String // "male", "female"
   dietaryNeeds    String?
+  facebookUrl     String?       @map("facebook_url")
   role            String        @default("user") // "user", "organizer", "admin"
   organizerStatus String        @default("none") @map("organizer_status") // "none", "pending", "approved"
   createdAt       DateTime      @default(now())
