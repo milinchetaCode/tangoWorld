@@ -465,6 +465,13 @@ export default function ManageEventPage({ params }: { params: Promise<{ id: stri
                                                 </span>
                                             )}
                                         </p>
+                                        {application.user?.facebookUrl && /^https?:\/\//i.test(application.user.facebookUrl) && (
+                                            <p className="mt-0.5 text-xs">
+                                                <a href={application.user.facebookUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline truncate">
+                                                    Facebook Profile
+                                                </a>
+                                            </p>
+                                        )}
                                         <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-slate-600">
                                             <p className="truncate">{application.user?.email}</p>
                                             <svg viewBox="0 0 2 2" className="h-0.5 w-0.5 fill-current"><circle cx={1} cy={1} r={1} /></svg>
