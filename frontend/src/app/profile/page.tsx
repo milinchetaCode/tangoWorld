@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getApiUrl } from '@/lib/api';
 import { withAuth } from '@/components/withAuth';
-import { User, Mail, MapPin, Users, Utensils, Award, Calendar, Star } from 'lucide-react';
+import { User, Mail, MapPin, Users, Utensils, Award, Calendar, Star, Link } from 'lucide-react';
 
 interface UserProfile {
     id: string;
@@ -13,6 +13,7 @@ interface UserProfile {
     city: string;
     gender: string;
     dietaryNeeds?: string;
+    facebookUrl?: string;
     role: string;
     organizerStatus: string;
 }
@@ -26,7 +27,8 @@ function ProfilePage() {
     const [editFormData, setEditFormData] = useState({
         city: '',
         gender: '',
-        dietaryNeeds: ''
+        dietaryNeeds: '',
+        facebookUrl: ''
     });
 
     useEffect(() => {
@@ -37,7 +39,8 @@ function ProfilePage() {
             setEditFormData({
                 city: userData.city || '',
                 gender: userData.gender || '',
-                dietaryNeeds: userData.dietaryNeeds || ''
+                dietaryNeeds: userData.dietaryNeeds || '',
+                facebookUrl: userData.facebookUrl || ''
             });
         }
     }, []);
@@ -86,7 +89,8 @@ function ProfilePage() {
             setEditFormData({
                 city: user.city || '',
                 gender: user.gender || '',
-                dietaryNeeds: user.dietaryNeeds || ''
+                dietaryNeeds: user.dietaryNeeds || '',
+                facebookUrl: user.facebookUrl || ''
             });
             setIsEditModalOpen(true);
         }
@@ -269,6 +273,24 @@ function ProfilePage() {
                                     <p className="text-base font-semibold text-slate-900 capitalize">{user.gender}</p>
                                 </div>
                             </div>
+                            {user.facebookUrl && (
+                                <div className="flex items-start gap-4 p-4 rounded-xl hover:bg-slate-50 transition-colors">
+                                    <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                        <Link className="h-5 w-5 text-blue-600" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-slate-500">Facebook</p>
+                                        <a
+                                            href={user.facebookUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-base font-semibold text-blue-600 hover:text-blue-800 truncate block"
+                                        >
+                                            {user.facebookUrl}
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -409,6 +431,20 @@ function ProfilePage() {
                                             rows={3}
                                             placeholder="e.g., vegetarian, vegan, gluten-free, etc."
                                             className="w-full px-4 py-2 rounded-xl border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all resize-none"
+                                        />
+                                    </div>
+
+                                    {/* Facebook URL */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            Facebook Profile URL
+                                        </label>
+                                        <input
+                                            type="url"
+                                            value={editFormData.facebookUrl}
+                                            onChange={(e) => handleEditFormChange('facebookUrl', e.target.value)}
+                                            placeholder="https://www.facebook.com/yourprofile"
+                                            className="w-full px-4 py-2 rounded-xl border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                                         />
                                     </div>
 

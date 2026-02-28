@@ -6,6 +6,7 @@ interface UpdateProfileData {
   city?: string;
   gender?: string;
   dietaryNeeds?: string;
+  facebookUrl?: string;
 }
 @Injectable()
 export class UsersService {

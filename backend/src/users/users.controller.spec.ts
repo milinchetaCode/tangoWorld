@@ -141,6 +141,21 @@ describe('UsersController', () => {
       expect(mockUsersService.updateProfile).toHaveBeenCalledWith(userId, updateData);
       expect(result.dietaryNeeds).toBe('vegan');
     });
+
+    it('should allow updating facebookUrl', async () => {
+      const updateData = { facebookUrl: 'https://www.facebook.com/testuser' };
+      const req = { user: { userId } };
+
+      mockUsersService.updateProfile.mockResolvedValue({
+        ...mockUser,
+        ...updateData,
+      });
+
+      const result = await controller.updateProfile(userId, req, updateData);
+
+      expect(mockUsersService.updateProfile).toHaveBeenCalledWith(userId, updateData);
+      expect((result as any).facebookUrl).toBe('https://www.facebook.com/testuser');
+    });
   });
 
   describe('requestOrganizer', () => {
