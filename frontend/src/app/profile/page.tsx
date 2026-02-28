@@ -40,7 +40,7 @@ function ProfilePage() {
                 city: userData.city || '',
                 gender: userData.gender || '',
                 dietaryNeeds: userData.dietaryNeeds || '',
-                facebookUrl: userData.facebookUrl || ''
+                facebookUrl: userData.facebookUrl || 'https://www.facebook.com/'
             });
         }
     }, []);
@@ -90,7 +90,7 @@ function ProfilePage() {
                 city: user.city || '',
                 gender: user.gender || '',
                 dietaryNeeds: user.dietaryNeeds || '',
-                facebookUrl: user.facebookUrl || ''
+                facebookUrl: user.facebookUrl || 'https://www.facebook.com/'
             });
             setIsEditModalOpen(true);
         }
@@ -443,7 +443,7 @@ function ProfilePage() {
                                             type="url"
                                             value={editFormData.facebookUrl}
                                             onChange={(e) => handleEditFormChange('facebookUrl', e.target.value)}
-                                            placeholder="https://www.facebook.com/yourprofile"
+                                            placeholder="https://www.facebook.com/yourname"
                                             className="w-full px-4 py-2 rounded-xl border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
                                         />
                                     </div>
