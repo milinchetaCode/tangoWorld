@@ -17,6 +17,7 @@ export interface Application {
         email: string;
         gender: string;
         dietaryNeeds?: string;
+        facebookUrl?: string;
         pastEventsWithOrganizer?: {
             id: string;
             title: string;

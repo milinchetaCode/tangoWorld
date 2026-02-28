@@ -123,6 +123,7 @@ export class ApplicationsService {
             email: true,
             gender: true,
             dietaryNeeds: true,
+            facebookUrl: true,
           },
         },
       },
